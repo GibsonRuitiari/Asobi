@@ -10,9 +10,8 @@ import com.gibsonruitiari.asobi.domain.pagingdatasource.CompletedComicsDataSourc
 import com.gibsonruitiari.asobi.domain.pagingdatasource.LatestComicsDataSource
 import com.gibsonruitiari.asobi.domain.pagingdatasource.OngoingComicsDataSource
 import com.gibsonruitiari.asobi.domain.pagingdatasource.PopularComicsDataSource
-import com.gibsonruitiari.asobi.presenter.discoveruicontract.DiscoverComicsResult
+import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsResult
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 

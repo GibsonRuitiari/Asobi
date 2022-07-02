@@ -1,4 +1,4 @@
-package com.gibsonruitiari.asobi.presenter.discoveruicontract
+package com.gibsonruitiari.asobi.presenter.uicontracts
 
 import androidx.paging.PagingData
 import com.gibsonruitiari.asobi.common.Action
