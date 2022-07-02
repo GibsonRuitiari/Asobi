@@ -11,4 +11,5 @@ class OngoingComicsDataSource (private val logger: Logger): BaseDataSource<SMang
         logger.i("Fetching on going comics")
         return ongoingComics(page).firstOrNull()?.mangas ?: emptyList()
     }
+
 }
