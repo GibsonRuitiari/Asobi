@@ -8,14 +8,15 @@ import com.gibsonruitiari.asobi.presenter.discoveruicontract.DiscoverComicsResul
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class LatestComicsUseCase constructor(private val latestComicsDataSource: LatestComicsDataSource,
-private val popularComicsDataSource: PopularComicsDataSource,
-private val ongoingComicsDataSource: OngoingComicsDataSource,
-private val completedComicsDataSource: CompletedComicsDataSource):FlowUseCase<Unit,
+class DiscoverComicsUseCase constructor(private val latestComicsDataSource: LatestComicsDataSource,
+                                        private val popularComicsDataSource: PopularComicsDataSource,
+                                        private val ongoingComicsDataSource: OngoingComicsDataSource,
+                                        private val completedComicsDataSource: CompletedComicsDataSource):FlowUseCase<Unit,
 DiscoverComicsResult>(){
 
     override fun run(params: Unit): Flow<DiscoverComicsResult> = flow {
         popularComicsDataSource
-     //   DiscoverComicsResult()
+
+     //  DiscoverComicsResult()
     }
 }
