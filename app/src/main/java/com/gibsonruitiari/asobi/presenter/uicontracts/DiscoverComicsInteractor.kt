@@ -8,9 +8,9 @@ import com.gibsonruitiari.asobi.presenter.uiModels.ViewComics
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
-data class DiscoverComicsState(val comicsData:DiscoverComicsResult):State{
+data class DiscoverComicsState(val isLoading: Boolean,val comicsData:DiscoverComicsResult):State{
     companion object{
-        val Empty = DiscoverComicsState(DiscoverComicsResult.EMPTY)
+        val Empty = DiscoverComicsState(true,DiscoverComicsResult.EMPTY)
     }
 }
 sealed class DiscoverComicsAction: Action {

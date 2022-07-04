@@ -2,32 +2,72 @@ package com.gibsonruitiari.asobi.presenter.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gibsonruitiari.asobi.data.datamodels.SManga
-import com.gibsonruitiari.asobi.domain.interactor.observers.ObserveLatestComics
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import com.gibsonruitiari.asobi.common.CoroutineScopeOwner
+import com.gibsonruitiari.asobi.common.Store
+import com.gibsonruitiari.asobi.domain.interactor.observers.DiscoverComicsUseCase
+import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsAction
+import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsResult
+import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsSideEffect
+import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-class DiscoverViewModel constructor(private val latestComicsObserver:ObserveLatestComics
-):ViewModel(){
-    init {
-        latestComicsObserver(ObserveLatestComics.Params(10))
-    }
-    private val refreshFlow = MutableStateFlow(0)
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val discoverState:StateFlow<List<SManga>> = refreshFlow.flatMapLatest {
-        latestComicsObserver.flowObservable
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList(),
+class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverComicsUseCase
+):ViewModel(),CoroutineScopeOwner,Store<DiscoverComicsState,
+DiscoverComicsAction,DiscoverComicsSideEffect>{
+    override val coroutineScope: CoroutineScope
+        get() = viewModelScope
+    private val state = MutableStateFlow(
+        DiscoverComicsState(false,DiscoverComicsResult.EMPTY)
     )
-    fun refresh(){
-       refreshFlow.value +=1
-        println("new value allocated")
+    // broadcast all the side effects to all subscribers
+    // replay=0 so as to broadcast most recent side effect
+    private val sideEffect = MutableSharedFlow<DiscoverComicsSideEffect>()
+    init {
+        onAction(DiscoverComicsAction.LoadComics)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        refreshFlow.value=0
+    override fun observeState(): StateFlow<DiscoverComicsState> = state
+    override fun observeSideEffect(): Flow<DiscoverComicsSideEffect> = sideEffect
+    companion object{
+        val PARAMS=DiscoverComicsUseCase.DiscoverComicsParams(10,1)
     }
+    override fun onAction(action: DiscoverComicsAction) {
+        val oldState = state.value
+        when(action){
+            is DiscoverComicsAction.LoadComics->{
+
+                with(state){
+                    discoverComicsUseCase.execute(args = PARAMS){
+                        onStart {
+                            coroutineScope.launch {
+                                emit(oldState.copy(isLoading = false))
+                            }
+                        }
+                        onNext {
+                            coroutineScope.launch {
+                                emit(oldState.copy(isLoading = false,
+                                    comicsData = it
+                                ))
+                            }
+                        }
+                        onError {
+                            coroutineScope.launch { emit(oldState.copy(isLoading = false)) }
+                            onAction(DiscoverComicsAction.Error(it.message?:"Something went wrong please try again"))
+                        }
+                    }
+                }
+            }
+            is DiscoverComicsAction.Error->{
+                coroutineScope.launch {
+                    sideEffect.emit(DiscoverComicsSideEffect.Error(action.message))
+                }
+            }
+        }
+    }
+
 }

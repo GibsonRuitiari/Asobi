@@ -4,18 +4,27 @@ import com.gibsonruitiari.asobi.common.sMangaToViewComicMapper
 import com.gibsonruitiari.asobi.data.completedComics
 import com.gibsonruitiari.asobi.data.datamodels.MangaPage
 import com.gibsonruitiari.asobi.data.datamodels.SManga
+import com.gibsonruitiari.asobi.data.latestComics
 import com.gibsonruitiari.asobi.data.network.NetworkResource
 import com.gibsonruitiari.asobi.data.network.Status
+import com.gibsonruitiari.asobi.data.ongoingComics
+import com.gibsonruitiari.asobi.data.popularComics
 import com.gibsonruitiari.asobi.domain.interactor.FlowUseCase
 import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsResult
 import kotlinx.coroutines.flow.*
 
-class CompletedComicsUseCase:FlowUseCase<CompletedComicsUseCase.CompletedComicsParams, DiscoverComicsResult>() {
-    override fun run(params: CompletedComicsParams): Flow<DiscoverComicsResult> = flow  {
-     completedComics(1).toNetworkResource()
-    }
+class DiscoverComicsUseCase:FlowUseCase<DiscoverComicsUseCase.DiscoverComicsParams, DiscoverComicsResult>() {
+    override fun run(params: DiscoverComicsParams): Flow<DiscoverComicsResult> = combine(  completedComics(1).toNetworkResource().toComicsResultData(),
+              latestComics(params.page).take(params.itemsSize).toNetworkResource().toComicsResultData(),
+              popularComics(1).toNetworkResource().toComicsResultData(),
+              ongoingComics(1).toNetworkResource().toComicsResultData()){
+          completed,latest,popular,ongoing->
+             DiscoverComicsResult(latestComics = latest, completedComics = completed,
+             popularComics = popular, ongoingComics = ongoing)
+      }
 
-    data class CompletedComicsParams(val itemsSize:Int)
+
+    data class DiscoverComicsParams(val itemsSize:Int,val page:Int)
     private fun Flow<NetworkResource<List<SManga>>>.toComicsResultData() =map{
         DiscoverComicsResult.DiscoverComicsData(isLoading = it.status == Status.LOADING,
         comicsData =it.data?.map { sMangaToViewComicMapper(it) } ?: emptyList(),
