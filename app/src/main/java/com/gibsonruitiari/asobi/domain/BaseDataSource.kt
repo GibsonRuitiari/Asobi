@@ -11,6 +11,7 @@ abstract class BaseDataSource<T:Any> (private val logger: Logger): PagingSource<
            state.closestPageToPosition(it)?.prevKey?.plus(1) ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
        }
     }
+
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, T> {
       return try {
         val pageNumber = params.key ?: 1
