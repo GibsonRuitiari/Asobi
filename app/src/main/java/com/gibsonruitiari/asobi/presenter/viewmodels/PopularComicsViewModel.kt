@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
-import com.gibsonruitiari.asobi.domain.interactor.PagedPopularComicsObserver
+import com.gibsonruitiari.asobi.domain.interactor.pagedobservers.PagedPopularComicsObserver
 import com.gibsonruitiari.asobi.presenter.uiModels.ViewComics
 import kotlinx.coroutines.flow.Flow
 
-class PopularComicsViewModel constructor(private val pagedPopularComicsObserver: PagedPopularComicsObserver):ViewModel() {
+class PopularComicsViewModel constructor(pagedPopularComicsObserver: PagedPopularComicsObserver):ViewModel() {
     val pagedList:Flow<PagingData<ViewComics>> = pagedPopularComicsObserver
         .flowObservable
         .cachedIn(viewModelScope)
