@@ -14,5 +14,6 @@ data class DiscoverScreenViewState (val latestComics:List<ViewComics> = emptyLis
     companion object{
         val emptyState = DiscoverScreenViewState()
     }
-
+    val refreshing:Boolean
+    get() = latestComicsRefreshing || popularComicsRefreshing||ongoingComicsRefreshing||completedComicsRefreshing
 }

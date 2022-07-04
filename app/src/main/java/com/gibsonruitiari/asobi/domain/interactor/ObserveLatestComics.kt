@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 
 class ObserveLatestComics:SubjectInteractor<ObserveLatestComics.Params,List<SManga>>() {
-    override fun createObservable(params: ObserveLatestComics.Params): Flow<List<SManga>> = flow{
+    override fun createObservable(params: Params): Flow<List<SManga>> = flow{
         val homePagePopularComics= popularComics(1).firstOrNull()?.mangas ?: emptyList()
         emit(homePagePopularComics.take(params.count))
     }
