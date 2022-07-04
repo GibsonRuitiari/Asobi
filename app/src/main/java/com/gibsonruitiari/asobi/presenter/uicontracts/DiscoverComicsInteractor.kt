@@ -1,16 +1,13 @@
 package com.gibsonruitiari.asobi.presenter.uicontracts
 
-import androidx.paging.PagingData
 import com.gibsonruitiari.asobi.common.Action
 import com.gibsonruitiari.asobi.common.Effect
 import com.gibsonruitiari.asobi.common.State
 import com.gibsonruitiari.asobi.presenter.uiModels.ViewComics
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 
 data class DiscoverComicsState(val isLoading: Boolean,val comicsData:DiscoverComicsResult):State{
     companion object{
-        val Empty = DiscoverComicsState(true,DiscoverComicsResult.EMPTY)
+        val Empty = DiscoverComicsState(false,DiscoverComicsResult.EMPTY)
     }
 }
 sealed class DiscoverComicsAction: Action {

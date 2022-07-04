@@ -6,7 +6,6 @@ import com.gibsonruitiari.asobi.common.CoroutineScopeOwner
 import com.gibsonruitiari.asobi.common.Store
 import com.gibsonruitiari.asobi.domain.interactor.observers.DiscoverComicsUseCase
 import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsAction
-import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsResult
 import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsSideEffect
 import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsState
 import kotlinx.coroutines.CoroutineScope
@@ -21,9 +20,7 @@ class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverC
 DiscoverComicsAction,DiscoverComicsSideEffect>{
     override val coroutineScope: CoroutineScope
         get() = viewModelScope
-    private val state = MutableStateFlow(
-        DiscoverComicsState(false,DiscoverComicsResult.EMPTY)
-    )
+    private val state = MutableStateFlow(DiscoverComicsState.Empty)
     // broadcast all the side effects to all subscribers
     // replay=0 so as to broadcast most recent side effect
     private val sideEffect = MutableSharedFlow<DiscoverComicsSideEffect>()
