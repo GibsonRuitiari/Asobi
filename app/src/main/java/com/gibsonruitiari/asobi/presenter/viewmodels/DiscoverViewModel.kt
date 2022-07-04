@@ -7,7 +7,7 @@ import com.gibsonruitiari.asobi.domain.interactor.observers.ObserveLatestComics
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 
-class DiscoverViewModel constructor(val latestComicsObserver:ObserveLatestComics
+class DiscoverViewModel constructor(private val latestComicsObserver:ObserveLatestComics
 ):ViewModel(){
     init {
         latestComicsObserver(ObserveLatestComics.Params(10))
@@ -23,6 +23,7 @@ class DiscoverViewModel constructor(val latestComicsObserver:ObserveLatestComics
     )
     fun refresh(){
        refreshFlow.value +=1
+        println("new value allocated")
     }
 
     override fun onCleared() {

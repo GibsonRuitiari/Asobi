@@ -28,10 +28,12 @@ val completedComics:DiscoverComicsData){
         val EMPTY = DiscoverComicsResult(DiscoverComicsData.EMPTY,
             DiscoverComicsData.EMPTY,DiscoverComicsData.EMPTY,DiscoverComicsData.EMPTY)
     }
-    data class DiscoverComicsData(val comicsData:Flow<PagingData<ViewComics>>,
+    data class DiscoverComicsData(val isLoading:Boolean=false,
+
+                                  val comicsData:List<ViewComics>,val errorMessage:String?,
     ){
         companion object{
-            val EMPTY = DiscoverComicsData(comicsData = emptyFlow())
+            val EMPTY = DiscoverComicsData(false,comicsData = emptyList(),null)
         }
     }
 }
