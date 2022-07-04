@@ -2,31 +2,13 @@ package com.gibsonruitiari.asobi.domain.interactor
 
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.gibsonruitiari.asobi.common.InvokeError
-import com.gibsonruitiari.asobi.common.InvokeStarted
-import com.gibsonruitiari.asobi.common.InvokeStatus
-import com.gibsonruitiari.asobi.common.InvokeSuccess
-import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withTimeout
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 
-abstract class Interactor<in Params>{
-    operator fun invoke(params: Params, timeoutInMs:Long=TimeUnit.MINUTES.toMillis(5)):Flow<InvokeStatus> = flow{
-        try {
-            withTimeout(timeoutInMs){
-                emit(InvokeStarted)
-                doWork(params)
-                emit(InvokeSuccess)
-            }
-        }catch (t:TimeoutCancellationException){
-            emit(InvokeError(t))
-        }
-    }.catch { t->emit(InvokeError(t)) }
-    protected abstract suspend fun doWork(params:Params)
-    suspend fun executeSynchronously(params: Params) = doWork(params)
-}
+
 abstract class PaginatedEntriesUseCase<Input :PaginatedEntriesUseCase.PaginatedParams<Output>,Output:Any>:SubjectInteractor<Input,
         PagingData<Output>>() {
     interface PaginatedParams<Output:Any>{

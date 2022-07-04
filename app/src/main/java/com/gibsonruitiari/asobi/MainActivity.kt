@@ -1,22 +1,15 @@
 package com.gibsonruitiari.asobi
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.lifecycle.viewmodel.MutableCreationExtras
 import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
-import com.gibsonruitiari.asobi.domain.interactor.observers.ObserveLatestComics
-import com.gibsonruitiari.asobi.presenter.viewmodels.DiscoverViewModel
-import kotlinx.coroutines.flow.collectLatest
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        val discoverViewModel=ViewModelProvider(this, discoverViewModelFactory)[DiscoverViewModel::class.java]
+       // val discoverViewModel=ViewModelProvider(this, discoverViewModelFactory)[DiscoverViewModel::class.java]
 
 
 
@@ -41,28 +34,28 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener { view ->
-            discoverViewModel.refresh()
+
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
     }
     companion object{
-        val discoverViewModelKey = object : CreationExtras.Key<ObserveLatestComics>{}
-        val mutableCreationExtras:MutableCreationExtras = MutableCreationExtras().apply {
-            set(discoverViewModelKey, ObserveLatestComics())
-        }
-        val discoverViewModelFactory = object :ViewModelProvider.Factory{
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                return when(modelClass){
-                    DiscoverViewModel::class.java->{
-                        mutableCreationExtras[discoverViewModelKey]?.let {
-                            param->DiscoverViewModel(param)
-                        }
-                    }
-                    else-> throw IllegalArgumentException("Unknown view model $modelClass")
-                }as T
-            }
-        }
+//        val discoverViewModelKey = object : CreationExtras.Key<ObserveLatestComics>{}
+//        val mutableCreationExtras:MutableCreationExtras = MutableCreationExtras().apply {
+//            set(discoverViewModelKey, ObserveLatestComics())
+//        }
+//        val discoverViewModelFactory = object :ViewModelProvider.Factory{
+//            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+//                return when(modelClass){
+//                    DiscoverViewModel::class.java->{
+//                        mutableCreationExtras[discoverViewModelKey]?.let {
+//                            param->DiscoverViewModel(param)
+//                        }
+//                    }
+//                    else-> throw IllegalArgumentException("Unknown view model $modelClass")
+//                }as T
+//            }
+//        }
 
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
