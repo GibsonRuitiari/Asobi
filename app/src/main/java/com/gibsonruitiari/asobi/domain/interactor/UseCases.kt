@@ -1,7 +1,9 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
 package com.gibsonruitiari.asobi.domain.interactor
 
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -4,7 +4,6 @@ import com.gibsonruitiari.asobi.data.datamodels.SManga
 import com.gibsonruitiari.asobi.presenter.uiModels.ViewComics
 
 interface Mapper<in Input,out Output>{
-   // fun map(input: Input):Output
     operator fun invoke(input: Input):Output
 }
 
