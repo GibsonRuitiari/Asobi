@@ -12,7 +12,7 @@ android {
         targetSdk 32
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled  true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -70,6 +70,11 @@ dependencies {
     // logging
     implementation 'com.jakewharton.timber:timber:5.0.1'
 
+    // move past the 65k methods configuration
+    implementation "androidx.multidex:multidex:2.0.1"
+
+    // flow testing
+    testImplementation 'app.cash.turbine:turbine:0.8.0'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
