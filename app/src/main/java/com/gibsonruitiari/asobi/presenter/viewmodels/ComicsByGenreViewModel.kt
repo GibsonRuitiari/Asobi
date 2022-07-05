@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 
-class ComicsByGenreViewModel constructor(val pagedComicsByGenreObserver: PagedComicsByGenreObserver):ViewModel() {
+class ComicsByGenreViewModel constructor(pagedComicsByGenreObserver: PagedComicsByGenreObserver):ViewModel() {
     val _genres = MutableStateFlow(Genres.DC_COMICS)
     val allGenres:SharedFlow<List<Genres>> = MutableSharedFlow<List<Genres>>().apply {
         tryEmit(Genres.values().toList())
