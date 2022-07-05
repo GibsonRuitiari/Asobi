@@ -2,11 +2,12 @@ package com.gibsonruitiari.asobi.presenter.uicontracts
 
 import com.gibsonruitiari.asobi.common.Action
 import com.gibsonruitiari.asobi.common.Effect
+import com.gibsonruitiari.asobi.common.State
 import com.gibsonruitiari.asobi.presenter.uiModels.ViewComicDetails
 
 
 data class ComicDetailsState(val isLoading: Boolean,
-val comicsDetailsResult: ComicsDetailsResult){
+val comicsDetailsResult: ComicsDetailsResult):State{
     companion object{
         val Empty=ComicDetailsState(false,ComicsDetailsResult.empty)
     }

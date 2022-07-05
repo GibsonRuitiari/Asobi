@@ -2,11 +2,12 @@ package com.gibsonruitiari.asobi.presenter.uicontracts
 
 import com.gibsonruitiari.asobi.common.Action
 import com.gibsonruitiari.asobi.common.Effect
+import com.gibsonruitiari.asobi.common.State
 import com.gibsonruitiari.asobi.presenter.uiModels.ViewComicPage
 
 
 data class ComicChapterState(val isChapterLoading:Boolean,
-val comicChapterResult:ComicChapterResult){
+val comicChapterResult:ComicChapterResult):State{
     companion object{
         val empty = ComicChapterState(false, ComicChapterResult.empty)
     }
