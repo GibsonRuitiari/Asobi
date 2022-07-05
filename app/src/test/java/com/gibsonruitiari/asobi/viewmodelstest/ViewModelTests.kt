@@ -61,7 +61,7 @@ class ViewModelTests {
     @Test
     fun `assert That DiscoverComicsUseCase Respects the Params It is Given`() = runTest {
         fakeDiscoverUseCaseInstance?.run(DiscoverComicsUseCase.DiscoverComicsParams(2,1))?.test {
-        
+
             println(expectMostRecentItem().completedComics.comicsData.size)
           //  Assert.assertEquals(2, expectMostRecentItem().completedComics.comicsData.size)
 
