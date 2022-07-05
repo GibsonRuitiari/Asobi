@@ -39,7 +39,6 @@ private val completedComicsRepo: CompletedComicsRepo):FlowUseCase<DiscoverComics
              DiscoverComicsResult(latestComics = latest, completedComics = completed,
              popularComics = popular, ongoingComics = ongoing)
       }
-
     data class DiscoverComicsParams(val itemsSize:Int,val page:Int)
     private fun Flow<NetworkResource<List<SManga>>>.toComicsResultData() =map{
         DiscoverComicsResult.DiscoverComicsData(isLoading = it.status == Status.LOADING,
