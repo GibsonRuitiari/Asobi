@@ -10,6 +10,5 @@ import kotlinx.coroutines.flow.flow
 class CompletedComicsRepoImpl:CompletedComicsRepo {
     override  fun getCompletedComics(page: Int): Flow<List<SManga>> = flow{
         emit(completedComics(page).firstOrNull()?.mangas ?: emptyList())
-
     }
 }

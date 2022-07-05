@@ -14,8 +14,6 @@ class ComicsDetailsObserver constructor(private val comicsDetailsRepo: ComicsDet
       return comicsDetailsRepo.getComicDetails(params.url).map { sMangaDetailsToViewComicDetails(it) }.toNetworkResource().map {
            val viewComicDetails=ComicsDetailsResult.ComicDetails(errorMessage = it.throwable?.message,isLoading = it.status==Status.LOADING,viewComicDetails = it.data)
            ComicsDetailsResult(viewComicDetails) }
-
     }
-
     data class ComicDetailsParams(val url:String)
 }
