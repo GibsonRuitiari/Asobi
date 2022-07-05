@@ -6,7 +6,7 @@ import com.gibsonruitiari.asobi.data.repositories.ComicsDetailsRepo
 import kotlinx.coroutines.flow.Flow
 
 class ComicsDetailsRepoImpl : ComicsDetailsRepo {
-    override suspend fun getComicDetails(comicUrl: String): Flow<SMangaInfo> {
+    override  fun getComicDetails(comicUrl: String): Flow<SMangaInfo> {
        return comicDetails(comicUrl)
     }
 }

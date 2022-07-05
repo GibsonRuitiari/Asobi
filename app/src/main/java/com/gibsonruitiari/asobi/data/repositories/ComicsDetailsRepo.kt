@@ -4,5 +4,5 @@ import com.gibsonruitiari.asobi.data.datamodels.SMangaInfo
 import kotlinx.coroutines.flow.Flow
 
 interface ComicsDetailsRepo {
-     suspend fun getComicDetails(comicUrl:String):Flow<SMangaInfo>
+      fun getComicDetails(comicUrl:String):Flow<SMangaInfo>
 }
