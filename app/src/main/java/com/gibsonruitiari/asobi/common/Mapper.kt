@@ -1,10 +1,9 @@
 package com.gibsonruitiari.asobi.common
 
 import com.gibsonruitiari.asobi.data.datamodels.SManga
+import com.gibsonruitiari.asobi.data.datamodels.SMangaChapter
 import com.gibsonruitiari.asobi.data.datamodels.SMangaInfo
-import com.gibsonruitiari.asobi.presenter.uiModels.ViewComicDetails
-import com.gibsonruitiari.asobi.presenter.uiModels.ViewComicIssues
-import com.gibsonruitiari.asobi.presenter.uiModels.ViewComics
+import com.gibsonruitiari.asobi.presenter.uiModels.*
 
 interface Mapper<in Input,out Output>{
     operator fun invoke(input: Input):Output
@@ -24,4 +23,11 @@ val sMangaDetailsToViewComicDetails = object: Mapper<SMangaInfo,ViewComicDetails
         comicIssues = input.issues.map { ViewComicIssues(it.issueName,it.issueLink,it.issueReleaseDate) },
         genres = input.genres, yearOfRelease = input.yearOfRelease)
 
+}
+
+val sMangaChapterToViewMangaChapter = object :Mapper<SMangaChapter, ViewComicChapter>{
+    override fun invoke(input: SMangaChapter): ViewComicChapter {
+        val viewComicPages=input.pages.map { ViewComicPage(pageDetail = it.pageDetail, pageThumbnail = it.pageThumbnail) }
+       return ViewComicChapter(totalPages = input.totalPages, comicPages = viewComicPages)
+    }
 }
