@@ -1,7 +1,6 @@
 package com.gibsonruitiari.asobi.domain.repositories
 
 import com.gibsonruitiari.asobi.data.datamodels.SManga
-import com.gibsonruitiari.asobi.data.latestComics
 import com.gibsonruitiari.asobi.data.ongoingComics
 import com.gibsonruitiari.asobi.data.repositories.OngoingComicsRepo
 import kotlinx.coroutines.flow.Flow
