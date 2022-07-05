@@ -1,31 +1,69 @@
 package com.gibsonruitiari.asobi.presenter.viewmodels
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.gibsonruitiari.asobi.common.CoroutineScopeOwner
 import com.gibsonruitiari.asobi.common.Store
+import com.gibsonruitiari.asobi.domain.interactor.observers.ComicsDetailsObserver
 import com.gibsonruitiari.asobi.presenter.uicontracts.ComicDetailsAction
 import com.gibsonruitiari.asobi.presenter.uicontracts.ComicDetailsSideEffect
 import com.gibsonruitiari.asobi.presenter.uicontracts.ComicDetailsState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-class ComicsDetailsViewModel:ViewModel(),
+class ComicsDetailsViewModel constructor(private val comicDetailsUseCase:ComicsDetailsObserver):ViewModel(),
 CoroutineScopeOwner,Store<ComicDetailsState,
 ComicDetailsAction,ComicDetailsSideEffect>{
     override val coroutineScope: CoroutineScope
-        get() = TODO("Not yet implemented")
+        get() = viewModelScope
+    private val comicUrl = MutableStateFlow<String?>(null)
+    private val state = MutableStateFlow(ComicDetailsState.Empty)
+    private val sideEffect = MutableSharedFlow<ComicDetailsSideEffect>()
+    init {
 
-    override fun observeState(): StateFlow<ComicDetailsState> {
-        TODO("Not yet implemented")
+        onAction(ComicDetailsAction.LoadComicDetails)
     }
-
-    override fun observeSideEffect(): Flow<ComicDetailsSideEffect> {
-        TODO("Not yet implemented")
+    override fun observeState(): StateFlow<ComicDetailsState> = state
+    fun setComicUrl(url:String){
+        comicUrl.value = url
     }
+    override fun observeSideEffect(): Flow<ComicDetailsSideEffect> = sideEffect
 
     override fun onAction(action: ComicDetailsAction) {
-        TODO("Not yet implemented")
+       val oldState = state.value
+        when(action){
+            is ComicDetailsAction.LoadComicDetails->{
+                with(state){
+                    comicUrl.value?.let {
+                        comicDetailsUseCase.execute(ComicsDetailsObserver.ComicDetailsParams(it)){
+                            onStart {
+                                coroutineScope.launch {
+                                    emit(oldState.copy(isLoading = false))
+                                }
+                            }
+                            onNext {
+                                coroutineScope.launch {
+                                    emit(oldState.copy(isLoading = false, comicsDetailsResult = it))
+                                }
+                            }
+                            onError {
+                                coroutineScope.launch { emit(oldState.copy(isLoading = false)) }
+                                onAction(ComicDetailsAction.Error(it.message?:"Something went wrong"))
+                            }
+                        }
+                    }
+                }
+            }
+            is ComicDetailsAction.Error->{
+                coroutineScope.launch {
+                    sideEffect.emit(ComicDetailsSideEffect.Error(action.message))
+                }
+            }
+        }
     }
 
 }
