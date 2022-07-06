@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="AppTheme" parent="BaseAppTheme">
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:statusBarColor">?colorSurface</item>
+        <item name="android:navigationBarColor">@color/black</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+    </style>
+    <style name="AppTheme.ComicDetail">
+        <item name="android:statusBarColor">@color/immersive_sys_ui</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+    </style>
+</resources>

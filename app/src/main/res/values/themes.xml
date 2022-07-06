@@ -1,25 +1,67 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Theme.Asobi" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
+<resources>
+    <!-- Base application theme and to be extended by other themes -->
+    <style name="BaseAppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Material color attributes -->
+        <item name="colorPrimary">@color/color_primary</item>
+        <item name="colorPrimaryVariant">@color/color_primary_variant</item>
+        <item name="colorSecondary">@color/color_secondary</item>
+        <item name="colorSecondaryVariant">@color/color_secondary_variant</item>
+
+        <item name="android:colorBackground">@color/color_background</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorError">@color/color_error</item>
+
+        <item name="colorOnPrimary">@color/color_on_primary</item>
+        <item name="colorOnSecondary">@color/color_on_secondary</item>
+        <item name="colorOnBackground">@color/color_on_background</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
+        <item name="colorOnError">@color/color_on_error</item>
+        <item name="colorControlNormal">@color/color_on_surface</item>
+        <item name="colorPrimaryDark">?colorPrimaryVariant</item>
+        <item name="colorAccent">?colorAccent</item>
+        <item name="android:windowBackground">?android:colorBackground</item>
+
+        <!-- Material shape attributes -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.Asobi.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.Asobi.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Asobi.LargeComponent</item>
+
+        <!-- Material type attributes -->
+        <item name="android:textColor">@color/sl_text_color</item>
+        <item name="textAppearanceHeadline1">@style/TextAppearance.Asobi.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.Asobi.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.Asobi.Headline3</item>
+        <item name="textAppearanceHeadline4">@style/TextAppearance.Asobi.Headline4</item>
+        <item name="textAppearanceHeadline5">@style/TextAppearance.Asobi.Headline5</item>
+        <item name="textAppearanceHeadline6">@style/TextAppearance.Asobi.Headline6</item>
+        <item name="textAppearanceSubtitle1">@style/TextAppearance.Asobi.Subtitle1</item>
+        <item name="textAppearanceSubtitle2">@style/TextAppearance.Asobi.Subtitle2</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.Asobi.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.Asobi.Body2</item>
+        <item name="textAppearanceButton">@style/TextAppearance.Asobi.Button</item>
+        <item name="textAppearanceCaption">@style/TextAppearance.Asobi.Caption</item>
+        <item name="textAppearanceOverline">@style/TextAppearance.Asobi.Overline</item>
+
+        <!-- Component styles -->
+        <item name="dialogTheme">@style/ThemeOverlay.Theme.AlertDialog</item>
+        <item name="alertDialogTheme">@style/ThemeOverlay.Theme.AlertDialog</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Theme.MaterialAlertDialog</item>
+        <item name="bottomSheetDialogTheme">@style/BottomSheetsTheme</item>
+        <item name="bottomAppBarStyle">@style/Widget.Theme.BottomAppBar</item>
+        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.Surface</item>
+        <item name="tabStyle">@style/Widget.MaterialComponents.TabLayout</item>
+        <item name="alphaEmphasisHigh">@dimen/alpha_emphasis_high</item>
+        <item name="alphaEmphasisMedium">@dimen/alpha_emphasis_medium</item>
+        <item name="alphaEmphasisDisabled">@dimen/alpha_emphasis_disabled</item>
+
+    </style>
+    <!-- to be  applied in the manifest file -->
+<style name="AppTheme" parent="BaseAppTheme">
+    <item name="windowActionBar">true</item>
+    <item name="windowNoTitle">false</item>
+</style>
+    <style name="AppTheme.Launcher">
+        <item name="android:windowBackground">@drawable/app_logo</item>
     </style>
 
-    <style name="Theme.Asobi.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.Asobi.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-    <style name="Theme.Asobi.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

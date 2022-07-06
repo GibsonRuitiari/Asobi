@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+ <!-- Alert Dialog -->
+ <style name="ThemeOverlay.Theme.MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+  <item name="materialAlertDialogTitleTextStyle">@style/AsobiAlertDialogTitleTextStyle</item>
+ </style>
+
+ <style name="ThemeOverlay.Theme.AlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+  <item name="dialogCornerRadius">@dimen/medium_corner_radius</item>
+ </style>
+ <style name="AsobiAlertDialogTitleTextStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
+  <item name="fontFamily">sans-serif-medium</item>
+ </style>
+
+ <!-- Bottom Sheets -->
+ <style name="ThemeOverlay.Theme.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
+  <item name="android:windowIsFloating">false</item>
+  <item name="android:windowBackground">@android:color/transparent</item>
+  <item name="android:windowAnimationStyle">@style/Animation.Theme.BottomSheet.Modal</item>
+  <item name="bottomSheetStyle">@style/Widget.Theme.BottomSheet.Modal</item>
+  <item name="android:listDivider">@color/color_divider</item>
+ </style>
+<style name="BottomSheetsTheme" parent="ThemeOverlay.Theme.BottomSheetDialog"/>
+
+
+ <style name="Widget.Theme.BottomSheet.Modal" parent="Widget.MaterialComponents.BottomSheet.Modal">
+  <item name="shapeAppearanceOverlay">?shapeAppearanceLargeComponent</item>
+ </style>
+ <!-- Bottom App Bar -->
+ <style name="Widget.Theme.BottomAppBar" parent="Widget.MaterialComponents.BottomAppBar">
+  <item name="backgroundTint">?attr/colorSurface</item>
+  <item name="materialThemeOverlay">@style/ThemeOverlay.Theme.BottomAppBar</item>
+ </style>
+ <!-- Toolbar -->
+ <style name="Widget.Theme.Toolbar.ComicDetail" parent="">
+  <item name="titleTextColor">@color/white</item>
+  <item name="subtitleTextColor">@color/white</item>
+  <item name="android:theme">@style/ThemeOverlay.Theme.Toolbar.ComicsDetail</item>
+ </style>
+<style name="ThemeOverlay.Theme.Toolbar.ComicsDetail" parent="">
+ <item name="colorControlNormal">@color/white</item>
+ <item name="actionMenuTextColor">@color/white</item>
+</style>
+ <style name="ThemeOverlay.Theme.BottomAppBar" parent="ThemeOverlay.MaterialComponents.BottomAppBar.Surface">
+  <item name="colorControlNormal">?attr/colorOnSurface</item>
+  <item name="actionMenuTextColor">?attr/colorOnSurface</item>
+ </style>
+
+ <style name="Widget.MaterialComponents.Button.OutlinedButton.IconOnly" parent="Widget.MaterialComponents.Button.OutlinedButton">
+  <item name="iconPadding">0dp</item>
+  <item name="iconGravity">textStart</item>
+  <item name="android:insetTop">0dp</item>
+  <item name="android:insetBottom">0dp</item>
+  <item name="android:paddingLeft">12dp</item>
+  <item name="android:paddingRight">12dp</item>
+  <item name="android:minWidth">48dp</item>
+  <item name="android:minHeight">48dp</item>
+ </style>
+ <style name="MaterialImageButton">
+  <item name="android:clickable">true</item>
+  <item name="android:focusable">true</item>
+  <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+  <item name="android:padding">@dimen/keyline_3</item>
+ </style>
+
+</resources>

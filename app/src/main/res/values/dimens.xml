@@ -1,3 +1,33 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="keyline_0">0dp</dimen>
+    <dimen name="keyline_1">1dp</dimen>
+    <dimen name="keyline_2">2dp</dimen>
+    <dimen name="keyline_3">4dp</dimen>
+    <dimen name="keyline_4">6dp</dimen>
+    <dimen name="keyline_5">8dp</dimen>
+    <dimen name="keyline_6">12dp</dimen>
+    <dimen name="keyline_7">16dp</dimen>
+    <dimen name="keyline_8">24dp</dimen>
+    <dimen name="keyline_9">32dp</dimen>
+    <dimen name="keyline_10">48dp</dimen>
+    <dimen name="keyline_11">64dp</dimen>
+
+    <!--Emphasis modifiers for "on" colors-->
+    <dimen name="alpha_emphasis_high">@dimen/material_emphasis_high_type</dimen>
+    <dimen name="alpha_emphasis_medium">@dimen/material_emphasis_medium</dimen>
+    <dimen name="alpha_emphasis_disabled">@dimen/material_emphasis_disabled</dimen>
+
+    <!-- Corner Radius -->
+    <dimen name="small_corner_radius">4dp</dimen>
+    <dimen name="medium_corner_radius">8dp</dimen>
+    <dimen name="large_corner_radius">0dp</dimen>
+
+    <!--Bottom Drawer-->
+    <dimen name="bottom_sheet_handle_width">28dp</dimen>
+    <dimen name="bottom_sheet_handle_height">4dp</dimen>
+    <dimen name="bottom_sheet_handle_radius">8dp</dimen>
+
+    <dimen name="card_elevation">8dp</dimen>
+
 </resources>
