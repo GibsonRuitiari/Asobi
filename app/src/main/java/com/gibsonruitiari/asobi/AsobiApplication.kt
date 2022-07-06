@@ -18,7 +18,7 @@ class AsobiApplication :MultiDexApplication(){
             androidLogger()
             androidContext(this@AsobiApplication)
             modules(listOf(asobiLoggerModule,
-            viewModelsModule, comicsRepositoryModule, comicsDataSourcesModule))
+            viewModelsModule, observersModule, comicsRepositoryModule, comicsDataSourcesModule))
         }
     }
 }
