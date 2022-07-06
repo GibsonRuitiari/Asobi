@@ -47,10 +47,14 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'androidx.emoji:emoji:1.1.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     // paging
     implementation  'androidx.paging:paging-common-ktx:3.1.1'
     implementation 'androidx.paging:paging-runtime-ktx:3.1.1'
+
+    // Lottie
+    implementation 'com.airbnb.android:lottie:3.5.0'
 
     // lifecycle
     implementation  'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
@@ -72,7 +76,11 @@ dependencies {
 
     // move past the 65k methods configuration
     implementation "androidx.multidex:multidex:2.0.1"
+    // image loading
+    implementation "io.coil-kt:coil:2.1.0"
 
+    // Koin for Android
+    implementation "io.insert-koin:koin-android:3.2.0"
     // flow testing
     testImplementation 'app.cash.turbine:turbine:0.8.0'
 

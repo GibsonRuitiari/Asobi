@@ -2,7 +2,7 @@ package com.gibsonruitiari.asobi.common.logging
 
 import timber.log.Timber
 
-internal class AsobiLogger:Logger {
+class AsobiLogger:Logger {
     override fun setUp(isInDebugMode: Boolean) {
         if (isInDebugMode) Timber.plant(AsobiDebugTree())
     }

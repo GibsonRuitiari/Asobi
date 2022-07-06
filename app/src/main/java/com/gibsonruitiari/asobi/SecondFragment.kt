@@ -5,8 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagingData
 import com.gibsonruitiari.asobi.databinding.FragmentSecondBinding
+import com.gibsonruitiari.asobi.presenter.recyclerviewadapter.pagedAdapterOf
+import com.gibsonruitiari.asobi.presenter.uiModels.ViewComics
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -27,10 +32,13 @@ class SecondFragment : Fragment() {
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         return binding.root
 
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.lifecycle
+        viewLifecycleOwner.lifecycleScope
 
         binding.buttonSecond.setOnClickListener {
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)

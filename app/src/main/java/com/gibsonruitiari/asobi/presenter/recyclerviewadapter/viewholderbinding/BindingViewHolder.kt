@@ -15,8 +15,7 @@ import kotlin.reflect.KProperty
  * This delegate reads and writes properties to a [Map] the [Map] is held in a tag
  * associated with a view in this case the view is [RecyclerView.ViewHolder.itemView]
  */
-fun <T> viewHolderDelegate(default:T?=null):ReadWriteProperty<RecyclerView.ViewHolder,T> = viewDelegate(default)
-    .map(mapper = RecyclerView.ViewHolder::itemView)
+fun <T> viewHolderDelegate(default:T?=null):ReadWriteProperty<RecyclerView.ViewHolder,T> = viewDelegate(default).map(mapper = RecyclerView.ViewHolder::itemView)
 // open to extension or inheritance by other classes
 open class BindingViewHolder<T:ViewBinding>(binding:T):RecyclerView.ViewHolder(binding.root){
     /* not everyone uses view binding so to make it flexible create a secondary constructor that delegates creation of view needed by view holder to the primary constructor  */
