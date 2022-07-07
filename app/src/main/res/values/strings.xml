@@ -16,4 +16,8 @@
     <string name="menu_item_search">search</string>
     <string name="menu_item_settings">settings</string>
     <string name="action_search">search comics</string>
+    <string name="error_state_title">Shucks! X_x</string>
+    <string name="empty_title">Nothing to see here…</string>
+    <string name="empty_subtitle">Try retrying or search for something..</string>
+    <string name="cd_retry">retry</string>
 </resources>

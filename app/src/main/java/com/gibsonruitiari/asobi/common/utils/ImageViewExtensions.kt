@@ -1,12 +1,11 @@
 package com.gibsonruitiari.asobi.common.utils
 
 import android.graphics.drawable.Drawable
-import androidx.appcompat.widget.AppCompatImageView
-import com.bumptech.glide.Glide.with
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.gibsonruitiari.asobi.GlideApp
 import com.google.android.material.imageview.ShapeableImageView
+
 const val CrossFadeDuration =400
 fun ShapeableImageView.loadPhotoUrl(
     url: String,
