@@ -18,7 +18,7 @@
         <item name="colorOnError">@color/color_on_error</item>
         <item name="colorControlNormal">@color/color_on_surface</item>
         <item name="colorPrimaryDark">?colorPrimaryVariant</item>
-        <item name="colorAccent">?colorAccent</item>
+        <item name="colorAccent">?colorSecondary</item>
         <item name="android:windowBackground">?android:colorBackground</item>
 
         <!-- Material shape attributes -->

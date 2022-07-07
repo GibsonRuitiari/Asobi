@@ -50,6 +50,9 @@ dependencies {
     implementation 'androidx.emoji:emoji:1.1.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
+    // window metrics
+    implementation 'androidx.window:window:1.0.0'
+
     // paging
     implementation  'androidx.paging:paging-common-ktx:3.1.1'
     implementation 'androidx.paging:paging-runtime-ktx:3.1.1'

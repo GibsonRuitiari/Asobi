@@ -44,6 +44,7 @@ val viewModelsModule= module {
     viewModel { LatestComicsViewModel(get()) }
     viewModel { OngoingComicsViewModel(get()) }
     viewModel { PopularComicsViewModel(get()) }
+    viewModel { MainActivityViewModel() }
 }
 
 val comicsRepositoryModule= module{
