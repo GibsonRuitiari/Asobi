@@ -21,4 +21,14 @@ class AsobiApplication :MultiDexApplication(){
             viewModelsModule, observersModule, comicsRepositoryModule, comicsDataSourcesModule))
         }
     }
+   // less than 1gb ram memory
+    override fun onLowMemory() {
+        super.onLowMemory()
+        GlideApp.get(this).clearMemory()
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        GlideApp.get(this).trimMemory(level)
+    }
 }

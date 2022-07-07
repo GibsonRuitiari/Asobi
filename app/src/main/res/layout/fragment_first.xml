@@ -42,15 +42,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/base_frag_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fadingEdge="vertical"
+            android:layoutAnimation="@anim/layout_animation_scale_in"
             android:scrollbars="none"
             android:visibility="gone"
-            android:fadingEdge="vertical"
-            tools:visibility="visible"
-            android:layoutAnimation="@anim/layout_animation_scale_in" />
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:ignore="SpeakableTextPresentCheck"
+            tools:listitem="@layout/comic_item_layout"
+            tools:spanCount="2"
+            tools:visibility="visible" />
         <include layout="@layout/empty_error_state_layout"
             android:id="@+id/error_state_layout"
             android:layout_width="match_parent"

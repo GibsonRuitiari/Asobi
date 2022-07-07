@@ -2,10 +2,10 @@ package com.gibsonruitiari.asobi.common.utils
 
 import android.content.Context
 import android.util.AttributeSet
-import androidx.appcompat.widget.AppCompatImageView
+import com.google.android.material.imageview.ShapeableImageView
 
 class AspectRatioImageView @JvmOverloads constructor(context:Context,
-attrs:AttributeSet?=null, defStyleAttr:Int=0):AppCompatImageView(context, attrs, defStyleAttr) {
+attrs:AttributeSet?=null, defStyleAttr:Int=0):ShapeableImageView(context, attrs, defStyleAttr) {
     var aspectRatio:Double = -1.0
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
