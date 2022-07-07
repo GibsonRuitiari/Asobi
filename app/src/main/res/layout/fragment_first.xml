@@ -68,6 +68,11 @@
             android:layout_height="match_parent"
             tools:visibility="visible"
             android:visibility="gone" />
+        <com.gibsonruitiari.asobi.common.LoadingLayout
+            android:id="@+id/content_loading_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_surface" />
     </FrameLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

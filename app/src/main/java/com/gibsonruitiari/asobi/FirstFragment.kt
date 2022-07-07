@@ -25,19 +25,14 @@ import com.gibsonruitiari.asobi.presenter.viewmodels.PopularComicsViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
+
 class FirstFragment : Fragment() {
-
     private var _binding: FragmentFirstBinding? = null
-
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val fragmentBinding get() = _binding!!
     private val activityMainViewModel:MainActivityViewModel by viewModel()
     private val popularComicsViewModel:PopularComicsViewModel by viewModel()
-
 
  companion object{
      private  const val  defaultNumberOfColumns =2 // by default
@@ -180,7 +175,7 @@ class FirstFragment : Fragment() {
             errorStateLayout.root.isVisible=false
             emptyStateLayout.root.isVisible=false
             // hide contentLoading
-            // binding.contentLoadingLayout.hide()
+            fragmentBinding.contentLoadingLayout.hide()
         }
     }
 
@@ -188,19 +183,19 @@ class FirstFragment : Fragment() {
         fragmentBinding.baseFragRecyclerView.isVisible = false
         fragmentBinding.errorStateLayout.root.isVisible = false
         fragmentBinding.emptyStateLayout.root.isVisible = true
-        // binding.contentLoadingLayout.hide()
+        fragmentBinding.contentLoadingLayout.hide()
     }
     private fun showErrorState(){
         fragmentBinding.baseFragRecyclerView.isVisible = false
         fragmentBinding.errorStateLayout.root.isVisible = true
         fragmentBinding.emptyStateLayout.root.isVisible = false
-       // binding.contentLoadingLayout.hide()
+        fragmentBinding.contentLoadingLayout.hide()
     }
     private fun showLoadingState(){
         fragmentBinding.baseFragRecyclerView.isVisible = false
         fragmentBinding.errorStateLayout.root.isVisible = false
         fragmentBinding.emptyStateLayout.root.isVisible = false
-       // binding.contentLoadingLayout.show()
+        fragmentBinding.contentLoadingLayout.show()
     }
     override fun onDestroyView() {
         super.onDestroyView()
