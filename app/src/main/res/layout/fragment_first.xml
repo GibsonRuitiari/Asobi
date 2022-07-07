@@ -6,23 +6,63 @@
     android:layout_height="match_parent"
     tools:context=".FirstFragment">
 
-    <TextView
-        android:id="@+id/textview_first"
-        android:layout_width="wrap_content"
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/hello_first_fragment"
-        app:layout_constraintBottom_toTopOf="@id/button_first"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@color/white"
+        android:id="@+id/base_frag_appbar"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            android:fadingEdge="vertical"
+            android:id="@+id/base_frag_toolbar"
+            app:titleCentered="true"
+            app:menu="@menu/base_frag_menu"
+            tools:title="@string/popular_comics"
+            app:titleTextColor="@color/black"
+            app:titleTextAppearance="@style/TextAppearance.Asobi.Headline6"
+            android:minHeight="56dp"
+            android:layout_height="match_parent">
+        </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <Button
-        android:id="@+id/button_first"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/next"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textview_first" />
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:id="@+id/base_frag_swipe_refresh"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    app:layout_constraintTop_toBottomOf="@id/base_frag_appbar">
+    <FrameLayout
+        android:id="@+id/swipe_refresh_layout_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/base_frag_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none"
+            android:visibility="gone"
+            android:fadingEdge="vertical"
+            tools:visibility="visible"
+            android:layoutAnimation="@anim/layout_animation_scale_in" />
+        <include layout="@layout/empty_error_state_layout"
+            android:id="@+id/error_state_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:visibility="visible"
+            android:visibility="gone" />
+        <include layout="@layout/empty_error_state_layout"
+            android:id="@+id/empty_state_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:visibility="visible"
+            android:visibility="gone" />
+    </FrameLayout>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

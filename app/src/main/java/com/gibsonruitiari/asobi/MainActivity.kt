@@ -49,13 +49,10 @@ class MainActivity : AppCompatActivity() {
                 mainActivityViewModel.screenWidthState.collect{
                     when(it){
                         ScreenSize.COMPACT->{
-                            // add a compact view to the root container
+                            // add/use a bottom app bar
                         }
-                        ScreenSize.MEDIUM->{
-
-                        }
-                        ScreenSize.EXPANDED->{
-
+                        ScreenSize.MEDIUM, ScreenSize.EXPANDED->{
+                            // use a rail view
                         }
                     }
                 }
