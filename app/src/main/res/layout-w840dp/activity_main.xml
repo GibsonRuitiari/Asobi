@@ -6,15 +6,15 @@
     tools:context=".MainActivity"
     xmlns:tools="http://schemas.android.com/tools">
     <include layout="@layout/content_main"
-        android:layout_marginStart="68dp"
+        android:layout_marginStart="100dp"
         android:id="@+id/frag_content_main"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>
     <com.google.android.material.navigationrail.NavigationRailView
-        android:layout_width="wrap_content"
+        android:layout_width="120dp"
         android:id="@+id/nav_rail_view"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent"
+       app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/navigation_rail_menu"

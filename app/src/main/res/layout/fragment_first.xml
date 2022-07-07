@@ -23,7 +23,7 @@
             tools:title="@string/popular_comics"
             app:titleTextColor="@color/black"
             app:titleTextAppearance="@style/TextAppearance.Asobi.Headline6"
-            android:minHeight="56dp"
+            android:minHeight="60dp"
             android:layout_height="match_parent">
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>

@@ -5,11 +5,13 @@
       <map>
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.166" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.2285" />
-        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout-w600dp/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout-w600dp/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout-w600dp/content_main.xml" value="0.33" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout-w840dp/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout-w840dp/activivity_main.xml" value="0.17265625" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comic_item_layout.xml" value="0.23020833333333332" />
-        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/content_main.xml" value="0.33" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/content_main.xml" value="0.22" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/empty_error_state_layout.xml" value="0.25" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/fragment_first.xml" value="0.25" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/fragment_second.xml" value="0.1911231884057971" />
