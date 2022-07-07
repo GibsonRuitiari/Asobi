@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="@dimen/comic_item_width"
+        android:id="@+id/comic_item_card"
+        android:layout_margin="@dimen/keyline_7"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="@dimen/keyline_4"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="0dp">
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/comics_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/comic_item_height"
+            tools:src="@drawable/app_logo"
+            tools:ignore="ContentDescription"
+            android:scaleType="centerCrop"
+            android:adjustViewBounds="true"/>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

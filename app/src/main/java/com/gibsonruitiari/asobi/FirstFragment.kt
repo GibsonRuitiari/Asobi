@@ -1,19 +1,21 @@
 package com.gibsonruitiari.asobi
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import com.gibsonruitiari.asobi.common.ScreenSize
+import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.databinding.FragmentFirstBinding
+import com.gibsonruitiari.asobi.presenter.recyclerviewadapter.viewholderbinding.BindingViewHolder
+import com.gibsonruitiari.asobi.presenter.recyclerviewadapter.viewholderbinding.viewHolderDelegate
+import com.gibsonruitiari.asobi.presenter.uiModels.ViewComics
 import com.gibsonruitiari.asobi.presenter.viewmodels.MainActivityViewModel
-import kotlinx.coroutines.flow.collect
+import com.gibsonruitiari.asobi.presenter.viewmodels.PopularComicsViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -26,21 +28,30 @@ class FirstFragment : Fragment() {
 
     // This property is only valid between onCreateView and
     // onDestroyView.
-    private val binding get() = _binding!!
+    private val fragmentBinding get() = _binding!!
     private val activityMainViewModel:MainActivityViewModel by viewModel()
+    private val popularComicsViewModel:PopularComicsViewModel by viewModel()
+
+
+    private var BindingViewHolder<ComicItemLayoutBinding>.defaultComicItemBinder by viewHolderDelegate<ViewComics>()
+    fun BindingViewHolder<ComicItemLayoutBinding>.bind(item:ViewComics){
+        this.defaultComicItemBinder= item
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
-        return binding.root
+        return fragmentBinding.root
 
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val container:ViewGroup = binding.root // constraint layout so add views it
+        val container:ViewGroup = fragmentBinding.root // constraint layout so add views it
      //   binding.buttonFirst.setOnClickListener { findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment) }
+
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 activityMainViewModel.screenWidthState.collect{

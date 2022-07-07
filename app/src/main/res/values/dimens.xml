@@ -30,4 +30,7 @@
 
     <dimen name="card_elevation">8dp</dimen>
 
+    <!--must maintain a 2/3 aspect ratio for devices larger than or within w840dp-->
+    <dimen name="comic_item_width">250dp</dimen>
+    <dimen name="comic_item_height">375dp</dimen>
 </resources>
