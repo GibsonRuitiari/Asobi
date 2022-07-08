@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_item_account"
+        android:id="@+id/menu_item_home"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_weekend_24"
         android:title="@string/menu_item_home"/>
     <item
-        android:id="@+id/menu_item_moon"
+        android:id="@+id/menu_item_favorites"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_favorite_border_24"
         android:title="@string/menu_item_favourites"/>
     <item
-        android:id="@+id/menu_item_time"
+        android:id="@+id/menu_item_settings"
         android:enabled="true"
         android:icon="@drawable/ic_outline_settings_24"
         android:title="@string/menu_item_settings"/>

@@ -6,16 +6,14 @@
     xmlns:tools="http://schemas.android.com/tools">
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/comics_image_view"
-        android:layout_width="180dp"
-        android:layout_height="250dp"
+        android:layout_width="150dp"
+        android:layout_height="200dp"
         app:strokeWidth="0dp"
-        android:layout_margin="@dimen/keyline_5"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize10Percent"
         tools:src="@drawable/sunstone"
         tools:ignore="ContentDescription"
-        android:scaleType="centerCrop"
+        android:scaleType="fitXY"
         app:layout_constraintTop_toTopOf="parent"
-        android:padding="@dimen/keyline_4"
         app:layout_constraintStart_toStartOf="parent"
         android:adjustViewBounds="true"/>
 

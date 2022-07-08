@@ -1,31 +1,27 @@
 package com.gibsonruitiari.asobi
 
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
-import android.view.*
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.flowWithLifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.window.layout.WindowMetricsCalculator
 import com.gibsonruitiari.asobi.common.ScreenSize
 import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
 import com.gibsonruitiari.asobi.presenter.viewmodels.MainActivityViewModel
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
+import com.google.android.material.navigation.NavigationBarView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private val mainActivityViewModel:MainActivityViewModel by viewModel()
+
+    private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -40,23 +36,37 @@ class MainActivity : AppCompatActivity() {
                 mainActivityViewModel.setScreenWidth(computeWindowSizeClasses())
             }
         })
+        /* cannot initialize navController from FragmentContainerView since navController does not depend on fragment
+         adding FragmentContainerView breaks code, so don't use it instead use fragment (despite AS Warning)
+          see issue https://issuetracker.google.com/issues/142847973 */
+        navController = findNavController(R.id.nav_host_fragment_content_main)
+        /* get an instance of navigation bar view, note: chances of both being null at the same time are one in a million*/
+        val navigationBarView:NavigationBarView = (binding.navRailView ?: binding.navigation) as NavigationBarView
+        NavigationUI.setupWithNavController(navigationBarView, navController)
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                mainActivityViewModel.screenWidthState.collect{
-                    when(it){
-                        ScreenSize.COMPACT->{
-                            // add/use a bottom app bar
-                        }
-                        ScreenSize.MEDIUM, ScreenSize.EXPANDED->{
-                            // use a rail view
-                        }
-                    }
-                }
+        binding.navRailView?.setOnItemSelectedListener (navigationBarViewClickListener)
+        binding.navigation?.setOnItemSelectedListener(navigationBarViewClickListener)
+
+
+    }
+
+    private val navigationBarViewClickListener = NavigationBarView.OnItemSelectedListener {
+        when(it.itemId){
+            R.id.menu_item_settings->{
+                it.isChecked = true
+            //    navController.navigate(R.id.action_FirstFragment_to_SecondFragment)
+                true
             }
+            R.id.menu_item_home->{
+                it.isChecked = true
+
+                true
+            }
+            R.id.menu_item_favorites->{
+                it.isChecked = true
+                true
+            }
+            else-> false
         }
     }
     private fun computeWindowSizeClasses():ScreenSize{
@@ -69,44 +79,5 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    companion object{
-//        val discoverViewModelKey = object : CreationExtras.Key<ObserveLatestComics>{}
-//        val mutableCreationExtras:MutableCreationExtras = MutableCreationExtras().apply {
-//            set(discoverViewModelKey, ObserveLatestComics())
-//        }
-//        val discoverViewModelFactory = object :ViewModelProvider.Factory{
-//            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-//                return when(modelClass){
-//                    DiscoverViewModel::class.java->{
-//                        mutableCreationExtras[discoverViewModelKey]?.let {
-//                            param->DiscoverViewModel(param)
-//                        }
-//                    }
-//                    else-> throw IllegalArgumentException("Unknown view model $modelClass")
-//                }as T
-//            }
-//        }
 
-    }
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
-    }
 }

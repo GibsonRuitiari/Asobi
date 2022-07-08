@@ -17,9 +17,11 @@ abstract class BaseDataSource<T:Any> (private val logger: Logger): PagingSource<
         val pageNumber = params.key ?: 1
         val data = loadData(pageNumber)
         val previousKey = if (pageNumber>0) pageNumber-1 else null
+          println("data base page source--> $data")
         val nextKey = if (data.isNotEmpty()) pageNumber.plus(1) else null
         LoadResult.Page(data = data, prevKey = previousKey, nextKey = nextKey)
-    }catch (e:java.io.IOException){
+    }catch (e:Exception){
+        println("exception $e")
         logger.e(e,"an error occurred while loading data in base data source :-[")
         LoadResult.Error(e)
       }

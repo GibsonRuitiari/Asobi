@@ -42,21 +42,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true">
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/base_frag_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fadingEdge="vertical"
             android:layoutAnimation="@anim/layout_animation_scale_in"
-            android:scrollbars="none"
-            android:visibility="gone"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            tools:ignore="SpeakableTextPresentCheck"
-            tools:listitem="@layout/comic_item_layout"
-            tools:spanCount="2"
-            tools:visibility="visible" />
-        <include layout="@layout/empty_error_state_layout"
+          />
+      <!--  <include layout="@layout/empty_error_state_layout"
             android:id="@+id/error_state_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -67,12 +60,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:visibility="visible"
-            android:visibility="gone" />
-        <com.gibsonruitiari.asobi.common.LoadingLayout
-            android:id="@+id/content_loading_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/color_surface" />
+            android:visibility="gone" />-->
+
     </FrameLayout>
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

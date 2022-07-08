@@ -15,7 +15,6 @@ fun ShapeableImageView.loadPhotoUrl(
         .load(url)
         .transition(DrawableTransitionOptions.withCrossFade(CrossFadeDuration))
         .addListener(requestListener)
-        .centerCrop()
         .into(this)
         .clearOnDetach()
 }

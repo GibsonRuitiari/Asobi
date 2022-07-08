@@ -22,7 +22,7 @@ val observersModule = module {
     factory { PagedComicsByGenreObserver(get()) }
     factory { PagedLatestComicsObserver(get()) }
     factory { PagedOngoingComicsObserver(get()) }
-    factory { PagedPopularComicsObserver(get()) }
+    factory { PagedPopularComicsObserver(get(), get()) }
     factory { ComicChaptersObserver(get()) }
     factory { ComicsDetailsObserver(get()) }
     factory { DiscoverComicsUseCase(get(),get(),get(),get()) }
@@ -32,7 +32,7 @@ val comicsDataSourcesModule = module {
     factory { ComicsByGenreDataSource(get()) }
     factory { CompletedComicsDataSource(get()) }
     factory { LatestComicsDataSource(get()) }
-    factory { PopularComicsDataSource(get()) }
+    single { PopularComicsDataSource(get(), get()) }
     factory { OngoingComicsDataSource(get()) }
 }
 val viewModelsModule= module {

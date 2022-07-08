@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.flow
 
 class PopularComicsRepoImpl: PopularComicsRepo {
     override  fun getPopularComics(page: Int): Flow<List<SManga>> = flow{
-         emit(popularComics(page).firstOrNull()?.mangas ?: emptyList())
+        val data = popularComics(page).firstOrNull()?.mangas ?: emptyList()
+         emit(data)
     }
 }
