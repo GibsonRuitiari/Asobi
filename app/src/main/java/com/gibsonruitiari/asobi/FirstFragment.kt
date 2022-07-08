@@ -14,8 +14,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.PagingData
+import androidx.recyclerview.widget.GridLayoutManager
 import com.gibsonruitiari.asobi.common.ScreenSize
 import com.gibsonruitiari.asobi.common.utils.RecyclerViewItemDecoration
+import com.gibsonruitiari.asobi.common.utils.convertToPxFromDp
 import com.gibsonruitiari.asobi.databinding.FragmentFirstBinding
 import com.gibsonruitiari.asobi.presenter.recyclerviewadapter.PagedPopularComicsAdapter
 import com.gibsonruitiari.asobi.presenter.uiModels.UiMeasureSpec
@@ -114,9 +116,9 @@ class FirstFragment : Fragment() {
         // set up recycler view
         fragmentBinding.baseFragRecyclerView.apply {
             adapter = pagedPopularComicsAdapter
-
+            layoutManager = GridLayoutManager(requireContext(),uiMeasureSpecState.recyclerViewColumns)
             addItemDecoration(RecyclerViewItemDecoration(includeEdge = true, spanCount = uiMeasureSpecState.recyclerViewColumns,
-            spacing = uiMeasureSpecState.recyclerViewMargin))
+            spacing = requireActivity().convertToPxFromDp(uiMeasureSpecState.recyclerViewMargin)))
 
         }
     }
