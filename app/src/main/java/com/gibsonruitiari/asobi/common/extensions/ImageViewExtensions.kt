@@ -3,7 +3,7 @@ package com.gibsonruitiari.asobi.common.extensions
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
-import com.gibsonruitiari.asobi.GlideApp
+import com.gibsonruitiari.asobi.modules.GlideApp
 import com.google.android.material.imageview.ShapeableImageView
 
 const val CrossFadeDuration =400
