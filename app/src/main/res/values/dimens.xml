@@ -31,9 +31,9 @@
     <dimen name="card_elevation">8dp</dimen>
 
     <!--must maintain a 2/3 aspect ratio for devices larger than or within w840dp-->
-    <dimen name="comic_item_width">250dp</dimen>
-    <dimen name="comic_item_height">375dp</dimen>
-    <dimen name="error_image_dimension">200</dimen>
-    <dimen name="retry_button_width_dimen">150</dimen>
-    <dimen name="retry_button_height_dimen">60</dimen>
+    <dimen name="comic_item_width">150dp</dimen>
+    <dimen name="comic_item_height">200dp</dimen>
+    <dimen name="error_image_dimension">200dp</dimen>
+    <dimen name="retry_button_width_dimen">150dp</dimen>
+    <dimen name="retry_button_height_dimen">60dp</dimen>
 </resources>

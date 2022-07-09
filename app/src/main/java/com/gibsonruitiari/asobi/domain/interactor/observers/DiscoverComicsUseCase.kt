@@ -1,6 +1,6 @@
 package com.gibsonruitiari.asobi.domain.interactor.observers
 
-import com.gibsonruitiari.asobi.common.sMangaToViewComicMapper
+import com.gibsonruitiari.asobi.common.utils.sMangaToViewComicMapper
 import com.gibsonruitiari.asobi.common.utils.toNetworkResource
 import com.gibsonruitiari.asobi.data.datamodels.SManga
 import com.gibsonruitiari.asobi.data.network.NetworkResource
@@ -11,7 +11,10 @@ import com.gibsonruitiari.asobi.data.repositories.OngoingComicsRepo
 import com.gibsonruitiari.asobi.data.repositories.PopularComicsRepo
 import com.gibsonruitiari.asobi.domain.interactor.FlowUseCase
 import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsResult
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.map
 
 class DiscoverComicsUseCase constructor(private val latestComicsRepo: LatestComicsRepo,
 private val ongoingComicsRepo: OngoingComicsRepo,
@@ -42,7 +45,8 @@ private val completedComicsRepo: CompletedComicsRepo):FlowUseCase<DiscoverComics
     data class DiscoverComicsParams(val itemsSize:Int,val page:Int)
     private fun Flow<NetworkResource<List<SManga>>>.toComicsResultData() =map{
         DiscoverComicsResult.DiscoverComicsData(isLoading = it.status == Status.LOADING,
-        comicsData =it.data?.map { sMangaToViewComicMapper(it) } ?: emptyList(),
+        comicsData =it.data?.map { sMangaToViewComicMapper(it)
+        } ?: emptyList(),
             errorMessage = it.throwable?.message)
     }
 

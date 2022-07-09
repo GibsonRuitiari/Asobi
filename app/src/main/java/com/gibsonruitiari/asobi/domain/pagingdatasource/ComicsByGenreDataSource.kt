@@ -1,7 +1,6 @@
 package com.gibsonruitiari.asobi.domain.pagingdatasource
 
 import com.gibsonruitiari.asobi.common.logging.Logger
-import com.gibsonruitiari.asobi.data.comicsByGenre
 import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.data.datamodels.SManga
 import com.gibsonruitiari.asobi.data.repositories.ComicsByGenreRepo

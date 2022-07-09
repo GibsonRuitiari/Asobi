@@ -1,4 +1,4 @@
-package com.gibsonruitiari.asobi.common
+package com.gibsonruitiari.asobi.common.utils
 
 import com.gibsonruitiari.asobi.data.datamodels.SManga
 import com.gibsonruitiari.asobi.data.datamodels.SMangaChapter

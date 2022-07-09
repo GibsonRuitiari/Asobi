@@ -1,6 +1,6 @@
 package com.gibsonruitiari.asobi.domain.interactor.observers
 
-import com.gibsonruitiari.asobi.common.sMangaChapterToViewMangaChapter
+import com.gibsonruitiari.asobi.common.utils.sMangaChapterToViewMangaChapter
 import com.gibsonruitiari.asobi.common.utils.toNetworkResource
 import com.gibsonruitiari.asobi.data.network.Status
 import com.gibsonruitiari.asobi.data.repositories.ComicsChapterRepo

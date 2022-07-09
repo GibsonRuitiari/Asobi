@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.gibsonruitiari.asobi.common.logging.Logger
-import com.gibsonruitiari.asobi.common.sMangaToViewComicMapper
+import com.gibsonruitiari.asobi.common.utils.sMangaToViewComicMapper
 import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.data.repositories.ComicsByGenreRepo
 import com.gibsonruitiari.asobi.domain.interactor.PaginatedEntriesUseCase
@@ -26,5 +26,5 @@ val logger: Logger, private val comicsByGenreRepo: ComicsByGenreRepo):PaginatedE
             value.map { sMangaToViewComicMapper(it) }
         }
     }
-    data class PagedComicsByGenreParams(val genre:Genres, override val pagingConfig: PagingConfig):PaginatedEntriesUseCase.PaginatedParams<ViewComics>
+    data class PagedComicsByGenreParams(val genre:Genres, override val pagingConfig: PagingConfig):PaginatedParams<ViewComics>
 }

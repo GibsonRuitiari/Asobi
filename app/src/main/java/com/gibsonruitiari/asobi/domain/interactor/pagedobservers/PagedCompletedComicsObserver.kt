@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.gibsonruitiari.asobi.common.logging.Logger
-import com.gibsonruitiari.asobi.common.sMangaToViewComicMapper
+import com.gibsonruitiari.asobi.common.utils.sMangaToViewComicMapper
 import com.gibsonruitiari.asobi.data.repositories.CompletedComicsRepo
 import com.gibsonruitiari.asobi.domain.interactor.PaginatedEntriesUseCase
 import com.gibsonruitiari.asobi.domain.pagingdatasource.CompletedComicsDataSource
