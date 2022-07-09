@@ -8,18 +8,19 @@
 
     <ImageView
         android:id="@+id/empty_error_state_image_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/error_image_dimension"
+        android:layout_height="@dimen/error_image_dimension"
         android:src="@drawable/no_internet_connection_image"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/empty_error_state_title"
         tools:ignore="ContentDescription" />
     <com.google.android.material.button.MaterialButton
-        android:layout_width="150dp"
-        android:layout_height="60dp"
+        android:layout_width="@dimen/retry_button_width_dimen"
+        android:layout_height="@dimen/retry_button_height_dimen"
         android:id="@+id/retry_button"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/empty_error_state_subtitle"

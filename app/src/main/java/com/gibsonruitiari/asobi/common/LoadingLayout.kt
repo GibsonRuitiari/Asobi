@@ -96,8 +96,8 @@ class LoadingLayout @JvmOverloads constructor(
 
     companion object {
 
-        private const val MIN_SHOW_TIME = 500 // ms
-        private const val MIN_DELAY = 500 // ms
+        private const val MIN_SHOW_TIME = 1000 // ms
+        private const val MIN_DELAY = 1000 // ms
     }
 
 }

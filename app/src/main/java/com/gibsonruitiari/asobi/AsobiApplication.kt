@@ -2,6 +2,7 @@ package com.gibsonruitiari.asobi
 
 import androidx.multidex.MultiDexApplication
 import com.gibsonruitiari.asobi.common.logging.AsobiDebugTree
+import com.gibsonruitiari.asobi.modules.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -17,8 +18,10 @@ class AsobiApplication :MultiDexApplication(){
         startKoin {
             androidLogger()
             androidContext(this@AsobiApplication)
-            modules(listOf(asobiLoggerModule,
-            viewModelsModule, observersModule, comicsRepositoryModule, comicsDataSourcesModule))
+            modules(listOf(
+                asobiLoggerModule,
+            viewModelsModule, observersModule, comicsRepositoryModule, comicsDataSourcesModule
+            ))
         }
     }
    // less than 1gb ram memory

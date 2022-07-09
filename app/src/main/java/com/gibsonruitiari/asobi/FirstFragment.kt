@@ -18,7 +18,7 @@ import com.gibsonruitiari.asobi.common.extensions.scrollToTop
 import com.gibsonruitiari.asobi.common.extensions.showSnackBar
 import com.gibsonruitiari.asobi.common.utils.RecyclerViewItemDecoration
 import com.gibsonruitiari.asobi.common.utils.convertToPxFromDp
-import com.gibsonruitiari.asobi.common.utils.loadPhotoUrl
+import com.gibsonruitiari.asobi.common.extensions.loadPhotoUrl
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.databinding.FragmentFirstBinding
 import com.gibsonruitiari.asobi.presenter.recyclerviewadapter.composedPagedAdapter
@@ -38,22 +38,19 @@ import java.net.UnknownHostException
 
 
 class FirstFragment : Fragment() {
-
-        private var _binding: FragmentFirstBinding? = null
-
+    private var _binding: FragmentFirstBinding? = null
     private val fragmentBinding get() = _binding!!
     private val activityMainViewModel:MainActivityViewModel by viewModel()
     private val popularComicsViewModel:PopularComicsViewModel by viewModel()
-    private var pagingListAdapter: PagingDataAdapter<ViewComics, BindingViewHolder<ComicItemLayoutBinding>>? = composedPagedAdapter(createViewHolder = { viewGroup, _ ->
+    private var pagingListAdapter: PagingDataAdapter<ViewComics, BindingViewHolder<ComicItemLayoutBinding>> = composedPagedAdapter(createViewHolder = { viewGroup, _ ->
         viewGroup.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
             itemView.setOnClickListener { onComicClicked(comicItem) }
         }
     },bindViewHolder = { viewHolder: BindingViewHolder<ComicItemLayoutBinding>, item: ViewComics?, _: Int ->
         viewHolder.bind(item)
     })
-    private val listAdapter get() = pagingListAdapter!!
  companion object{
-     private  const val  defaultNumberOfColumns =2 // by default
+     private  const val defaultNumberOfColumns =2 // by default
      private const val defaultSpacing = 4
      private const val mediumNumberOfColumns = 4
      private const val mediumSpacing = 8
@@ -67,8 +64,6 @@ class FirstFragment : Fragment() {
             binding.comicsImageView.loadPhotoUrl(it.comicThumbnail)
         }
     }
-
-
     private fun onComicClicked(comics: ViewComics){
         Toast.makeText(requireContext(),"${comics.comicLink} clicked",Toast.LENGTH_SHORT).show()
     }
@@ -102,7 +97,7 @@ class FirstFragment : Fragment() {
     }
     private suspend fun observePagedData(){
         popularComicsViewModel.pagedList.collectLatest {
-            pagingListAdapter?.submitData(it)
+            pagingListAdapter.submitData(it)
         }
     }
     private suspend fun observeScreenSizeAndSetUiMeasureSpec(){
@@ -112,10 +107,10 @@ class FirstFragment : Fragment() {
         }
     }
     private fun listenToUiStateAndUpdateUiAccordingly(){
-        pagingListAdapter?.addLoadStateListener {
+        pagingListAdapter.addLoadStateListener {
             when(it.refresh){
                 is LoadState.NotLoading->{
-                    if (pagingListAdapter?.itemCount==0){
+                    if (pagingListAdapter.itemCount==0){
                         showEmptyState()
                         setEmptyStateText(getString(R.string.error_state_title),getString(R.string.empty_title))
                     }
@@ -123,7 +118,6 @@ class FirstFragment : Fragment() {
                 }
                 is LoadState.Loading-> {
                     showLoadingState()
-                    println("still loading ")
                 }
                 is LoadState.Error->{
                     val errorMessage=when((it.refresh as LoadState.Error).error){
@@ -161,13 +155,13 @@ class FirstFragment : Fragment() {
         }
     private fun setUpBasicFragmentsComponents(){
         fragmentBinding.baseFragToolbar.title = getString(R.string.popular_comics)
-        fragmentBinding.baseFragSwipeRefresh.setOnRefreshListener { pagingListAdapter?.refresh() }
+        fragmentBinding.baseFragSwipeRefresh.setOnRefreshListener { pagingListAdapter.refresh() }
     }
     private  fun initializePagedDataRecyclerView(uiMeasureSpecState: UiMeasureSpec){
         fragmentBinding.baseFragRecyclerView.apply {
             setHasFixedSize(true)
             scrollToTop()
-            adapter = listAdapter
+            adapter = pagingListAdapter
             layoutManager=gridLayoutManager(spanCount = uiMeasureSpecState.recyclerViewColumns)
 
           addItemDecoration(RecyclerViewItemDecoration(includeEdge = true, spanCount = uiMeasureSpecState.recyclerViewColumns, spacing = requireActivity().convertToPxFromDp(uiMeasureSpecState.recyclerViewMargin)))
@@ -223,7 +217,6 @@ class FirstFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        pagingListAdapter = null
     }
 
 }

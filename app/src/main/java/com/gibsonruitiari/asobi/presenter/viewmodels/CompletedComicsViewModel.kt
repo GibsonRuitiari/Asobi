@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.Flow
 
 class CompletedComicsViewModel constructor(pagedCompletedComicsObserver: PagedCompletedComicsObserver):ViewModel() {
     companion object{
-        val pagingConfig = PagingConfig(pageSize = 36,
-            initialLoadSize = 36)
+        val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10, initialLoadSize = 30,
+            enablePlaceholders = false)
     }
     val pagedList: Flow<PagingData<ViewComics>> = pagedCompletedComicsObserver
         .flowObservable

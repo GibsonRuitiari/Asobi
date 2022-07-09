@@ -1,4 +1,4 @@
-package com.gibsonruitiari.asobi
+package com.gibsonruitiari.asobi.modules
 
 import com.gibsonruitiari.asobi.common.logging.AsobiLogger
 import com.gibsonruitiari.asobi.common.logging.Logger

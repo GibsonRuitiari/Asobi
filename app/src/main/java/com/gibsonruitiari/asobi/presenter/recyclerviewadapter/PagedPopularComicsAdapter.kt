@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.gibsonruitiari.asobi.common.utils.loadPhotoUrl
+import com.gibsonruitiari.asobi.common.extensions.loadPhotoUrl
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.presenter.recyclerviewadapter.diff.DiffItemAdapterCallback
 import com.gibsonruitiari.asobi.presenter.uiModels.ViewComics

@@ -1,4 +1,4 @@
-package com.gibsonruitiari.asobi
+package com.gibsonruitiari.asobi.modules
 
 import android.app.ActivityManager
 import android.content.Context
