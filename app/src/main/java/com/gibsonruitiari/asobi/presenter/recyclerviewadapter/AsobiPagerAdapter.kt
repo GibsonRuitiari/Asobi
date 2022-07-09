@@ -1,33 +1,22 @@
 package com.gibsonruitiari.asobi.presenter.recyclerviewadapter
 
 import android.view.ViewGroup
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.flowWithLifecycle
-import androidx.paging.PagingData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.presenter.recyclerviewadapter.diff.DiffItemAdapterCallback
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
 private class AsobiPagerAdapter<ItemT:Any,VH:RecyclerView.ViewHolder>(
     private val viewHolderCreator:(ViewGroup,Int)->VH,
-    // view holder, item and position
-    private val viewHolderBinder:(holder:VH,position:Int)->Unit):PagingDataAdapter<ItemT,VH>(DiffItemAdapterCallback()) {
+    private val viewHolderBinder:(holder:VH,item:ItemT?,position:Int)->Unit):PagingDataAdapter<ItemT,VH>(DiffItemAdapterCallback()) {
     override fun onBindViewHolder(holder: VH, position: Int) {
-        viewHolderBinder(holder,position)
+        viewHolderBinder(holder,getItem(position),position)
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
        return viewHolderCreator(parent,viewType)
     }
-
 }
-// ViewLifecycleOwner.lifecycleScope.launch{to collect pagedItems}
-fun <ItemT:Any,VH:RecyclerView.ViewHolder> pagedAdapterOf(
-
-                                                          viewHolderCreator: (parent: ViewGroup, viewType: Int) -> VH,
-                                                          viewHolderBinder: (holder: VH, position: Int) -> Unit):PagingDataAdapter<ItemT,VH> = AsobiPagerAdapter<ItemT, VH>(viewHolderCreator,
-viewHolderBinder = viewHolderBinder)
+ fun<Items:Any,VH:RecyclerView.ViewHolder>composedPagedAdapter(createViewHolder:(ViewGroup,
+Int)->VH,bindViewHolder:(viewHolder:VH,item:Items?,itemPosition:Int)->Unit):PagingDataAdapter<Items,VH>{
+   return AsobiPagerAdapter(createViewHolder,bindViewHolder)
+}
 

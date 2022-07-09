@@ -17,21 +17,21 @@ import kotlin.reflect.KProperty
  */
 fun <T> viewHolderDelegate(default:T?=null):ReadWriteProperty<RecyclerView.ViewHolder,T> = viewDelegate(default).map(mapper = RecyclerView.ViewHolder::itemView)
 // open to extension or inheritance by other classes
-open class BindingViewHolder<T:ViewBinding>(val binding:T):RecyclerView.ViewHolder(binding.root){
+open class BindingViewHolder<T:ViewBinding> private constructor(val binding:T):RecyclerView.ViewHolder(binding.root){
     /* not everyone uses view binding so to make it flexible create a secondary constructor that delegates creation of view needed by view holder to the primary constructor  */
-   constructor(viewGroup:ViewGroup,creator:(layoutInflater:LayoutInflater,
-    attachToRoot:Boolean,root:ViewGroup)->T):this(creator(LayoutInflater.from(viewGroup.context),
-    false,viewGroup))
+   constructor(parent:ViewGroup, creator: (inflater: LayoutInflater, root: ViewGroup, attachToRoot: Boolean) -> T)
+            :this(creator(LayoutInflater.from(parent.context),
+    parent,false))
 
 }
 // convenient method not a must though since we are using view binding
-fun <T:ViewBinding>ViewGroup.createViewHolder(creator: (layoutInflater: LayoutInflater, attachToRoot: Boolean,
-                                                                    root: ViewGroup) -> T) = BindingViewHolder(this,creator)
+fun <T:ViewBinding>ViewGroup.viewHolderFrom(
+    creator: (inflater: LayoutInflater, root: ViewGroup, attachToRoot: Boolean) -> T
+): BindingViewHolder<T> = BindingViewHolder(this, creator)
 
 /** Tags enable us to put/associate views with some data (this is how views memorize their own data);
  *  thus we use getTag() and setTag(key,object) to set and get objects/data associated with a view
  *  The key should be unique to avoid collision: two views using the same key?
 **/
-inline fun <reified T> View.getOrPutTag(@IdRes key:Int, initializer:()->T):T{
-  return  getTag(key) as T ?: initializer().also { setTag(key,it) }
-}
+inline fun <reified T> View.getOrPutTag(@IdRes key:Int, initializer:()->T):T=
+getTag(key) as? T ?: initializer().also { setTag(key, it) }

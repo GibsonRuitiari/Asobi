@@ -1,7 +1,6 @@
 package com.gibsonruitiari.asobi.presenter.recyclerviewadapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -12,7 +11,7 @@ import com.gibsonruitiari.asobi.presenter.recyclerviewadapter.diff.DiffItemAdapt
 import com.gibsonruitiari.asobi.presenter.uiModels.ViewComics
 
 class PagedPopularComicsAdapter(private val onComicClicked:(ViewComics)->Unit):PagingDataAdapter<ViewComics,PagedPopularComicsAdapter
-.PopularComicsViewHolder>(ViewComicsDiffCallback) {
+.PopularComicsViewHolder>(DiffItemAdapterCallback()) {
 
     inner class PopularComicsViewHolder(private val comicItemLayoutBinding: ComicItemLayoutBinding):RecyclerView.ViewHolder(comicItemLayoutBinding.root){
           fun bind(comics: ViewComics?){

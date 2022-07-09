@@ -49,13 +49,14 @@ fun<T> viewDelegate(default: T?=null):ReadWriteProperty<View,T> =  ViewDelegate(
 private class ViewDelegate<T>(private val default:T?=null):ReadWriteProperty<View,T>{
     override fun getValue(thisRef: View, property: KProperty<*>): T {
         // associate a view's tag with a map of objects
-        val map=thisRef.getOrPutTag<MutableMap<String,Any?>>(R.id.view_delegate_property_map,
-        ::mutableMapOf)
-      return  (map[property.name] ?: default) as T
+        val map = thisRef
+            .getOrPutTag<MutableMap<String, Any?>>(R.id.view_delegate_property_map, ::mutableMapOf)
+        return (map[property.name] ?: default) as T
     }
 
     override fun setValue(thisRef: View, property: KProperty<*>, value: T) {
-        val map = thisRef.getOrPutTag<MutableMap<String,Any?>>(R.id.view_delegate_property_map, initializer = { mutableMapOf()})
+        val map = thisRef
+            .getOrPutTag<MutableMap<String, Any?>>(R.id.view_delegate_property_map, ::mutableMapOf)
         map[property.name] = value
     }
 }

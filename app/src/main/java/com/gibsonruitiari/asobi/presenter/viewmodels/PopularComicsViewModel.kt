@@ -18,6 +18,6 @@ class PopularComicsViewModel constructor(pagedPopularComicsObserver: PagedPopula
     }
     companion object{
         val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10, initialLoadSize = 30,
-        enablePlaceholders = true)
+        enablePlaceholders = false)
     }
 }

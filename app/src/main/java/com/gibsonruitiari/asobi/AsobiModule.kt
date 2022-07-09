@@ -18,10 +18,10 @@ val asobiLoggerModule = module {
     single<Logger> { AsobiLogger() }
 }
 val observersModule = module {
-    factory { PagedCompletedComicsObserver(get()) }
-    factory { PagedComicsByGenreObserver(get()) }
-    factory { PagedLatestComicsObserver(get()) }
-    factory { PagedOngoingComicsObserver(get()) }
+    factory { PagedCompletedComicsObserver(get(), get()) }
+    factory { PagedComicsByGenreObserver(get(), get()) }
+    factory { PagedLatestComicsObserver(get(), get()) }
+    factory { PagedOngoingComicsObserver(get(), get()) }
     factory { PagedPopularComicsObserver(get(), get()) }
     factory { ComicChaptersObserver(get()) }
     factory { ComicsDetailsObserver(get()) }
@@ -29,11 +29,11 @@ val observersModule = module {
 }
 
 val comicsDataSourcesModule = module {
-    factory { ComicsByGenreDataSource(get()) }
-    factory { CompletedComicsDataSource(get()) }
-    factory { LatestComicsDataSource(get()) }
-    single { PopularComicsDataSource(get(), get()) }
-    factory { OngoingComicsDataSource(get()) }
+    factory { ComicsByGenreDataSource(get(), get()) }
+    factory { CompletedComicsDataSource(get(), get()) }
+    factory { LatestComicsDataSource(get(), get()) }
+    factory { PopularComicsDataSource(get(), get()) }
+    factory { OngoingComicsDataSource(get(), get()) }
 }
 val viewModelsModule= module {
     viewModel { ComicChaptersViewModel(get()) } // get() loads the dependencies eargerly as opposed to lazy loading -:(

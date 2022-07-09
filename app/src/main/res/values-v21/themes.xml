@@ -8,6 +8,8 @@
     </style>
     <style name="AppTheme.ComicDetail">
         <item name="android:statusBarColor">@color/immersive_sys_ui</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
+      <!--  <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>"-->
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 </resources>

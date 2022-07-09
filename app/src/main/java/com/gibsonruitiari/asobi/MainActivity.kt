@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.*
+import androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -24,9 +26,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    //    WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         val container:ViewGroup = binding.root
         // https://issuetracker.google.com/202338815
         // hook a utility view to listen to configurationChanges
@@ -43,13 +45,10 @@ class MainActivity : AppCompatActivity() {
         /* get an instance of navigation bar view, note: chances of both being null at the same time are one in a million*/
         val navigationBarView:NavigationBarView = (binding.navRailView ?: binding.navigation) as NavigationBarView
         NavigationUI.setupWithNavController(navigationBarView, navController)
-
         binding.navRailView?.setOnItemSelectedListener (navigationBarViewClickListener)
         binding.navigation?.setOnItemSelectedListener(navigationBarViewClickListener)
 
-
     }
-
     private val navigationBarViewClickListener = NavigationBarView.OnItemSelectedListener {
         when(it.itemId){
             R.id.menu_item_settings->{
