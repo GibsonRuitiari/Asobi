@@ -2,7 +2,6 @@ package com.gibsonruitiari.asobi.ui.comicsadapters
 
 import android.view.View
 import com.gibsonruitiari.asobi.R
-import com.gibsonruitiari.asobi.ui.comicsadapters.viewholderbinding.getOrPutTag
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 

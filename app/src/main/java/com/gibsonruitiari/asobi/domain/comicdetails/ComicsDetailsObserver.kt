@@ -1,11 +1,11 @@
 package com.gibsonruitiari.asobi.domain.comicdetails
 
-import com.gibsonruitiari.asobi.utilities.utils.sMangaDetailsToViewComicDetails
 import com.gibsonruitiari.asobi.utilities.utils.toNetworkResource
 import com.gibsonruitiari.asobi.data.network.Status
 import com.gibsonruitiari.asobi.data.shared.comicdetails.ComicsDetailsRepo
 import com.gibsonruitiari.asobi.domain.FlowUseCase
 import com.gibsonruitiari.asobi.ui.comicdetails.ComicsDetailsResult
+import com.gibsonruitiari.asobi.utilities.sMangaDetailsToViewComicDetails
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

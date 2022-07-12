@@ -1,6 +1,5 @@
 package com.gibsonruitiari.asobi.domain
 
-import com.gibsonruitiari.asobi.utilities.utils.sMangaToViewComicMapper
 import com.gibsonruitiari.asobi.utilities.utils.toNetworkResource
 import com.gibsonruitiari.asobi.data.datamodels.SManga
 import com.gibsonruitiari.asobi.data.network.NetworkResource
@@ -10,6 +9,7 @@ import com.gibsonruitiari.asobi.data.shared.latestcomics.LatestComicsRepo
 import com.gibsonruitiari.asobi.data.shared.ongoingcomics.OngoingComicsRepo
 import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepo
 import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverComicsResult
+import com.gibsonruitiari.asobi.utilities.sMangaToViewComicMapper
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.take

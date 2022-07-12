@@ -1,11 +1,11 @@
 package com.gibsonruitiari.asobi.domain.comicchapters
 
-import com.gibsonruitiari.asobi.utilities.utils.sMangaChapterToViewMangaChapter
 import com.gibsonruitiari.asobi.utilities.utils.toNetworkResource
 import com.gibsonruitiari.asobi.data.network.Status
 import com.gibsonruitiari.asobi.data.shared.comicsbychapter.ComicsChapterRepo
 import com.gibsonruitiari.asobi.domain.FlowUseCase
 import com.gibsonruitiari.asobi.ui.comichapters.ComicChapterResult
+import com.gibsonruitiari.asobi.utilities.sMangaChapterToViewMangaChapter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

@@ -5,12 +5,12 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.gibsonruitiari.asobi.utilities.logging.Logger
-import com.gibsonruitiari.asobi.utilities.utils.sMangaToViewComicMapper
 import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.data.shared.comicsbygenre.ComicsByGenreRepo
 import com.gibsonruitiari.asobi.domain.interactor.PaginatedEntriesUseCase
 import com.gibsonruitiari.asobi.data.shared.comicsbygenre.ComicsByGenreDataSource
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
+import com.gibsonruitiari.asobi.utilities.sMangaToViewComicMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
