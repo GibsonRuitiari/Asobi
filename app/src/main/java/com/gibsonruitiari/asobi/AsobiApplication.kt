@@ -1,8 +1,8 @@
 package com.gibsonruitiari.asobi
 
 import androidx.multidex.MultiDexApplication
-import com.gibsonruitiari.asobi.common.logging.AsobiDebugTree
-import com.gibsonruitiari.asobi.modules.*
+import com.gibsonruitiari.asobi.utilities.logging.AsobiDebugTree
+import com.gibsonruitiari.asobi.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin

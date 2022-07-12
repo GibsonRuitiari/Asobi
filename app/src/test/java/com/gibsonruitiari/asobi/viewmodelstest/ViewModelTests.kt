@@ -3,14 +3,14 @@ package com.gibsonruitiari.asobi.viewmodelstest
 
 import app.cash.turbine.test
 import com.gibsonruitiari.asobi.data.datamodels.SManga
-import com.gibsonruitiari.asobi.data.repositories.CompletedComicsRepo
-import com.gibsonruitiari.asobi.data.repositories.LatestComicsRepo
-import com.gibsonruitiari.asobi.data.repositories.OngoingComicsRepo
-import com.gibsonruitiari.asobi.data.repositories.PopularComicsRepo
-import com.gibsonruitiari.asobi.domain.interactor.observers.DiscoverComicsUseCase
+import com.gibsonruitiari.asobi.data.shared.completedcomics.CompletedComicsRepo
+import com.gibsonruitiari.asobi.data.shared.latestcomics.LatestComicsRepo
+import com.gibsonruitiari.asobi.data.shared.ongoingcomics.OngoingComicsRepo
+import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepo
+import com.gibsonruitiari.asobi.domain.DiscoverComicsUseCase
 import com.gibsonruitiari.asobi.dummyComicList
-import com.gibsonruitiari.asobi.presenter.uicontracts.DiscoverComicsResult
-import com.gibsonruitiari.asobi.presenter.viewmodels.DiscoverViewModel
+import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverComicsResult
+import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -20,15 +20,13 @@ import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert
-import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Before
 import org.junit.Test
 
 class ViewModelTests {
 
-    private var fakeDiscoverUseCaseInstance:DiscoverComicsUseCase?=null
+    private var fakeDiscoverUseCaseInstance: DiscoverComicsUseCase?=null
     @Before
     fun initializeFakeDiscoverUseCaseInstance(){
         val fakeLatestComicsRepoImpl = object : LatestComicsRepo {

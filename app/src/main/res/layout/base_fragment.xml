@@ -66,20 +66,20 @@
                 android:layout_height="match_parent"
                 tools:visibility="visible"
                 android:visibility="gone" />
-            <com.gibsonruitiari.asobi.common.LoadingLayout
+            <com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
                 android:id="@+id/content_loading_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/color_surface" />
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/filter_by_genre_button"
-                tools:visibility="visible"
-                android:visibility="gone"
-                android:layout_gravity="end"
-                android:contentDescription="@string/filter_comics_by_genre"
-                android:layout_margin="@dimen/fab_margin"/>
+<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:id="@+id/filter_by_genre_button"-->
+<!--                tools:visibility="visible"-->
+<!--                android:visibility="gone"-->
+<!--                android:layout_gravity="end"-->
+<!--                android:contentDescription="@string/filter_comics_by_genre"-->
+<!--                android:layout_margin="@dimen/fab_margin"/>-->
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

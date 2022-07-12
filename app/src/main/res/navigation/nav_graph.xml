@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/FirstFragment"
-        android:name="com.gibsonruitiari.asobi.presenter.fragments.OngoingComicsFragment"
+        android:name="com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/base_fragment">
 
@@ -17,9 +17,9 @@
     </fragment>
     <fragment
         android:id="@+id/SecondFragment"
-        android:name="com.gibsonruitiari.asobi.FirstFragment"
+        android:name="com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsFragment"
         android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_first">
+        tools:layout="@layout/base_fragment">
 
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
