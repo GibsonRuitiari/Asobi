@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.Insets
+import androidx.core.view.*
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
@@ -23,7 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navController: NavController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    //    WindowCompat.setDecorFitsSystemWindows(window, false)
+     WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val container:ViewGroup = binding.root
@@ -45,6 +47,27 @@ class MainActivity : AppCompatActivity() {
         binding.navRailView?.setOnItemSelectedListener (navigationBarViewClickListener)
         binding.navigation?.setOnItemSelectedListener(navigationBarViewClickListener)
 
+        binding.navRailView?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it){view,insets->
+                // pad the navigation rail so the contents aren't drawn behind the sys ui bar
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                view.updatePadding(top=systemBars.top,
+                bottom = systemBars.bottom)
+                insets
+            }
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rootContainer){view,insets->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            binding.navigation?.isVisible = !imeVisible
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val bottomPadding = if (binding.navigation?.isVisible == true) systemBars.bottom else 0
+            view.updatePadding(left=systemBars.left,
+            right=systemBars.right, bottom = bottomPadding)
+            // consume the insets
+            WindowInsetsCompat.Builder(insets).setInsets(WindowInsetsCompat
+                .Type.systemBars(), Insets.of(0,
+            systemBars.top,0,systemBars.bottom- bottomPadding)).build()
+        }
     }
     private val navigationBarViewClickListener = NavigationBarView.OnItemSelectedListener {
         when(it.itemId){

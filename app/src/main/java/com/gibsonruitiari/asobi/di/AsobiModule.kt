@@ -74,7 +74,7 @@ val scopeModule = module {
 }
 val viewModelsModule= module {
     viewModel { ComicChaptersViewModel(get()) } // get() loads the dependencies eagerly as opposed to lazy loading -:(
-    viewModel { ComicsByGenreViewModel(get(),get()) }
+    viewModel { ComicsByGenreViewModel(get(),get(named("filtersViewModel"))) }
     viewModel { ComicsDetailsViewModel(get()) }
     viewModel { CompletedComicsViewModel(get()) }
     viewModel{ DiscoverViewModel(get()) }
@@ -82,7 +82,7 @@ val viewModelsModule= module {
     viewModel { OngoingComicsViewModel(get()) }
     viewModel { PopularComicsViewModel(get()) }
     viewModel { MainActivityViewModel() }
-    factory<ComicFilterViewModel> { ComicFilterViewModelImpl(get(named("applicationScope"))) }
+    factory<ComicFilterViewModel>(named("filtersViewModel")) { ComicFilterViewModelImpl(get(named("applicationScope"))) }
 }
 
 val comicsRepositoryModule= module{

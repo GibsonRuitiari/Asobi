@@ -21,9 +21,10 @@ private class AsobiListAdapter<ItemT:Any, VH:RecyclerView.ViewHolder>(
     private val onDetachedFromRecyclerView:((RecyclerView)->Unit)?=null
 ):ListAdapter<ItemT,VH>(DiffItemAdapterCallback<ItemT>()){
     init {
-        setHasStableIds(itemIdFunction!=null)
+        setHasStableIds(itemIdFunction != null)
         submitList(initialItems)
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH =
         viewHolderCreator(parent, viewType)
 
@@ -74,7 +75,7 @@ fun <ItemT:Any,VH:RecyclerView.ViewHolder> listAdapterOf(
     onViewHolderRecycleFailed: ((VH) -> Boolean)? = null,
     onAttachedToRecyclerView: ((RecyclerView) -> Unit)? = null,
     onDetachedFromRecyclerView: ((RecyclerView) -> Unit)? = null
-):ListAdapter<ItemT,VH> = AsobiListAdapter(  initialItems,
+):ListAdapter<ItemT,VH> = AsobiListAdapter(     initialItems,
     viewHolderCreator,
     viewHolderBinder,
     viewHolderPartialBinder,

@@ -3,6 +3,7 @@ package com.gibsonruitiari.asobi.utilities.extensions
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.snackbar.Snackbar
@@ -37,7 +38,25 @@ fun View.showSnackBar(
         .setAnchorView(anchor)
         .show()
 }
-
+/* Ensure direct child of constraint layout take the maximum width as possible
+* Useful mostly in cases where the screen size increases - screen size> Screen.COMPACT */
+fun setContentToMaxWidth(view: View){
+    val parent = view.parent as? ConstraintLayout ?: return
+    val layoutParams = view.layoutParams as ConstraintLayout.LayoutParams
+    val screenDensity = view.resources.displayMetrics.density
+    val widthDp = parent.width /screenDensity
+    val widthPercent = getContentMaxWidthPercent(widthDp.toInt())
+    layoutParams.matchConstraintPercentWidth=widthPercent
+    view.requestLayout()
+}
+private fun getContentMaxWidthPercent(maxWidthDp:Int):Float{
+    return when{
+        maxWidthDp >= 1024 -> 0.6f
+        maxWidthDp >= 840 -> 0.7f
+        maxWidthDp >= 600 -> 0.8f
+        else->1f
+    }
+}
 fun View.doOnApplyWindowInsets(f:(View,WindowInsetsCompat,ViewPaddingState)->Unit){
     val paddingState = createPaddingStateWhenGiven(this)
     ViewCompat.setOnApplyWindowInsetsListener(this){

@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.MainActivity"
+    android:id="@+id/root_container"
     xmlns:tools="http://schemas.android.com/tools">
 <FrameLayout
     android:layout_width="0dp"

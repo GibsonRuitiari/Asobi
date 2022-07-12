@@ -1,15 +1,21 @@
 package com.gibsonruitiari.asobi.ui.comicfilter
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicFilterFragmentBinding
+import com.gibsonruitiari.asobi.databinding.SelectableFilterChipItemBinding
+import com.gibsonruitiari.asobi.ui.comicsadapters.*
+import com.gibsonruitiari.asobi.ui.uiModels.FilterChip
 import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
 import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
 import com.gibsonruitiari.asobi.utilities.extensions.slideOffsetToAlpha
@@ -28,7 +34,7 @@ class ComicsFilterBottomSheet:Fragment() {
         private const val ALPHA_CONTENT_END=0.3F
     }
     private val filterViewModel:ComicFilterViewModel by inject()
-    private lateinit var binding:ComicFilterFragmentBinding
+    private lateinit var comicFilterFragmentBinding:ComicFilterFragmentBinding
     private lateinit var behavior:BottomSheetBehavior<*>
     private val backPressedCallback = object :OnBackPressedCallback(false){
         override fun handleOnBackPressed() {
@@ -40,6 +46,20 @@ class ComicsFilterBottomSheet:Fragment() {
     /*Bottom sheet states' values range from 1-5, by default we shouldn't have a pending sheet state so we set it to
     * -1  */
     private var pendingSheetState = -1
+    private var BindingViewHolder<SelectableFilterChipItemBinding>.item by viewHolderDelegate<FilterChip>()
+    private fun BindingViewHolder<SelectableFilterChipItemBinding>.bindFilterChip(filterChip: FilterChip){
+        this.item = filterChip
+        binding.filterLabel.text= filterChip.text
+        binding.filterLabel.isChecked = filterChip.isSelected
+        val tintColor=if (filterChip.color != Color.TRANSPARENT) filterChip.color else ContextCompat.getColor(binding.filterLabel.context,R.color.default_tag_color)
+        binding.filterLabel.chipIconTint = ColorStateList.valueOf(tintColor)
+        binding.filterLabel.setOnClickListener {
+            filterViewModel.setGenre(filterChip.genres)
+            // hide the bottom sheet once selected
+            hideFiltersSheet()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
@@ -50,32 +70,34 @@ class ComicsFilterBottomSheet:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = ComicFilterFragmentBinding.inflate(inflater,
-        container,false).apply {
-            collapseArrow.alpha = filterViewModel.contentAlpha.value
-        }
+        comicFilterFragmentBinding = ComicFilterFragmentBinding.inflate(inflater,
+        container,false)
         /* Use system inset padding values to ensure recycler-view's contents are above the
         * navigation bar  */
-        binding.recyclerviewGenreFilters.doOnApplyWindowInsets{
+        comicFilterFragmentBinding.recyclerviewGenreFilters.doOnApplyWindowInsets{
             view,insets, paddingValues->
             val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars() or
             WindowInsetsCompat.Type.ime())
             view.updatePadding(bottom=paddingValues.bottom+systemInsets.bottom)
         }
-        return binding.root
+        return comicFilterFragmentBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        behavior = BottomSheetBehavior.from(binding.filterSheet)
-        binding.recyclerviewGenreFilters.apply {
-            //adapter =//
+        val filterRecyclerViewAdapter = listAdapterOf(initialItems = filterViewModel.genresList.value,
+            viewHolderCreator = {parent: ViewGroup, _: Int ->
+                parent.viewHolderFrom(SelectableFilterChipItemBinding::inflate)
+        }, viewHolderBinder = {holder: BindingViewHolder<SelectableFilterChipItemBinding>, item: FilterChip, _: Int -> holder.bindFilterChip(item)})
+        behavior = from(comicFilterFragmentBinding.filterSheet)
+        comicFilterFragmentBinding.recyclerviewGenreFilters.apply {
+            adapter = filterRecyclerViewAdapter
             setHasFixedSize(true)
             itemAnimator=null
             addOnScrollListener(object :RecyclerView.OnScrollListener(){
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
-                    binding.filtersHeaderShadow.isActivated = recyclerView.canScrollVertically(-1)
+                    comicFilterFragmentBinding.filtersHeaderShadow.isActivated = recyclerView.canScrollVertically(-1)
                 }
             })
             addItemDecoration(FlexboxItemDecoration(context).apply {
@@ -84,11 +106,13 @@ class ComicsFilterBottomSheet:Fragment() {
             })
         }
         val peekHeight = behavior.peekHeight
-        val marginBottom = binding.root.marginBottom
+        val marginBottom = comicFilterFragmentBinding.root.marginBottom
         /* Apply gesture insets so that the container scrolls within the system ui  */
-        binding.root.doOnApplyWindowInsets { v, windowInsetsCompat, viewPaddingState ->
+        comicFilterFragmentBinding.root.doOnApplyWindowInsets { v, windowInsetsCompat, viewPaddingState ->
             val gestureInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type
                 .systemGestures())
+            behavior.peekHeight = gestureInsets.bottom + peekHeight
+            // Update the peek height so that it is above the navigation bar
             v.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                 bottomMargin = marginBottom + gestureInsets.top
             }
@@ -103,10 +127,10 @@ class ComicsFilterBottomSheet:Fragment() {
                updateBackPressedCallbackEnabled(newState)
             }
         })
-        binding.collapseArrow.setOnClickListener {
+        comicFilterFragmentBinding.collapseArrow.setOnClickListener {
             behavior.state = if (behavior.skipCollapsed) STATE_HIDDEN else STATE_COLLAPSED
         }
-        binding.filterSheet.doOnLayout {
+        comicFilterFragmentBinding.filterSheet.doOnLayout {
             val slideOffset = when(behavior.state){
                 STATE_EXPANDED->1f
                 STATE_COLLAPSED->0f
@@ -123,27 +147,26 @@ class ComicsFilterBottomSheet:Fragment() {
         launchAndRepeatWithViewLifecycle {
             launch {
                 filterViewModel.contentAlpha.collectLatest {
-                    binding.collapseArrow.alpha= it
-                    binding.resetFilterBtn.alpha=it
-                    binding.filterSheetHeaderText.alpha=it
-                    binding.recyclerviewGenreFilters.alpha=it
-
-                    binding.collapseArrow.isClickable = it>0f
-                    binding.resetFilterBtn.isClickable = it>0f
-
+                   setAlphaStateForFilterSheetUiComponents(it)
+                    comicFilterFragmentBinding.collapseArrow.isClickable = it>0f
+                    comicFilterFragmentBinding.resetFilterBtn.isClickable = it>0f
                 }
             }
-            launch { filterViewModel.genresList.collectLatest {
-             binding.recyclerviewGenreFilters
-            }}
+            launch { filterViewModel.genresList.collectLatest { filterRecyclerViewAdapter.submitList(it) }}
         }
         initializeBasicUiComponents()
     }
+    private fun setAlphaStateForFilterSheetUiComponents(alpha:Float){
+        comicFilterFragmentBinding.collapseArrow.alpha= alpha
+        comicFilterFragmentBinding.resetFilterBtn.alpha=alpha
+        comicFilterFragmentBinding.filterSheetHeaderText.alpha=alpha
+        comicFilterFragmentBinding.recyclerviewGenreFilters.alpha=alpha
+    }
     private fun initializeBasicUiComponents(){
-        binding.filterSheetHeaderText.text= getString(R.string.filter_comics_by_genre)
+        comicFilterFragmentBinding.filterSheetHeaderText.text= getString(R.string.filter_comics_by_genre)
     }
     private fun resetFilterChoice(){
-        binding.resetFilterBtn.setOnClickListener {
+        comicFilterFragmentBinding.resetFilterBtn.setOnClickListener {
             filterViewModel.resetFilterChoice()
         }
     }
@@ -153,10 +176,16 @@ class ComicsFilterBottomSheet:Fragment() {
     private fun updateBackPressedCallbackEnabled(state:Int){
         backPressedCallback.isEnabled = !(state == STATE_COLLAPSED || state == STATE_HIDDEN)
     }
+    /* To be used by GenreFragment when the filter-button is clicked */
     fun showFiltersSheet(){
         if (::behavior.isInitialized){
             behavior.state = STATE_EXPANDED
         }else pendingSheetState = STATE_EXPANDED
+    }
+    private fun hideFiltersSheet(){
+        if (::behavior.isInitialized){
+            behavior.state = STATE_HIDDEN
+        }else pendingSheetState= STATE_HIDDEN
     }
 
 }

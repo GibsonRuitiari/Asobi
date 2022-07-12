@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -14,13 +17,12 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.BaseFragmentBinding
+import com.gibsonruitiari.asobi.ui.comicfilter.ComicsFilterBottomSheet
 import com.gibsonruitiari.asobi.ui.uiModels.UiMeasureSpec
 import com.gibsonruitiari.asobi.utilities.RecyclerViewItemDecoration
 import com.gibsonruitiari.asobi.utilities.ScreenSize
 import com.gibsonruitiari.asobi.utilities.convertToPxFromDp
-import com.gibsonruitiari.asobi.utilities.extensions.gridLayoutManager
-import com.gibsonruitiari.asobi.utilities.extensions.scrollToTop
-import com.gibsonruitiari.asobi.utilities.extensions.showSnackBar
+import com.gibsonruitiari.asobi.utilities.extensions.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -59,6 +61,7 @@ abstract class MainFragment<Item:Any>:Fragment(){
         pagingListAdapter = createComposedPagedAdapter()
         setUpBaseFragmentUiComponents()
         listenToUiStateAndUpdateUiAccordingly()
+        showFilterBottomSheet()
 
         viewLifecycleOwner.lifecycleScope.launch {
             println("started collecting")
@@ -123,6 +126,13 @@ abstract class MainFragment<Item:Any>:Fragment(){
     private fun setUpSwipeRefreshWidgetState(isRefreshing:Boolean){
         fragmentBinding.baseFragSwipeRefresh.isRefreshing=isRefreshing
     }
+    private fun showFilterBottomSheet(){
+        /* use childFragmentManager to search for the filter bottom sheet since we are in a fragment we cannot use supportFragmentManager */
+        val filterSheetFragment = childFragmentManager.findFragmentById(R.id.filter_sheet) as ComicsFilterBottomSheet
+        fragmentBinding.filterByGenreButton.setOnClickListener {
+            filterSheetFragment.showFiltersSheet()
+        }
+    }
 
     private fun setEmptyStateText(title: String, subtitle: String) {
         fragmentBinding.emptyStateLayout.emptyErrorStateTitle.text = title
@@ -185,10 +195,24 @@ abstract class MainFragment<Item:Any>:Fragment(){
     }
     private fun setUpBaseFragmentUiComponents(){
         fragmentBinding.baseFragToolbar.title = toolbarTitle
+        fragmentBinding.baseFragSwipeRefresh.doOnNextLayout {
+            setContentToMaxWidth(it)
+        }
+        val colorSchemes=requireActivity().resources.getIntArray(R.array.swipe_refresh_colors)
+        fragmentBinding.baseFragSwipeRefresh.setColorSchemeColors(*colorSchemes)
         fragmentBinding.baseFragSwipeRefresh.setOnRefreshListener { pagingListAdapter?.refresh() }
+        // not that good if you think about it
+        fragmentBinding.filterByGenreButton.visibility = if (activityMainViewModel.isInComicsByGenreFragment.value == true)  View.VISIBLE else View.GONE
 
     }
     private fun setUpBaseFragmentRecyclerView(uiMeasureSpec: UiMeasureSpec){
+        // first set up window insets
+        fragmentBinding.baseFragRecyclerView.doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+            val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type
+                .systemBars()  or WindowInsetsCompat.Type.ime())
+            view.updatePadding(bottom = viewPaddingState.bottom+
+            systemInsets.bottom)
+        }
         fragmentBinding.baseFragRecyclerView.apply {
             setHasFixedSize(true)
             scrollToTop()

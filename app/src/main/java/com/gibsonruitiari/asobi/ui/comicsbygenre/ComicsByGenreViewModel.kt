@@ -15,7 +15,6 @@ class ComicsByGenreViewModel constructor(pagedComicsByGenreObserver: PagedComics
         .flowObservable
         .cachedIn(viewModelScope)
     init {
-
         pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(genre =filterViewModel.selectedFilterChip.value.genres, pagingConfig = pagingConfig))
     }
     companion object{

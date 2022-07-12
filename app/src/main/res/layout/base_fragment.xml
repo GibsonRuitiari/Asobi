@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/coordinator_layout"
+    android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:id="@+id/base_frag_appbar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:fitsSystemWindows="true">
         <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
             android:fadingEdge="vertical"
@@ -21,20 +21,23 @@
             tools:title="@string/popular_comics"
             app:titleTextColor="@color/black"
             app:titleTextAppearance="@style/TextAppearance.Asobi.Headline6"
-            android:minHeight="60dp"
             android:layout_height="?actionBarSize">
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
-
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/base_frag_swipe_refresh"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_constraintTop_toBottomOf="@id/base_frag_appbar">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
         <FrameLayout
             android:id="@+id/swipe_refresh_layout_container"
             android:layout_width="match_parent"
@@ -72,15 +75,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/color_surface" />
-<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:id="@+id/filter_by_genre_button"-->
-<!--                tools:visibility="visible"-->
-<!--                android:visibility="gone"-->
-<!--                android:layout_gravity="end"-->
-<!--                android:contentDescription="@string/filter_comics_by_genre"-->
-<!--                android:layout_margin="@dimen/fab_margin"/>-->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/filter_by_genre_button"
+                tools:visibility="visible"
+                android:src="@drawable/ic_baseline_filter_list_24"
+                android:visibility="gone"
+                android:layout_gravity="bottom|end"
+                android:contentDescription="@string/filter_comics_by_genre"
+                android:layout_margin="@dimen/fab_margin"/>
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

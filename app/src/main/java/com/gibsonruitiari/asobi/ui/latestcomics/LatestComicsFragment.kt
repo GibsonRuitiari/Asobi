@@ -10,7 +10,6 @@ import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.ui.MainFragment
 import com.gibsonruitiari.asobi.ui.comicsadapters.*
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
-import com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsViewModel
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -36,11 +35,11 @@ class LatestComicsFragment: MainFragment<ViewComics>() {
     private fun onComicClicked(comicItem:ViewComics){
         Toast.makeText(requireContext(),"${comicItem.comicLink} clicked", Toast.LENGTH_SHORT).show()
     }
-    private val ongoingComicsViewModel: OngoingComicsViewModel by viewModel()
+    private val latestComicsViewModel: LatestComicsViewModel by viewModel()
     override val toolbarTitle: String
         get() = getString(R.string.latest_comics)
     override suspend fun observePagedData() {
-        ongoingComicsViewModel.pagedList.collectLatest {
+        latestComicsViewModel.pagedList.collectLatest {
             pagingListAdapter?.submitData(it)
         }
     }
