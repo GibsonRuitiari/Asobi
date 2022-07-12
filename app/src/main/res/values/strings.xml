@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">Asobi</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Vector paths -->
+    <string name="chip_dot_path" translatable="false">M12,8l0,0c-2.21,0 -4,1.79 -4,4c0,2.21 1.79,4 4,4c2.21,0 4,-1.79 4,-4c0,-2.21 -1.79,-4 -4,-4l0,0z</string>
+    <string name="chip_check_path" translatable="false">M9,16.2l-4.2,-4.2c0,0 -1.4,1.4 -1.4,1.4c0,0 5.6,5.6 5.6,5.6c0,0 12,-12 12,-12c0,0 -1.4,-1.4 -1.4,-1.4l-10.6,10.6z</string>
+
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
@@ -25,4 +30,7 @@
     <string name="completed_comics">Completed comics</string>
     <string name="latest_comics">Latest comics</string>
     <string name="filter_comics_by_genre">filter comics by genre</string>
+    <string name="filter_by_string">Filter by genre</string>
+    <string name="reset_filters_string">reset</string>
+    <string name="collapse_arrow_desc">Lower Filter By Genre Sheet</string>
 </resources>

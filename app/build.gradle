@@ -50,6 +50,8 @@ dependencies {
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
     implementation 'androidx.emoji:emoji:1.1.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+
 
     // window metrics
     implementation 'androidx.window:window:1.0.0'

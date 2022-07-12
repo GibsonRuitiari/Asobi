@@ -1,0 +1,18 @@
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/chip_check"
+        android:drawable="@drawable/chip_check"
+        android:state_checked="true" />
+    <item
+        android:id="@+id/chip_dot"
+        android:drawable="@drawable/chip_dot" />
+
+    <transition
+        android:fromId="@id/chip_dot"
+        android:toId="@id/chip_check"
+        android:drawable="@drawable/avd_chip_dot_to_check" />
+    <transition
+        android:fromId="@id/chip_check"
+        android:toId="@id/chip_dot"
+        android:drawable="@drawable/avd_chip_check_to_dot" />
+</animated-selector>

@@ -11,7 +11,17 @@
  <style name="AsobiAlertDialogTitleTextStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
   <item name="fontFamily">sans-serif-medium</item>
  </style>
-
+<style name="Widget.Asobi.FilterChip" parent="Widget.MaterialComponents.Chip.Choice">
+ <item name="android:textAppearance">@style/TextAppearance.Asobi.FilterChip.Selectable</item>
+ <item name="chipBackgroundColor">@color/chip_bg</item>
+ <item name="chipIcon">@drawable/chip_icon</item>
+ <item name="chipIconVisible">true</item>
+ <item name="chipStrokeColor">@color/chip_stroke</item>
+ <item name="textStartPadding">0dp</item>
+</style>
+ <style name="Widget.Asobi.FilterChip.Selectable">
+  <item name="chipStrokeWidth">1dp</item>
+ </style>
  <!-- Bottom Sheets -->
  <style name="ThemeOverlay.Theme.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
   <item name="android:windowIsFloating">false</item>

@@ -36,4 +36,10 @@
     <dimen name="error_image_dimension">200dp</dimen>
     <dimen name="retry_button_width_dimen">150dp</dimen>
     <dimen name="retry_button_height_dimen">60dp</dimen>
+    <dimen name="genre_bottom_sheet_peek_height">48dp</dimen>
+    <dimen name="margin_normal">16dp</dimen>
+    <dimen name="spacing_normal">8dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="ally_min_touch_target">48dp</dimen>
+    <dimen name="chip_bg_alpha_checked">0.18dp</dimen>
 </resources>
