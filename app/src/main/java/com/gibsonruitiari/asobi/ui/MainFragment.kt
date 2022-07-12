@@ -201,8 +201,9 @@ abstract class MainFragment<Item:Any>:Fragment(){
         val colorSchemes=requireActivity().resources.getIntArray(R.array.swipe_refresh_colors)
         fragmentBinding.baseFragSwipeRefresh.setColorSchemeColors(*colorSchemes)
         fragmentBinding.baseFragSwipeRefresh.setOnRefreshListener { pagingListAdapter?.refresh() }
-        // not that good if you think about it
-        fragmentBinding.filterByGenreButton.visibility = if (activityMainViewModel.isInComicsByGenreFragment.value == true)  View.VISIBLE else View.GONE
+        if (activityMainViewModel.isInComicsByGenreFragment.value==true){
+            fragmentBinding.filterByGenreButton.show()
+        }else fragmentBinding.filterByGenreButton.hide()
 
     }
     private fun setUpBaseFragmentRecyclerView(uiMeasureSpec: UiMeasureSpec){
