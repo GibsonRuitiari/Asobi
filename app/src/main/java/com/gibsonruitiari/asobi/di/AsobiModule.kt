@@ -29,6 +29,8 @@ import com.gibsonruitiari.asobi.domain.ongoingcomics.PagedOngoingComicsObserver
 import com.gibsonruitiari.asobi.domain.popularcomics.PagedPopularComicsObserver
 import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.ui.comicdetails.ComicsDetailsViewModel
+import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterViewModel
+import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterViewModelImpl
 import com.gibsonruitiari.asobi.ui.comichapters.ComicChaptersViewModel
 import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreViewModel
 import com.gibsonruitiari.asobi.ui.completedcomics.CompletedComicsViewModel
@@ -36,7 +38,11 @@ import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverViewModel
 import com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsViewModel
 import com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsViewModel
 import com.gibsonruitiari.asobi.ui.popularcomics.PopularComicsViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val asobiLoggerModule = module {
@@ -61,9 +67,14 @@ val comicsDataSourcesModule = module {
     factory { PopularComicsDataSource(get(), get()) }
     factory { OngoingComicsDataSource(get(), get()) }
 }
+val scopeModule = module {
+    single(named("applicationScope")) {
+        CoroutineScope(SupervisorJob()+Dispatchers.Default)
+    }
+}
 val viewModelsModule= module {
-    viewModel { ComicChaptersViewModel(get()) } // get() loads the dependencies eargerly as opposed to lazy loading -:(
-    viewModel { ComicsByGenreViewModel(get()) }
+    viewModel { ComicChaptersViewModel(get()) } // get() loads the dependencies eagerly as opposed to lazy loading -:(
+    viewModel { ComicsByGenreViewModel(get(),get()) }
     viewModel { ComicsDetailsViewModel(get()) }
     viewModel { CompletedComicsViewModel(get()) }
     viewModel{ DiscoverViewModel(get()) }
@@ -71,6 +82,7 @@ val viewModelsModule= module {
     viewModel { OngoingComicsViewModel(get()) }
     viewModel { PopularComicsViewModel(get()) }
     viewModel { MainActivityViewModel() }
+    factory<ComicFilterViewModel> { ComicFilterViewModelImpl(get(named("applicationScope"))) }
 }
 
 val comicsRepositoryModule= module{

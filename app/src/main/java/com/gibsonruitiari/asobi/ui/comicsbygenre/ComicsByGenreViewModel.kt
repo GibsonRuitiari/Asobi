@@ -1,23 +1,22 @@
 package com.gibsonruitiari.asobi.ui.comicsbygenre
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingConfig
-import com.gibsonruitiari.asobi.data.datamodels.Genres
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.gibsonruitiari.asobi.domain.bygenre.PagedComicsByGenreObserver
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
+import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterViewModel
+import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
+import kotlinx.coroutines.flow.Flow
 
-class ComicsByGenreViewModel constructor(pagedComicsByGenreObserver: PagedComicsByGenreObserver):ViewModel() {
-    val _genres = MutableStateFlow(Genres.DC_COMICS)
-    val allGenres:SharedFlow<List<Genres>> = MutableSharedFlow<List<Genres>>().apply {
-        tryEmit(Genres.values().toList())
-    }
-    fun setGenre(value:Genres){
-        _genres.value = value
-    }
+class ComicsByGenreViewModel constructor(pagedComicsByGenreObserver: PagedComicsByGenreObserver,filterViewModel: ComicFilterViewModel):ViewModel() {
+    val comicsList: Flow<PagingData<ViewComics>> = pagedComicsByGenreObserver
+        .flowObservable
+        .cachedIn(viewModelScope)
     init {
-        pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(genre = _genres.value, pagingConfig = pagingConfig))
+
+        pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(genre =filterViewModel.selectedFilterChip.value.genres, pagingConfig = pagingConfig))
     }
     companion object{
         val pagingConfig = PagingConfig(pageSize = 36,

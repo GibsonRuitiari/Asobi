@@ -18,10 +18,7 @@ class AsobiApplication :MultiDexApplication(){
         startKoin {
             androidLogger()
             androidContext(this@AsobiApplication)
-            modules(listOf(
-                asobiLoggerModule,
-            viewModelsModule, observersModule, comicsRepositoryModule, comicsDataSourcesModule
-            ))
+            modules(listOf(asobiLoggerModule,viewModelsModule, observersModule, comicsRepositoryModule, comicsDataSourcesModule,scopeModule))
         }
     }
    // less than 1gb ram memory
