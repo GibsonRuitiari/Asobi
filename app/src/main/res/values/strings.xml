@@ -34,4 +34,5 @@
     <string name="reset_filters_string">reset</string>
     <string name="collapse_arrow_desc">Lower Filter By Genre Sheet</string>
     <string name="comics_by_genre">Comics by genre</string>
+    <string name="more_string">more</string>
 </resources>
