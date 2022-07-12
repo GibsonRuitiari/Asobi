@@ -5,11 +5,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.MainActivity"
     xmlns:tools="http://schemas.android.com/tools">
-    <include layout="@layout/content_main"
-        android:layout_marginStart="68dp"
-        android:id="@+id/frag_content_main"
+<FrameLayout
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    android:id="@+id/content_container"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toEndOf="@id/nav_rail_view">
+    <fragment
+        android:id="@+id/nav_host_fragment_content_main"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"/>
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/nav_graph" />
+</FrameLayout>
     <com.google.android.material.navigationrail.NavigationRailView
         android:layout_width="wrap_content"
         android:id="@+id/nav_rail_view"
