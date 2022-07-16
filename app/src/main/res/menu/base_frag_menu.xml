@@ -4,6 +4,7 @@
         android:id="@+id/action_search"
         android:orderInCategory="100"
         android:icon="@drawable/ic_baseline_search_24"
+        android:contentDescription="@string/action_search"
         android:title="@string/action_search"
         app:showAsAction="always"/>
 </menu>

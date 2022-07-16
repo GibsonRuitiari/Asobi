@@ -62,15 +62,34 @@ abstract class MainFragment<Item:Any>:Fragment(){
         setUpBaseFragmentUiComponents()
         listenToUiStateAndUpdateUiAccordingly()
         showFilterBottomSheet()
+        setUpMainFragmentToolbarMenuItem()
+        /*Perform collection of multiple flows here  */
+        launchAndRepeatWithViewLifecycle {
+            launch { /*Observe uiMeasureSpec state data */ observeScreenMeasureSpecState() }
+            launch {  /* Observe paged data */ observePagedData() }
+            launch { /*Observe screen size data */observeScreenWidthState() }
+        }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            println("started collecting")
-            /*Perform collection of multiple flows here  */
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                launch { /*Observe uiMeasureSpec state data */ observeScreenMeasureSpecState() }
-                launch {  /* Observe paged data */ observePagedData() }
-                launch { /*Observe screen size data */observeScreenWidthState() }
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            /*Perform collection of multiple flows here  */
+//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+//                launch { /*Observe uiMeasureSpec state data */ observeScreenMeasureSpecState() }
+//                launch {  /* Observe paged data */ observePagedData() }
+//                launch { /*Observe screen size data */observeScreenWidthState() }
+//            }
+//        }
+    }
+    private fun setUpMainFragmentToolbarMenuItem(){
+        with(fragmentBinding.baseFragToolbar){
+            inflateMenu(R.menu.base_frag_menu)
+            setOnMenuItemClickListener { item->
+                if (item.itemId == R.id.action_search){
+                    println("menu item click consumed")
+                    showSnackBar("menu item click consumed")
+                    true
+                }else false
             }
+
         }
     }
     private suspend fun observeScreenWidthState(){

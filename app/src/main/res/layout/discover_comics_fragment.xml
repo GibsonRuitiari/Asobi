@@ -6,39 +6,64 @@
     android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="?attr/colorSurface"
+        app:layout_behavior=".utilities.StatusBarScrimBehavior"
+        android:fitsSystemWindows="true"/>
+    <include layout="@layout/empty_error_state_layout"
+        android:id="@+id/empty_state_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+    <com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
+        android:id="@+id/content_loading_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_surface" />
+    <include
+        layout="@layout/empty_error_state_layout"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:id="@+id/error_state_layout"
+        android:layout_gravity="center"/>
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/discover_fragment_container"
+        android:visibility="gone"
         android:fillViewport="true">
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/latest_comics_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-
-                android:textAppearance="@style/TextAppearance.Asobi.Body1"
+                android:gravity="center"
+                android:layout_margin="@dimen/margin_small"
+                android:text="@string/latest_comics"
+                android:textAppearance="@style/TextAppearance.Asobi.Subtitle1"
                 app:layout_constraintBottom_toTopOf="@+id/latest_comics_recycler_view"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="@dimen/margin_small"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Latest Comics" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/appCompatButton"
-                android:layout_width="83dp"
-                app:strokeWidth="0dp"
-                style="?borderlessButtonStyle"
-                android:layout_margin="10dp"
-                android:layout_height="48dp"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/latest_comics_more_text"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/margin_small"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textAllCaps="false"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/latest_comics_recycler_view"
                 android:text="@string/more_string"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -51,6 +76,98 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/latest_comics_label" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/popular_comics_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/popular_comics"
+                android:layout_margin="@dimen/margin_small"
+                android:textAppearance="@style/TextAppearance.Asobi.Subtitle1"
+                app:layout_constraintTop_toBottomOf="@id/latest_comics_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Popular Comics" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/popular_comics_more_text"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/margin_small"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/latest_comics_recycler_view"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAllCaps="false"
+                android:text="@string/more_string"
+                app:layout_constraintEnd_toEndOf="parent" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/popular_comics_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/popular_comics_label"
+                android:layout_marginTop="@dimen/margin_small"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/completed_comics_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_margin="@dimen/margin_small"
+                android:textAppearance="@style/TextAppearance.Asobi.Subtitle1"
+                app:layout_constraintTop_toBottomOf="@id/popular_comics_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="@string/completed_comics"
+                tools:text="Completed Comics" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/completed_comics_more_text"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/margin_small"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/popular_comics_recycler_view"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAllCaps="false"
+                android:text="@string/more_string"
+                app:layout_constraintEnd_toEndOf="parent" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:id="@+id/completed_comics_recyclerview"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/completed_comics_label"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/ongoing_comics_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_margin="@dimen/margin_small"
+                android:textAppearance="@style/TextAppearance.Asobi.Subtitle1"
+                app:layout_constraintTop_toBottomOf="@id/completed_comics_recyclerview"
+                app:layout_constraintStart_toStartOf="parent"
+                android:text="@string/ongoing_comics"
+                tools:text="Ongoing Comics" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/ongoing_comics_more_text"
+                android:layout_width="wrap_content"
+                android:layout_margin="@dimen/margin_small"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/completed_comics_recyclerview"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAllCaps="false"
+                android:text="@string/more_string"
+                app:layout_constraintEnd_toEndOf="parent" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/ongoing_comics_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/margin_small"
+                app:layout_constraintTop_toBottomOf="@id/ongoing_comics_label"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
