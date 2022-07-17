@@ -202,8 +202,8 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 app:layout_constraintTop_toBottomOf="@id/ongoing_comics_recycler_view"
                 app:layout_constraintStart_toStartOf="parent"
-                android:text="@string/ongoing_comics"
-                tools:text="Ongoing Comics" />
+                android:text="@string/comics_by_genre"
+                tools:text="Comics by genre" />
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/comics_by_genre_more_text"
                 android:layout_width="wrap_content"

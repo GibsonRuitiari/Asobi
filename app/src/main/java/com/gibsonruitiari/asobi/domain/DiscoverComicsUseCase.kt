@@ -1,9 +1,11 @@
 package com.gibsonruitiari.asobi.domain
 
+import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.utilities.utils.toNetworkResource
 import com.gibsonruitiari.asobi.data.datamodels.SManga
 import com.gibsonruitiari.asobi.data.network.NetworkResource
 import com.gibsonruitiari.asobi.data.network.Status
+import com.gibsonruitiari.asobi.data.shared.comicsbygenre.ComicsByGenreRepo
 import com.gibsonruitiari.asobi.data.shared.completedcomics.CompletedComicsRepo
 import com.gibsonruitiari.asobi.data.shared.latestcomics.LatestComicsRepo
 import com.gibsonruitiari.asobi.data.shared.ongoingcomics.OngoingComicsRepo
@@ -18,7 +20,8 @@ import kotlinx.coroutines.flow.map
 class DiscoverComicsUseCase constructor(private val latestComicsRepo: LatestComicsRepo,
                                         private val ongoingComicsRepo: OngoingComicsRepo,
                                         private val popularComicsRepo: PopularComicsRepo,
-                                        private val completedComicsRepo: CompletedComicsRepo
+                                        private val completedComicsRepo: CompletedComicsRepo,
+                                        private val genreComicsRepo: ComicsByGenreRepo
 ): FlowUseCase<DiscoverComicsUseCase.DiscoverComicsParams, DiscoverComicsResult>() {
     override fun run(params: DiscoverComicsParams): Flow<DiscoverComicsResult> = combine(
         completedComicsRepo
@@ -37,12 +40,16 @@ class DiscoverComicsUseCase constructor(private val latestComicsRepo: LatestComi
               ongoingComicsRepo.getOngoingComics(params.page)
                   .take(params.itemsSize)
                   .toNetworkResource()
-                  .toComicsResultData()){
-          completed,latest,popular,ongoing->
+                  .toComicsResultData(),
+        genreComicsRepo.getComicsByGenre(params.page,params.genre)
+            .take(params.itemsSize)
+            .toNetworkResource()
+            .toComicsResultData()){
+          completed,latest,popular,ongoing, comicsByGenre->
              DiscoverComicsResult(latestComics = latest, completedComics = completed,
-             popularComics = popular, ongoingComics = ongoing)
+             popularComics = popular, ongoingComics = ongoing, comicsByGenre = comicsByGenre)
       }
-    data class DiscoverComicsParams(val itemsSize:Int,val page:Int)
+    data class DiscoverComicsParams(val itemsSize:Int,val page:Int, val genre:Genres)
     private fun Flow<NetworkResource<List<SManga>>>.toComicsResultData() =map{
         DiscoverComicsResult.DiscoverComicsData(isLoading = it.status == Status.LOADING,
         comicsData =it.data?.map { sMangaToViewComicMapper(it)

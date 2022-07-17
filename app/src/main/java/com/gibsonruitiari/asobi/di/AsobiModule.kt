@@ -57,7 +57,7 @@ val observersModule = module {
     factory { PagedPopularComicsObserver(get(), get()) }
     factory { ComicChaptersObserver(get()) }
     factory { ComicsDetailsObserver(get()) }
-    factory { DiscoverComicsUseCase(get(),get(),get(),get()) }
+    factory { DiscoverComicsUseCase(get(),get(),get(),get(), get()) }
 }
 
 val comicsDataSourcesModule = module {

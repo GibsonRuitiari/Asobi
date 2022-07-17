@@ -39,7 +39,14 @@ class DiscoverFragment:MainNavigationFragment() {
     private var BindingViewHolder<ComicItemLayoutBinding>.ongoingComics by viewHolderDelegate<ViewComics>()
     private var BindingViewHolder<ComicItemLayoutBinding>.latestComics by viewHolderDelegate<ViewComics>()
     private var BindingViewHolder<ComicItemLayoutBinding>.popularComics by viewHolderDelegate<ViewComics>()
+    private var BindingViewHolder<ComicItemLayoutBinding>.comicsByGenre by viewHolderDelegate<ViewComics>()
 
+    private fun BindingViewHolder<ComicItemLayoutBinding>.bindComicsByGenre(viewComics: ViewComics){
+        this.comicsByGenre = viewComics
+        with(binding){
+            comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
+        }
+    }
     private fun BindingViewHolder<ComicItemLayoutBinding>.bindCompletedComics(viewComics: ViewComics){
         this.completedComics = viewComics
         with(binding){
@@ -64,6 +71,14 @@ class DiscoverFragment:MainNavigationFragment() {
             comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
         }
     }
+    private val comicsByGenreAdapter = listAdapterOf(initialItems = emptyList(),
+    viewHolderCreator = {parent: ViewGroup, _: Int ->
+        parent.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
+            itemView.setOnClickListener {  Toast.makeText(requireContext(), "${comicsByGenre.comicLink} clicked", Toast.LENGTH_SHORT).show() }
+        }
+    }, viewHolderBinder = {holder:BindingViewHolder<ComicItemLayoutBinding>, item:ViewComics,_->
+            holder.bindComicsByGenre(item)
+        })
     private val latestComicsAdapter = listAdapterOf(initialItems = emptyList(),
     viewHolderCreator = {
         parent: ViewGroup, _: Int ->
@@ -133,13 +148,15 @@ class DiscoverFragment:MainNavigationFragment() {
                             val popularComics = it.comicsData.popularComics.comicsData
                             val latestComics = it.comicsData.latestComics.comicsData
                             val ongoingComics = it.comicsData.ongoingComics.comicsData
+                            val comicsByGenre = it.comicsData.comicsByGenre.comicsData
                             when{
-                                completedComics.isEmpty() || popularComics.isEmpty() || latestComics.isEmpty() || ongoingComics.isEmpty()->onDataEmptyShowEmptyLayout()
+                                completedComics.isEmpty() || popularComics.isEmpty() || latestComics.isEmpty() ||comicsByGenre.isEmpty()|| ongoingComics.isEmpty()->onDataEmptyShowEmptyLayout()
                                 else->{
                                     completedComicsAdapter.submitList(completedComics)
                                     popularComicsAdapter.submitList(popularComics)
                                     ongoingComicsAdapter.submitList(ongoingComics)
                                     latestComicsAdapter.submitList(latestComics)
+                                    comicsByGenreAdapter.submitList(comicsByGenre)
                                     onDataLoadedSuccessfullyShowDataLayout()
                                 }
                             }
@@ -175,7 +192,7 @@ class DiscoverFragment:MainNavigationFragment() {
             setOnMenuItemClickListener {
                 when(it.itemId){
                     R.id.refresh_item->{
-                        Toast.makeText(requireContext(),"refresh action clicked",Toast.LENGTH_SHORT).show()
+                        discoverComicsFragmentBinding.coordinatorLayout.showSnackBar(getString(R.string.refreshing_message))
                         true
                     }
                     else->false
@@ -218,6 +235,13 @@ class DiscoverFragment:MainNavigationFragment() {
                 addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
                 setHasFixedSize(true)
             }
+            with(comicsByGenreRecyclerView){
+                linearSnapHelper.attachToRecyclerView(this)
+                layoutManager= horizontalLayoutManager()
+                adapter = comicsByGenreAdapter
+                addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
+                setHasFixedSize(true)
+            }
         }
     }
     /* Navigate to the specific fragment when more button is clicked */
@@ -234,6 +258,9 @@ class DiscoverFragment:MainNavigationFragment() {
             }
             ongoingComicsMoreText.setOnClickListener {
                 findNavController().navigate(R.id.to_ongoing_comics)
+            }
+            comicsByGenreMoreText.setOnClickListener {
+                findNavController().navigate(R.id.to_comics_by_genre)
             }
         }
     }

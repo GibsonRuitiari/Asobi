@@ -20,12 +20,12 @@ sealed class DiscoverComicsSideEffect: Effect {
 }
 data class DiscoverComicsResult(val latestComics: DiscoverComicsData,
                                 val popularComics: DiscoverComicsData, val ongoingComics: DiscoverComicsData,
-                                val completedComics: DiscoverComicsData
+                                val completedComics: DiscoverComicsData,val comicsByGenre:DiscoverComicsData
 ){
     companion object{
         val EMPTY = DiscoverComicsResult(
             DiscoverComicsData.EMPTY,
-            DiscoverComicsData.EMPTY, DiscoverComicsData.EMPTY, DiscoverComicsData.EMPTY
+            DiscoverComicsData.EMPTY, DiscoverComicsData.EMPTY, DiscoverComicsData.EMPTY, DiscoverComicsData.EMPTY
         )
     }
     data class DiscoverComicsData(val isLoading:Boolean=false,

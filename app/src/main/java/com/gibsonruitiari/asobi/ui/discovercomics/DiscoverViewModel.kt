@@ -2,18 +2,16 @@ package com.gibsonruitiari.asobi.ui.discovercomics
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.domain.CoroutineScopeOwner
 import com.gibsonruitiari.asobi.utilities.Store
 import com.gibsonruitiari.asobi.domain.DiscoverComicsUseCase
+import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverComicsUseCase
-):ViewModel(), CoroutineScopeOwner,Store<DiscoverComicsState,
+class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverComicsUseCase):ViewModel(), CoroutineScopeOwner,Store<DiscoverComicsState,
         DiscoverComicsAction, DiscoverComicsSideEffect>{
     override val coroutineScope: CoroutineScope
         get() = viewModelScope
@@ -22,6 +20,7 @@ class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverC
     // replay=0 so as to broadcast most recent side effect
     private val sideEffect = MutableSharedFlow<DiscoverComicsSideEffect>()
     init {
+
         onAction(DiscoverComicsAction.LoadComics)
     }
 
@@ -30,15 +29,15 @@ class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverC
     companion object{
         private const val ITEM_SIZE=16
         private const val ITEM_PAGE=1
-        val PARAMS= DiscoverComicsUseCase.DiscoverComicsParams(ITEM_SIZE, ITEM_PAGE)
     }
+
     override fun onAction(action: DiscoverComicsAction) {
         val oldState = state.value
+        val params= DiscoverComicsUseCase.DiscoverComicsParams(ITEM_SIZE, ITEM_PAGE, genre = Genres.DC_COMICS)
         when(action){
             is DiscoverComicsAction.LoadComics->{
-
                 with(state){
-                    discoverComicsUseCase.execute(args = PARAMS){
+                    discoverComicsUseCase.execute(args = params){
                         onStart {
                             coroutineScope.launch {
                                 emit(oldState.copy(isLoading = false))

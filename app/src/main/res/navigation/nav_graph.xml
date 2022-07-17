@@ -20,6 +20,8 @@
 
       <action android:id="@+id/to_completed_comics"
           app:destination="@id/navigation_completed_comics"/>
+      <action android:id="@+id/to_comics_by_genre"
+          app:destination="@+id/navigation_comics_by_genre"/>
 
   </fragment>
     <fragment
