@@ -8,10 +8,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +26,7 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-abstract class MainFragment<Item:Any>:Fragment(){
+abstract class MainFragment<Item:Any>:MainNavigationFragment(){
     private var _baseFragmentBinding: BaseFragmentBinding?=null
     private val fragmentBinding get() = _baseFragmentBinding!!
     var pagingListAdapter:PagingDataAdapter<Item,RecyclerView.ViewHolder> ?=null
@@ -57,12 +53,12 @@ abstract class MainFragment<Item:Any>:Fragment(){
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         pagingListAdapter = createComposedPagedAdapter()
         setUpBaseFragmentUiComponents()
         listenToUiStateAndUpdateUiAccordingly()
         showFilterBottomSheet()
         setUpMainFragmentToolbarMenuItem()
+
         /*Perform collection of multiple flows here  */
         launchAndRepeatWithViewLifecycle {
             launch { /*Observe uiMeasureSpec state data */ observeScreenMeasureSpecState() }
@@ -80,7 +76,7 @@ abstract class MainFragment<Item:Any>:Fragment(){
 //        }
     }
     private fun setUpMainFragmentToolbarMenuItem(){
-        with(fragmentBinding.baseFragToolbar){
+        with(fragmentBinding.toolbar){
             inflateMenu(R.menu.base_frag_menu)
             setOnMenuItemClickListener { item->
                 if (item.itemId == R.id.action_search){
@@ -213,7 +209,7 @@ abstract class MainFragment<Item:Any>:Fragment(){
         }
     }
     private fun setUpBaseFragmentUiComponents(){
-        fragmentBinding.baseFragToolbar.title = toolbarTitle
+        fragmentBinding.toolbar.title = toolbarTitle
         fragmentBinding.baseFragSwipeRefresh.doOnNextLayout {
             setContentToMaxWidth(it)
         }

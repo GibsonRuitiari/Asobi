@@ -3,26 +3,63 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/navigation_discover">
+  <fragment
+      android:id="@+id/navigation_discover"
+      android:name="com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment"
+      android:label="@string/discover"
+      tools:layout="@layout/discover_comics_fragment">
+      <action android:id="@+id/to_latest_comics"
+          app:destination="@id/navigation_latest_comics"/>
 
-    <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/base_fragment">
+      <action android:id="@+id/to_popular_comics"
+          app:destination="@id/navigation_popular_comics"/>
 
-        <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
-    </fragment>
+      <action android:id="@+id/to_ongoing_comics"
+          app:destination="@id/navigation_ongoing_comics"/>
+
+      <action android:id="@+id/to_completed_comics"
+          app:destination="@id/navigation_completed_comics"/>
+
+  </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
+        android:id="@+id/navigation_popular_comics"
+        android:name="com.gibsonruitiari.asobi.ui.popularcomics.PopularComicsFragment"
+        android:label="@string/popular_comics"
+        />
+    <fragment android:id="@+id/navigation_latest_comics"
         android:name="com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/base_fragment">
+        android:label="@string/latest_comics"
+        />
+    <fragment android:id="@+id/navigation_completed_comics"
+        android:label="@string/completed_comics"
+        android:name="com.gibsonruitiari.asobi.ui.completedcomics.CompletedComicsFragment"
+        />
+    <fragment android:name="com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsFragment"
+        android:id="@+id/navigation_ongoing_comics"
+        android:label="@string/ongoing_comics" />
+    <fragment android:id="@+id/navigation_comics_by_genre"
+        android:label="@string/comics_by_genre"
+        android:name="com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreFragment"
+        />
+<!--    <fragment-->
+<!--        android:id="@+id/FirstFragment"-->
+<!--        android:name="com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsFragment"-->
+<!--        android:label="@string/first_fragment_label"-->
+<!--        tools:layout="@layout/base_fragment">-->
 
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
-    </fragment>
+<!--        <action-->
+<!--            android:id="@+id/action_FirstFragment_to_SecondFragment"-->
+<!--            app:destination="@id/SecondFragment" />-->
+<!--    </fragment>-->
+<!--    <fragment-->
+<!--        android:id="@+id/SecondFragment"-->
+<!--        android:name="com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsFragment"-->
+<!--        android:label="@string/second_fragment_label"-->
+<!--        tools:layout="@layout/base_fragment">-->
+
+<!--        <action-->
+<!--            android:id="@+id/action_SecondFragment_to_FirstFragment"-->
+<!--            app:destination="@id/FirstFragment" />-->
+<!--    </fragment>-->
 </navigation>

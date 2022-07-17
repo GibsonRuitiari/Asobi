@@ -15,7 +15,7 @@
         <com.google.android.material.appbar.MaterialToolbar
             android:layout_width="match_parent"
             android:fadingEdge="vertical"
-            android:id="@+id/base_frag_toolbar"
+            android:id="@+id/toolbar"
             app:titleCentered="true"
             app:menu="@menu/base_frag_menu"
             tools:title="@string/popular_comics"

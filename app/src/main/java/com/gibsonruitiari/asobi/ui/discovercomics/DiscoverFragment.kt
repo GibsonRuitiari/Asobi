@@ -6,26 +6,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.ListAdapter
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.databinding.DiscoverComicsFragmentBinding
+import com.gibsonruitiari.asobi.ui.MainNavigationFragment
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
-import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
-import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
-import com.gibsonruitiari.asobi.utilities.extensions.requestApplyInsetsWhenAttached
-import com.gibsonruitiari.asobi.utilities.extensions.showSnackBar
+import com.gibsonruitiari.asobi.utilities.extensions.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class DiscoverFragment:Fragment() {
+@Suppress("UNCHECKED_CAST")
+class DiscoverFragment:MainNavigationFragment() {
     private var _binding:DiscoverComicsFragmentBinding?=null
     private val discoverComicsFragmentBinding:DiscoverComicsFragmentBinding get() = _binding!!
     private var BindingViewHolder<ComicItemLayoutBinding>.completedComics by viewHolderDelegate<ViewComics>()
@@ -69,17 +68,17 @@ class DiscoverFragment:Fragment() {
             holder.bindLatestComics(item)
         })
     private val popularComicsAdapter = listAdapterOf(initialItems = emptyList(),
-    viewHolderCreator = {parent: ViewGroup, viewType: Int ->
+    viewHolderCreator = {parent: ViewGroup, _: Int ->
         parent.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
             itemView.setOnClickListener {
                 Toast.makeText(requireContext(), "${popularComics.comicLink} clicked", Toast.LENGTH_SHORT).show()
             }
         }
-    }, viewHolderBinder = {holder: RecyclerView.ViewHolder, item: ViewComics, position: Int ->
+    }, viewHolderBinder = {holder: RecyclerView.ViewHolder, item: ViewComics, _: Int ->
             (holder as BindingViewHolder<ComicItemLayoutBinding>).bindPopularComics(item)
         })
     private val completedComicsAdapter = listAdapterOf(initialItems = emptyList(),
-    viewHolderCreator = {parent, viewType ->
+    viewHolderCreator = {parent, _ ->
         parent.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
             itemView.setOnClickListener {        Toast.makeText(requireContext(), "${completedComics.comicLink} clicked", Toast.LENGTH_SHORT).show() }
         }
@@ -87,7 +86,7 @@ class DiscoverFragment:Fragment() {
             (holder as BindingViewHolder<ComicItemLayoutBinding>).bindCompletedComics(item)
         })
     private val ongoingComicsAdapter = listAdapterOf(initialItems = emptyList(),
-    viewHolderCreator = {parent, viewType ->
+    viewHolderCreator = {parent, _ ->
         parent.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
             itemView.setOnClickListener {
                 Toast.makeText(requireContext(), "${ongoingComics.comicLink} clicked", Toast.LENGTH_SHORT).show()
@@ -116,9 +115,25 @@ class DiscoverFragment:Fragment() {
             /* Observe the state from view model  */
             launch {
                 discoverViewModel.observeState().collectLatest {
-                   if (it.isLoading) onLoadingShowLoadingLayout()
-                   it.comicsData.completedComics.comicsData
-
+                    when{
+                        it.isLoading-> onLoadingShowLoadingLayout()
+                        else->{
+                            val completedComics = it.comicsData.completedComics.comicsData
+                            val popularComics = it.comicsData.popularComics.comicsData
+                            val latestComics = it.comicsData.latestComics.comicsData
+                            val ongoingComics = it.comicsData.ongoingComics.comicsData
+                            when{
+                                completedComics.isEmpty() || popularComics.isEmpty() || latestComics.isEmpty() || ongoingComics.isEmpty()->onDataEmptyShowEmptyLayout()
+                                else->{
+                                    completedComicsAdapter.submitList(completedComics)
+                                    popularComicsAdapter.submitList(popularComics)
+                                    ongoingComicsAdapter.submitList(ongoingComics)
+                                    latestComicsAdapter.submitList(latestComics)
+                                    onDataLoadedSuccessfullyShowDataLayout()
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -137,11 +152,77 @@ class DiscoverFragment:Fragment() {
                 }
             }
         }
-
-
+        setUpDiscoverFragmentToolbar()
+        setUpDiscoverFragmentsRecyclerViews()
+        setUpOnMoreLabelClickListeners()
     }
+    /* Start: Set up ui components */
+    private fun setUpDiscoverFragmentToolbar(){
+        // inflate menu
+        with(discoverComicsFragmentBinding.toolbar){
+            inflateMenu(R.menu.discover_frag_menu)
+            setOnMenuItemClickListener {
+                when(it.itemId){
+                    R.id.refresh_item->{
+                        Toast.makeText(requireContext(),"refresh action clicked",Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                    else->false
+                }
+            }
+        }
+    }
+    private fun setUpDiscoverFragmentsRecyclerViews(){
+        val linearSnapHelper = LinearSnapHelper()
+        with(discoverComicsFragmentBinding){
+            with(latestComicsRecyclerView){
+                linearSnapHelper.attachToRecyclerView(this)
+                layoutManager = horizontalLayoutManager()
+                adapter = latestComicsAdapter
+                setHasFixedSize(true)
+
+            }
+            with(completedComicsRecyclerview){
+                linearSnapHelper.attachToRecyclerView(this)
+                layoutManager = horizontalLayoutManager()
+                adapter = completedComicsAdapter
+                setHasFixedSize(true)
+            }
+            with(ongoingComicsRecyclerView){
+                linearSnapHelper.attachToRecyclerView(this)
+                layoutManager = horizontalLayoutManager()
+                adapter = ongoingComicsAdapter
+                setHasFixedSize(true)
+            }
+            with(popularComicsRecyclerView){
+                linearSnapHelper.attachToRecyclerView(this)
+                layoutManager = horizontalLayoutManager()
+                adapter = popularComicsAdapter
+                setHasFixedSize(true)
+            }
+        }
+    }
+    /* Navigate to the specific fragment when more button is clicked */
+    private fun setUpOnMoreLabelClickListeners(){
+        with(discoverComicsFragmentBinding){
+            completedComicsMoreText.setOnClickListener {
+                findNavController().navigate(R.id.navigation_completed_comics)
+            }
+            popularComicsMoreText.setOnClickListener {
+                findNavController().navigate(R.id.navigation_popular_comics)
+            }
+            completedComicsMoreText.setOnClickListener {
+                findNavController().navigate(R.id.navigation_completed_comics)
+            }
+            ongoingComicsMoreText.setOnClickListener {
+                findNavController().navigate(R.id.navigation_ongoing_comics)
+            }
+        }
+    }
+    /* End: Set up ui components */
 
 
+    /* Start: Respond to events by showing the requisite state on the screen to the user */
     private fun onDataLoadedSuccessfullyShowDataLayout(){
         with(discoverComicsFragmentBinding){
             contentLoadingLayout.hide()
@@ -174,6 +255,7 @@ class DiscoverFragment:Fragment() {
             contentLoadingLayout.show()
         }
     }
+    /* End: Respond to events by showing the requisite state on the screen to the user */
 
     override fun onDestroy() {
         super.onDestroy()

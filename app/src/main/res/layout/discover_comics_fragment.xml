@@ -6,6 +6,22 @@
     android:fitsSystemWindows="true"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:background="@color/white"
+        android:id="@+id/discover_fragment_app_bar">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:layout_width="match_parent"
+            app:titleTextColor="@color/black"
+            app:titleTextAppearance="@style/TextAppearance.Asobi.Headline6"
+            android:layout_height="?actionBarSize"
+            android:minWidth="60dp"
+            android:id="@+id/toolbar"
+            app:menu="@menu/discover_frag_menu"
+            app:title="@string/discover"/>
+    </com.google.android.material.appbar.AppBarLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
