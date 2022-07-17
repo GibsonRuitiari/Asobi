@@ -108,7 +108,7 @@ class ComicsFilterBottomSheet:Fragment() {
         val peekHeight = behavior.peekHeight
         val marginBottom = comicFilterFragmentBinding.root.marginBottom
         /* Apply gesture insets so that the container scrolls within the system ui  */
-        comicFilterFragmentBinding.root.doOnApplyWindowInsets { v, windowInsetsCompat, viewPaddingState ->
+        comicFilterFragmentBinding.root.doOnApplyWindowInsets { v, windowInsetsCompat, _ ->
             val gestureInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type
                 .systemGestures())
             behavior.peekHeight = gestureInsets.bottom + peekHeight
