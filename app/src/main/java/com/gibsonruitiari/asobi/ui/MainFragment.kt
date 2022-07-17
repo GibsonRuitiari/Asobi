@@ -30,7 +30,6 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
     private var _baseFragmentBinding: BaseFragmentBinding?=null
     private val fragmentBinding get() = _baseFragmentBinding!!
     var pagingListAdapter:PagingDataAdapter<Item,RecyclerView.ViewHolder> ?=null
-
     abstract fun createComposedPagedAdapter():PagingDataAdapter<Item,RecyclerView.ViewHolder>
     abstract val toolbarTitle:String
     private val activityMainViewModel: MainActivityViewModel by viewModel()
@@ -62,18 +61,16 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
         /*Perform collection of multiple flows here  */
         launchAndRepeatWithViewLifecycle {
             launch { /*Observe uiMeasureSpec state data */ observeScreenMeasureSpecState() }
-            launch {  /* Observe paged data */ observePagedData() }
+            launch {  /* Observe paged data */
+                observePagedData() }
             launch { /*Observe screen size data */observeScreenWidthState() }
         }
-
 
     }
     private fun setUpMainFragmentToolbarMenuItem(){
         with(fragmentBinding.toolbar){
-            inflateMenu(R.menu.base_frag_menu)
             setOnMenuItemClickListener { item->
                 if (item.itemId == R.id.action_search){
-                    println("menu item click consumed")
                     showSnackBar("menu item click consumed")
                     true
                 }else false
@@ -136,9 +133,9 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
     }
     private fun showFilterBottomSheet(){
         /* use childFragmentManager to search for the filter bottom sheet since we are in a fragment we cannot use supportFragmentManager */
-        val filterSheetFragment = childFragmentManager.findFragmentById(R.id.filter_sheet) as ComicsFilterBottomSheet
+        val filterSheetFragment = childFragmentManager.findFragmentById(R.id.filter_sheet) as? ComicsFilterBottomSheet
         fragmentBinding.filterByGenreButton.setOnClickListener {
-            filterSheetFragment.showFiltersSheet()
+            filterSheetFragment?.showFiltersSheet()
         }
     }
 
@@ -209,7 +206,7 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
         val colorSchemes=requireActivity().resources.getIntArray(R.array.swipe_refresh_colors)
         fragmentBinding.baseFragSwipeRefresh.setColorSchemeColors(*colorSchemes)
         fragmentBinding.baseFragSwipeRefresh.setOnRefreshListener { pagingListAdapter?.refresh() }
-        if (activityMainViewModel.isInComicsByGenreFragment.value==true){
+        if (activityMainViewModel.isInComicsByGenreFragment.value){
             fragmentBinding.filterByGenreButton.show()
         }else fragmentBinding.filterByGenreButton.hide()
 

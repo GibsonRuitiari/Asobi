@@ -224,16 +224,16 @@ class DiscoverFragment:MainNavigationFragment() {
     private fun setUpOnMoreLabelClickListeners(){
         with(discoverComicsFragmentBinding){
             completedComicsMoreText.setOnClickListener {
-                findNavController().navigate(R.id.navigation_completed_comics)
+                findNavController().navigate(R.id.to_completed_comics)
             }
             popularComicsMoreText.setOnClickListener {
-                findNavController().navigate(R.id.navigation_popular_comics)
+                findNavController().navigate(R.id.to_popular_comics)
             }
-            completedComicsMoreText.setOnClickListener {
-                findNavController().navigate(R.id.navigation_completed_comics)
+            latestComicsMoreText.setOnClickListener {
+                findNavController().navigate(R.id.to_latest_comics)
             }
             ongoingComicsMoreText.setOnClickListener {
-                findNavController().navigate(R.id.navigation_ongoing_comics)
+                findNavController().navigate(R.id.to_ongoing_comics)
             }
         }
     }

@@ -168,8 +168,8 @@ class MainActivity : AppCompatActivity(), NavigationHost {
 
     }
     override fun registerToolbarWithNavigation(toolbar: Toolbar) {
-        val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
-        toolbar.setupWithNavController(navController,appBarConfiguration)
+       val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
+      toolbar.setupWithNavController(navController,appBarConfiguration)
     }
 
 }

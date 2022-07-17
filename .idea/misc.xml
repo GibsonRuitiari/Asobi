@@ -22,8 +22,8 @@
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout-w840dp/activity_main.xml" value="0.5" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout-w840dp/activivity_main.xml" value="0.17265625" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/activity_main.xml" value="0.22" />
-        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/base_fragment.xml" value="0.2" />
-        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comic_filter_fragment.xml" value="0.33" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/base_fragment.xml" value="0.25" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comic_filter_fragment.xml" value="0.22" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comic_item_layout.xml" value="0.33" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comic_item_layout_large.xml" value="0.22" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/content_main.xml" value="0.22" />
@@ -40,6 +40,7 @@
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/menu/discover_menu.xml" value="0.13333333333333333" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/menu/menu_main.xml" value="0.23020833333333332" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/menu/navigation_rail_menu.xml" value="0.23020833333333332" />
+        <entry key="..\:/Users/Ruiriari Gibson/AppData/Local/Temp/drawable-temp/fake_of_chip_icon.xml" value="0.1915" />
       </map>
     </option>
   </component>

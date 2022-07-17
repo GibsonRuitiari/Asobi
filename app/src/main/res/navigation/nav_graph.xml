@@ -42,24 +42,4 @@
         android:label="@string/comics_by_genre"
         android:name="com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreFragment"
         />
-<!--    <fragment-->
-<!--        android:id="@+id/FirstFragment"-->
-<!--        android:name="com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsFragment"-->
-<!--        android:label="@string/first_fragment_label"-->
-<!--        tools:layout="@layout/base_fragment">-->
-
-<!--        <action-->
-<!--            android:id="@+id/action_FirstFragment_to_SecondFragment"-->
-<!--            app:destination="@id/SecondFragment" />-->
-<!--    </fragment>-->
-<!--    <fragment-->
-<!--        android:id="@+id/SecondFragment"-->
-<!--        android:name="com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsFragment"-->
-<!--        android:label="@string/second_fragment_label"-->
-<!--        tools:layout="@layout/base_fragment">-->
-
-<!--        <action-->
-<!--            android:id="@+id/action_SecondFragment_to_FirstFragment"-->
-<!--            app:destination="@id/FirstFragment" />-->
-<!--    </fragment>-->
 </navigation>

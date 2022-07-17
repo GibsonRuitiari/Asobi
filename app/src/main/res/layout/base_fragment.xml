@@ -38,7 +38,6 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:id="@+id/base_frag_swipe_refresh"
@@ -50,26 +49,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:animateLayoutChanges="true">
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/base_frag_recycler_view"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:clipToPadding="false"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:fadingEdge="vertical"
                 android:layoutAnimation="@anim/layout_animation_scale_in"
                 android:scrollbars="none"
                 android:visibility="gone"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                tools:ignore="SpeakableTextPresentCheck"
-                tools:listitem="@layout/comic_item_layout"
-                tools:spanCount="2"
                 tools:visibility="visible" />
             <include layout="@layout/empty_error_state_layout"
                 android:id="@+id/error_state_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:visibility="visible"
                 android:visibility="gone" />
             <include layout="@layout/empty_error_state_layout"
                 android:id="@+id/empty_state_layout"
@@ -80,8 +72,7 @@
             <com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
                 android:id="@+id/content_loading_layout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/color_surface" />
+                android:layout_height="match_parent"/>
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
