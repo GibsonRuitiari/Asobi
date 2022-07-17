@@ -61,11 +61,15 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
         /*Perform collection of multiple flows here  */
         launchAndRepeatWithViewLifecycle {
             launch { /*Observe uiMeasureSpec state data */ observeScreenMeasureSpecState() }
-            launch {  /* Observe paged data */
-                observePagedData() }
+            launch {  /* Observe paged data */ observePagedData() }
             launch { /*Observe screen size data */observeScreenWidthState() }
+            launch { activityMainViewModel.isInComicsByGenreFragment.collectLatest { initializeFilterButton(it) } }
         }
-
+    }
+    private fun initializeFilterButton(isInComicsByGenreFragment:Boolean){
+        if (isInComicsByGenreFragment){
+            fragmentBinding.filterByGenreButton.show()
+        }else fragmentBinding.filterByGenreButton.hide()
     }
     private fun setUpMainFragmentToolbarMenuItem(){
         with(fragmentBinding.toolbar){
@@ -206,9 +210,7 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
         val colorSchemes=requireActivity().resources.getIntArray(R.array.swipe_refresh_colors)
         fragmentBinding.baseFragSwipeRefresh.setColorSchemeColors(*colorSchemes)
         fragmentBinding.baseFragSwipeRefresh.setOnRefreshListener { pagingListAdapter?.refresh() }
-        if (activityMainViewModel.isInComicsByGenreFragment.value){
-            fragmentBinding.filterByGenreButton.show()
-        }else fragmentBinding.filterByGenreButton.hide()
+
 
     }
     private fun setUpBaseFragmentRecyclerView(uiMeasureSpec: UiMeasureSpec){
