@@ -39,4 +39,6 @@
     <string name="refresh">refresh</string>
     <string name="loading_msg">Loading please wait</string>
     <string name="refreshing_message">Refreshing please wait :D</string>
+    <string name="filter">filter</string>
+    <string name="menu_item_library">your library</string>
 </resources>

@@ -73,17 +73,19 @@
                 android:id="@+id/content_loading_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/filter_by_genre_button"
-                tools:visibility="visible"
-                android:src="@drawable/ic_baseline_filter_list_24"
-                android:visibility="gone"
-                android:layout_gravity="bottom|end"
-                android:contentDescription="@string/filter_comics_by_genre"
-                android:layout_margin="@dimen/fab_margin"/>
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/filter_by_genre_button"
+        tools:visibility="visible"
+        android:text="@string/filter"
+        android:visibility="gone"
+        app:layout_behavior=".utilities.ExtendedFabBehavior"
+        app:icon="@drawable/ic_baseline_filter_list_24"
+        android:layout_gravity="bottom|end"
+        android:contentDescription="@string/filter_comics_by_genre"
+        android:layout_margin="@dimen/keyline_7"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

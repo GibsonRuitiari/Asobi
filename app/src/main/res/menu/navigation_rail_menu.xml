@@ -13,6 +13,6 @@
     <item
         android:id="@+id/menu_item_settings"
         android:enabled="true"
-        android:icon="@drawable/ic_outline_settings_24"
-        android:title="@string/menu_item_settings"/>
+        android:icon="@drawable/ic_baseline_bookmarks_24"
+        android:title="@string/menu_item_library"/>
 </menu>
