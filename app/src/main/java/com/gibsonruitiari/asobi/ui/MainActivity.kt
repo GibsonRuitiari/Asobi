@@ -104,7 +104,7 @@ class MainActivity : AppCompatActivity(), NavigationHost {
     }
     private fun applyWindowInsetsOnStatusBarScrim(){
         binding.statusBarScrim.setOnApplyWindowInsetsListener { v, insets ->
-            val topInset =insets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+            val topInset =insets.systemWindowInsetTop
             if (v.layoutParams.height != topInset) {
                 v.layoutParams.height = topInset
                 v.requestLayout()

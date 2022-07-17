@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.updatePadding
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +20,13 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
-import com.gibsonruitiari.asobi.utilities.extensions.*
+import com.gibsonruitiari.asobi.utilities.ItemMarginRecyclerViewDecorator
+import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
+import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
+import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
+import com.gibsonruitiari.asobi.utilities.extensions.showSnackBar
+import com.gibsonruitiari.asobi.utilities.extensions.requestApplyInsetsWhenAttached
+import com.gibsonruitiari.asobi.utilities.extensions.horizontalLayoutManager
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -116,7 +124,10 @@ class DiscoverFragment:MainNavigationFragment() {
             launch {
                 discoverViewModel.observeState().collectLatest {
                     when{
-                        it.isLoading-> onLoadingShowLoadingLayout()
+                        it.isLoading-> {
+                            onLoadingShowLoadingLayout()
+                            discoverComicsFragmentBinding.coordinatorLayout.showSnackBar(getString(R.string.loading_msg))
+                        }
                         else->{
                             val completedComics = it.comicsData.completedComics.comicsData
                             val popularComics = it.comicsData.popularComics.comicsData
@@ -160,7 +171,7 @@ class DiscoverFragment:MainNavigationFragment() {
     private fun setUpDiscoverFragmentToolbar(){
         // inflate menu
         with(discoverComicsFragmentBinding.toolbar){
-            inflateMenu(R.menu.discover_frag_menu)
+            //inflateMenu(R.menu.discover_frag_menu)
             setOnMenuItemClickListener {
                 when(it.itemId){
                     R.id.refresh_item->{
@@ -179,6 +190,7 @@ class DiscoverFragment:MainNavigationFragment() {
                 linearSnapHelper.attachToRecyclerView(this)
                 layoutManager = horizontalLayoutManager()
                 adapter = latestComicsAdapter
+                addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
                 setHasFixedSize(true)
 
             }
@@ -186,18 +198,24 @@ class DiscoverFragment:MainNavigationFragment() {
                 linearSnapHelper.attachToRecyclerView(this)
                 layoutManager = horizontalLayoutManager()
                 adapter = completedComicsAdapter
+                addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
                 setHasFixedSize(true)
             }
             with(ongoingComicsRecyclerView){
                 linearSnapHelper.attachToRecyclerView(this)
                 layoutManager = horizontalLayoutManager()
                 adapter = ongoingComicsAdapter
+                addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
+                doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+                    val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars())
+                    view.updatePadding(bottom = viewPaddingState.bottom+ systemInsets.bottom + resources.getDimension(R.dimen.default_padding).toInt())}
                 setHasFixedSize(true)
             }
             with(popularComicsRecyclerView){
                 linearSnapHelper.attachToRecyclerView(this)
                 layoutManager = horizontalLayoutManager()
                 adapter = popularComicsAdapter
+                addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
                 setHasFixedSize(true)
             }
         }

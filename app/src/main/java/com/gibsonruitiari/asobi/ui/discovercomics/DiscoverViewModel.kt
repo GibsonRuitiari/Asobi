@@ -28,7 +28,9 @@ class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverC
     override fun observeState(): StateFlow<DiscoverComicsState> = state
     override fun observeSideEffect(): Flow<DiscoverComicsSideEffect> = sideEffect
     companion object{
-        val PARAMS= DiscoverComicsUseCase.DiscoverComicsParams(10,1)
+        private const val ITEM_SIZE=16
+        private const val ITEM_PAGE=1
+        val PARAMS= DiscoverComicsUseCase.DiscoverComicsParams(ITEM_SIZE, ITEM_PAGE)
     }
     override fun onAction(action: DiscoverComicsAction) {
         val oldState = state.value

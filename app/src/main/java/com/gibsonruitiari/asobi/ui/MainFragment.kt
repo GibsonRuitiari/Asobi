@@ -66,14 +66,7 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
             launch { /*Observe screen size data */observeScreenWidthState() }
         }
 
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            /*Perform collection of multiple flows here  */
-//            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-//                launch { /*Observe uiMeasureSpec state data */ observeScreenMeasureSpecState() }
-//                launch {  /* Observe paged data */ observePagedData() }
-//                launch { /*Observe screen size data */observeScreenWidthState() }
-//            }
-//        }
+
     }
     private fun setUpMainFragmentToolbarMenuItem(){
         with(fragmentBinding.toolbar){
