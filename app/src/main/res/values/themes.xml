@@ -54,6 +54,7 @@
         <item name="alphaEmphasisMedium">@dimen/alpha_emphasis_medium</item>
         <item name="alphaEmphasisDisabled">@dimen/alpha_emphasis_disabled</item>
 
+
     </style>
     <!-- to be  applied in the manifest file -->
 <style name="AppTheme" parent="BaseAppTheme">

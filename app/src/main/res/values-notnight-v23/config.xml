@@ -1,0 +1,3 @@
+<resources>
+    <bool name="use_light_status">true</bool>
+</resources>

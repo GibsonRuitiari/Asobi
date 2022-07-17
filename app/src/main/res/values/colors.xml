@@ -39,7 +39,7 @@
     <color name="system_ui_scrim_light">#B3FFFFFF</color> <!-- 70% white -->
     <color name="system_ui_scrim_black">#40000000</color> <!-- 25% black -->
     <color name="immersive_sys_ui">#33000000</color>
-
+    <color name="transparent">#00FFFFFF</color>
     <!--  dark scrim by default since light status is API 23+ -->
     <color name="status_bar_scrim">@color/system_ui_scrim_black</color>
     <!-- dark scrim by default since light nav bar is API 27+ -->
