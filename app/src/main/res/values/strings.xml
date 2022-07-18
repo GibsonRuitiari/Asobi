@@ -41,4 +41,5 @@
     <string name="refreshing_message">Refreshing please wait :D</string>
     <string name="filter">filter</string>
     <string name="menu_item_library">your library</string>
+    <string name="error_image">error image</string>
 </resources>

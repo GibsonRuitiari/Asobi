@@ -1,23 +1,33 @@
 package com.gibsonruitiari.asobi.ui.comicsbygenre
 
+import android.animation.AnimatorInflater
 import android.animation.LayoutTransition
+import android.graphics.Typeface
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.animation.LayoutAnimationController
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.graphics.TypefaceCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.marginEnd
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.vectordrawable.graphics.drawable.AnimationUtilsCompat
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.databinding.ComicsByGenreFragmentBinding
@@ -31,8 +41,10 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ExtendedFabBehavior
 import com.gibsonruitiari.asobi.utilities.StatusBarScrimBehavior
+import com.gibsonruitiari.asobi.utilities.extensions.gridLayoutManager
 import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
 import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
+import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -132,6 +144,99 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         swipeRefreshLayout.addView(frameLayoutContainer)
 
         /* Stack things up on the frame layout container-> recycler view;error-layout;empty-layout;loading-layout */
+        val genreRecyclerView = RecyclerView(frameLayoutContainer.context).apply {
+            id = ViewCompat.generateViewId()
+            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT)
+            val animation=AnimationUtils.loadLayoutAnimation(this.context, R.anim.layout_animation_scale_in)
+            layoutAnimation= animation
+            layoutManager = gridLayoutManager(2)
+            adapter = comicsByGenreAdapter
+            setHasFixedSize(true)
+            visibility = View.GONE
+        }
+        frameLayoutContainer.addView(genreRecyclerView)
+        val errorEmptyLayout = ConstraintLayout(frameLayoutContainer.context).apply {
+            id= ViewCompat.generateViewId()
+            layoutParams=FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT)
+            (layoutParams as FrameLayout.LayoutParams).gravity = Gravity.CENTER
+            background = resourcesInstance.getDrawable(R.color.color_surface,null)
+
+        }
+
+        frameLayoutContainer.addView(errorEmptyLayout)
+
+        val errorImageView = AppCompatImageView(errorEmptyLayout.context).apply{
+            id= ViewCompat.generateViewId()
+            scaleType = ImageView.ScaleType.CENTER_CROP
+            setImageResource(R.drawable.no_internet_connection_image)
+            contentDescription= getString(R.string.error_image)
+        }
+
+        errorEmptyLayout.addView(errorImageView)
+        val emptyErrorStateTitle = AppCompatTextView(errorEmptyLayout.context).apply {
+            id = ViewCompat.generateViewId()
+            gravity= Gravity.CENTER
+            textSize = 16f
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
+            typeface = Typeface.SANS_SERIF
+            text = "Nothing to see here.."
+
+        }
+        errorEmptyLayout.addView(emptyErrorStateTitle)
+
+        val emptyErrorStateSubtitle = AppCompatTextView(errorEmptyLayout.context).apply {
+            id = ViewCompat.generateViewId()
+            gravity=Gravity.CENTER
+            textSize = 14f
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
+            text="Try searching for something"
+        }
+        errorEmptyLayout.addView(emptyErrorStateSubtitle)
+
+        val errorEmptyLayoutConstraintSet = ConstraintSet()
+        errorEmptyLayoutConstraintSet.clone(errorEmptyLayout)
+
+        errorEmptyLayoutConstraintSet.constrainWidth(emptyErrorStateTitle.id,0)
+        errorEmptyLayoutConstraintSet.constrainHeight(emptyErrorStateTitle.id,ConstraintSet.WRAP_CONTENT)
+
+
+
+        errorEmptyLayoutConstraintSet.constrainHeight(errorImageView.id,180)
+        errorEmptyLayoutConstraintSet.constrainWidth(errorImageView.id,180)
+
+
+        errorEmptyLayoutConstraintSet.constrainWidth(emptyErrorStateSubtitle.id,0)
+        errorEmptyLayoutConstraintSet.constrainHeight(emptyErrorStateSubtitle.id, ConstraintSet.WRAP_CONTENT)
+
+        errorEmptyLayoutConstraintSet.setMargin(emptyErrorStateSubtitle.id,ConstraintSet.TOP,24)
+
+        errorEmptyLayoutConstraintSet.connect(errorImageView.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        errorEmptyLayoutConstraintSet.connect(errorImageView.id,ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        errorEmptyLayoutConstraintSet.connect(errorImageView.id,ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+        errorEmptyLayoutConstraintSet.connect(errorImageView.id,ConstraintSet.BOTTOM, emptyErrorStateTitle.id, ConstraintSet.TOP)
+
+        errorEmptyLayoutConstraintSet.connect(emptyErrorStateSubtitle.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        errorEmptyLayoutConstraintSet.connect(emptyErrorStateSubtitle.id,ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        errorEmptyLayoutConstraintSet.connect(emptyErrorStateSubtitle.id,ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+        errorEmptyLayoutConstraintSet.connect(emptyErrorStateSubtitle.id,ConstraintSet.TOP,emptyErrorStateTitle.id, ConstraintSet.BOTTOM)
+
+        errorEmptyLayoutConstraintSet.connect(emptyErrorStateTitle.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        errorEmptyLayoutConstraintSet.connect(emptyErrorStateTitle.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        errorEmptyLayoutConstraintSet.connect(emptyErrorStateTitle.id, ConstraintSet.TOP,errorImageView.id, ConstraintSet.BOTTOM)
+        errorEmptyLayoutConstraintSet.connect(emptyErrorStateTitle.id, ConstraintSet.BOTTOM,emptyErrorStateSubtitle.id, ConstraintSet.TOP)
+
+
+        errorEmptyLayoutConstraintSet.applyTo(errorEmptyLayout)
+
+        val loadingLayout = LoadingLayout(frameLayoutContainer.context).apply {
+            id=ViewCompat.generateViewId()
+            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT)
+            visibility=View.GONE
+        }
+        frameLayoutContainer.addView(loadingLayout)
 
         return parentContainer
     }
