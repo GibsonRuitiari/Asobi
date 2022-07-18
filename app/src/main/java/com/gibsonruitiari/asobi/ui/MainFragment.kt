@@ -55,7 +55,6 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
         pagingListAdapter = createComposedPagedAdapter()
         setUpBaseFragmentUiComponents()
         listenToUiStateAndUpdateUiAccordingly()
-        showFilterBottomSheet()
         setUpMainFragmentToolbarMenuItem()
 
         /*Perform collection of multiple flows here  */
@@ -63,14 +62,9 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
             launch { /*Observe uiMeasureSpec state data */ observeScreenMeasureSpecState() }
             launch {  /* Observe paged data */ observePagedData() }
             launch { /*Observe screen size data */observeScreenWidthState() }
-            launch { activityMainViewModel.isInComicsByGenreFragment.collectLatest { initializeFilterButton(it) } }
         }
     }
-    private fun initializeFilterButton(isInComicsByGenreFragment:Boolean){
-        if (isInComicsByGenreFragment){
-            fragmentBinding.filterByGenreButton.show()
-        }else fragmentBinding.filterByGenreButton.hide()
-    }
+
     private fun setUpMainFragmentToolbarMenuItem(){
         with(fragmentBinding.toolbar){
             setOnMenuItemClickListener { item->
@@ -135,13 +129,13 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
     private fun setUpSwipeRefreshWidgetState(isRefreshing:Boolean){
         fragmentBinding.baseFragSwipeRefresh.isRefreshing=isRefreshing
     }
-    private fun showFilterBottomSheet(){
-        /* use childFragmentManager to search for the filter bottom sheet since we are in a fragment we cannot use supportFragmentManager */
-        val filterSheetFragment = childFragmentManager.findFragmentById(R.id.filter_sheet) as? ComicsFilterBottomSheet
-        fragmentBinding.filterByGenreButton.setOnClickListener {
-            filterSheetFragment?.showFiltersSheet()
-        }
-    }
+//    private fun showFilterBottomSheet(){
+//        /* use childFragmentManager to search for the filter bottom sheet since we are in a fragment we cannot use supportFragmentManager */
+//        val filterSheetFragment = childFragmentManager.findFragmentById(R.id.filter_sheet) as? ComicsFilterBottomSheet
+//        fragmentBinding.filterByGenreButton.setOnClickListener {
+//            filterSheetFragment?.showFiltersSheet()
+//        }
+//    }
 
     private fun setEmptyStateText(title: String, subtitle: String) {
         fragmentBinding.emptyStateLayout.emptyErrorStateTitle.text = title

@@ -9,7 +9,8 @@ import com.google.android.material.appbar.AppBarLayout
 
 
 
-class StatusBarScrimBehavior(context:Context,attr:AttributeSet):CoordinatorLayout.Behavior<View>(context,
+class StatusBarScrimBehavior @JvmOverloads constructor(context:Context,attr:AttributeSet?=null)
+    :CoordinatorLayout.Behavior<View>(context,
 attr) {
     /* since the coordinator layout has set fitSystemWindows:true, then we need to return the same insets
     * instead of creating our own inset policy; the insets will be applied as padding, by this view  */

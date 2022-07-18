@@ -10,11 +10,13 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicFilterFragmentBinding
 import com.gibsonruitiari.asobi.databinding.SelectableFilterChipItemBinding
 import com.gibsonruitiari.asobi.ui.comicsadapters.*
+import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreViewModel
 import com.gibsonruitiari.asobi.ui.uiModels.FilterChip
 import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
 import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
@@ -24,18 +26,21 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 
-class ComicsFilterBottomSheet:Fragment() {
+abstract class ComicsFilterBottomSheet:Fragment() {
     companion object{
         /* Threshold for when the contents of the bottom sheet should become invisible */
         private const val ALPHA_CONTENT_START =0.1f
         /* Threshold for when the contents of the bottom sheet should become visible */
         private const val ALPHA_CONTENT_END=0.3F
     }
-    private val filterViewModel:ComicFilterViewModel by inject()
+
+    protected abstract fun resolveViewModelDelegate():ComicFilterViewModel
+    private lateinit var filterViewModel:ComicFilterViewModel
     private lateinit var comicFilterFragmentBinding:ComicFilterFragmentBinding
     private lateinit var behavior:BottomSheetBehavior<*>
+
+
     private val backPressedCallback = object :OnBackPressedCallback(false){
         override fun handleOnBackPressed() {
             if (::behavior.isInitialized && behavior.state==STATE_EXPANDED){
@@ -85,6 +90,7 @@ class ComicsFilterBottomSheet:Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        filterViewModel = resolveViewModelDelegate()
         val filterRecyclerViewAdapter = listAdapterOf(initialItems = filterViewModel.genresList.value,
             viewHolderCreator = {parent: ViewGroup, _: Int ->
                 parent.viewHolderFrom(SelectableFilterChipItemBinding::inflate)

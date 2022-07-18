@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/navigation_discover">
+    app:startDestination="@id/navigation_comics_by_genre">
   <fragment
       android:id="@+id/navigation_discover"
       android:name="com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment"
