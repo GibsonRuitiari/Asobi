@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/filter_sheet"
+
     android:background="?attr/colorSurface"
     android:clickable="true"
     android:focusable="true">
