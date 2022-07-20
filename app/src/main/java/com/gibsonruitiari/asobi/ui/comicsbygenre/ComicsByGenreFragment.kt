@@ -1,14 +1,13 @@
 package com.gibsonruitiari.asobi.ui.comicsbygenre
 
-import android.animation.AnimatorInflater
 import android.animation.LayoutTransition
 import android.graphics.Typeface
-import android.opengl.Visibility
 import android.os.Bundle
-import android.view.*
-import android.view.animation.Animation
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.view.animation.LayoutAnimationController
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.Toast
@@ -17,36 +16,45 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.graphics.TypefaceCompat
-import androidx.core.view.*
-import androidx.fragment.app.Fragment
+import androidx.core.view.ViewCompat
+import androidx.core.view.doOnNextLayout
+import androidx.core.view.isVisible
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.vectordrawable.graphics.drawable.AnimationUtilsCompat
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.databinding.ComicsByGenreFragmentBinding
 import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.ui.MainNavigationFragment
-import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterFragment
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.composedPagedAdapter
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
+import com.gibsonruitiari.asobi.ui.uiModels.UiMeasureSpec
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ExtendedFabBehavior
+import com.gibsonruitiari.asobi.utilities.RecyclerViewItemDecoration
 import com.gibsonruitiari.asobi.utilities.StatusBarScrimBehavior
+import com.gibsonruitiari.asobi.utilities.convertToPxFromDp
 import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 
 @Suppress("UNCHECKED_CAST")
 class ComicsByGenreFragment: MainNavigationFragment() {
     private var _comicsByGenreBinding:ComicsByGenreFragmentBinding?=null
     private val comicsByGenreBinding:ComicsByGenreFragmentBinding get() = _comicsByGenreBinding!!
     private val mainActivityViewModel:MainActivityViewModel by viewModel()
+    private val comicsByGenreViewModel:ComicsByGenreViewModel by viewModel()
 
     /* Start of view variables  */
     private lateinit var mainFragmentSwipeRefreshLayout: SwipeRefreshLayout
@@ -54,11 +62,12 @@ class ComicsByGenreFragment: MainNavigationFragment() {
     private lateinit var mainFragmentExtendedFabActionButton:ExtendedFloatingActionButton
     private lateinit var mainFragmentConstraintLayoutContainer:ConstraintLayout
     private lateinit var mainFragmentFrameLayoutContainer:FrameLayout
+    private lateinit var loadingLayout: LoadingLayout
     private lateinit var mainFragmentError_EmptyLayoutContainer:ConstraintLayout
     private lateinit var mainFragmentError_EmptyLayoutImageView:AppCompatImageView
     private lateinit var mainFragmentError_EmptySubtitle:AppCompatTextView
     private lateinit var mainFragmentError_EmptyTitle:AppCompatTextView
-
+    private lateinit var mainFragmentRetryButton:MaterialButton
     /* End of view variables  */
 
     private val comicsByGenreAdapter =  composedPagedAdapter(createViewHolder = { viewGroup: ViewGroup, _: Int ->
@@ -125,7 +134,8 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         /* Add swipe refresh layout */
         mainFragmentSwipeRefreshLayout = SwipeRefreshLayout(mainFragmentConstraintLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
-          //  (layoutParams as CoordinatorLayout.LayoutParams).behavior = AppBarLayout.ScrollingViewBehavior()
+            setOnRefreshListener { comicsByGenreAdapter.refresh() }
+            doOnNextLayout { setContentToMaxWidth(this) }
             setColorSchemeColors(*colorSchemes)
         }
         mainFragmentConstraintLayoutContainer.addView(mainFragmentSwipeRefreshLayout)
@@ -154,7 +164,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         /* Stack things up on the frame layout container-> recycler view;error-layout;empty-layout;loading-layout */
 
         /* Loading layout initially the view is visible */
-        val loadingLayout = LoadingLayout(mainFragmentFrameLayoutContainer.context).apply {
+        loadingLayout = LoadingLayout(mainFragmentFrameLayoutContainer.context).apply {
             id=ViewCompat.generateViewId()
             layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
         }
@@ -167,7 +177,6 @@ class ComicsByGenreFragment: MainNavigationFragment() {
             ViewGroup.LayoutParams.MATCH_PARENT)
             val animation=AnimationUtils.loadLayoutAnimation(this.context, R.anim.layout_animation_scale_in)
             layoutAnimation= animation
-            layoutManager = gridLayoutManager(2)
             adapter = comicsByGenreAdapter
             setHasFixedSize(true)
             visibility = View.GONE
@@ -219,7 +228,20 @@ class ComicsByGenreFragment: MainNavigationFragment() {
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             text="Try searching for something"
         }
+
         mainFragmentError_EmptyLayoutContainer.addView(mainFragmentError_EmptySubtitle)
+
+        mainFragmentRetryButton = MaterialButton(mainFragmentError_EmptyLayoutContainer.context).apply{
+            id = ViewCompat.generateViewId()
+            gravity = Gravity.CENTER
+            text=getString(R.string.cd_retry)
+            textSize= resourcesInstance().getDimension(R.dimen.error_empty_subtitle_size)
+            textAlignment=View.TEXT_ALIGNMENT_CENTER
+            typeface = Typeface.SANS_SERIF
+            visibility=View.GONE
+
+        }
+        mainFragmentError_EmptyLayoutContainer.addView(mainFragmentRetryButton)
 
         /* Apply constraints to emptyErrorLayoutContainer together with it's children */
 
@@ -237,9 +259,14 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentError_EmptyLayoutImageView.id,resourcesInstance().getDimension(R.dimen.comic_item_width).toInt())
         errorEmptyLayoutConstraintSet.constrainWidth(mainFragmentError_EmptyLayoutImageView.id,resourcesInstance().getDimension(R.dimen.comic_item_width).toInt())
 
+        errorEmptyLayoutConstraintSet.constrainWidth(mainFragmentRetryButton.id,resourcesInstance().getDimension(R.dimen.retry_button_width_dimen).toInt())
+        errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentRetryButton.id,resourcesInstance().getDimension(R.dimen.retry_button_height_dimen).toInt())
+
+
         /* Set the top margin for one of the error_empty layout container's children views */
 
         errorEmptyLayoutConstraintSet.setMargin(mainFragmentError_EmptySubtitle.id,ConstraintSet.TOP,resourcesInstance().getDimension(R.dimen.keyline_8).toInt())
+        errorEmptyLayoutConstraintSet.setMargin(mainFragmentRetryButton.id, ConstraintSet.TOP, resourcesInstance().getDimension(R.dimen.keyline_7).toInt())
 
         /* Set the constraints for error_empty layout container's children views */
 
@@ -258,6 +285,10 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptyTitle.id, ConstraintSet.TOP,mainFragmentError_EmptyLayoutImageView.id, ConstraintSet.BOTTOM)
         errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptyTitle.id, ConstraintSet.BOTTOM,mainFragmentError_EmptySubtitle.id, ConstraintSet.TOP)
 
+        errorEmptyLayoutConstraintSet.connect(mainFragmentRetryButton.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentRetryButton.id,ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentRetryButton.id,ConstraintSet.TOP, mainFragmentError_EmptySubtitle.id, ConstraintSet.BOTTOM)
+
         /* Apply the constraints to EmptyError Layout container */
         errorEmptyLayoutConstraintSet.applyTo(mainFragmentError_EmptyLayoutContainer)
 
@@ -267,30 +298,119 @@ class ComicsByGenreFragment: MainNavigationFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        resolveFilterFragmentInstance()
-        updateMainFragmentFabActionButtonInsets()
+        mainFragmentExtendedFabActionButton.applyBottomInsets()
+        listenToUiEventsAndUpdateUiAccordingly()
 
         /* Listen to/collect data in this lifecycle scope  */
         launchAndRepeatWithViewLifecycle {
+            launch { /* Observe paged data */  observePagedDataAndSubmitItToRecyclerView()}
+            launch { /*Observe screen size data */  observeScreenWidthState()}
+            launch { /*Observe uiMeasureSpec and construct recycler view accordingly */ observeScreenMeasureSpecState() }
+        }
+    }
+    /* Observe data start */
+    private suspend fun observePagedDataAndSubmitItToRecyclerView(){
+        comicsByGenreViewModel.comicsList.collectLatest {
+            comicsByGenreAdapter.submitData(it)
+        }
+    }
+    private suspend fun observeScreenWidthState(){
+        mainActivityViewModel.screenWidthState.collectLatest {
+            mainActivityViewModel.setUiMeasureSpec((it.constructUiMeasureSpecFromScreenSize()))
+        }
+    }
+    private suspend fun observeScreenMeasureSpecState(){
+        mainActivityViewModel.uiMeasureSpecState.collectLatest {
+            setUpMainFragmentRecyclerView(it)
+        }
+    }
+    /* Observe data end */
 
+    /*Start:Show Correct State based on the data events observed above */
+    private fun onDataLoadedSuccessfullyShowData(){
+        mainFragmentRecyclerView.isVisible = true
+        mainFragmentError_EmptyLayoutContainer.isVisible = false
+        loadingLayout.hide()
+    }
+
+    private fun onErrorOrEmptyDataShowErrorOrEmptyState(){
+        mainFragmentRecyclerView.isVisible=false
+        mainFragmentError_EmptyLayoutContainer.isVisible=true
+        loadingLayout.hide()
+    }
+    private fun onLoadingShowLoadingState(){
+        mainFragmentRecyclerView.isVisible=false
+        mainFragmentError_EmptyLayoutContainer.isVisible=false
+        loadingLayout.show()
+    }
+
+    /*End: Observe Ui States And Show Correct State */
+    private fun listenToUiEventsAndUpdateUiAccordingly(){
+        comicsByGenreAdapter.addLoadStateListener {
+            when(it.refresh){
+                is LoadState.NotLoading->{
+                    if (comicsByGenreAdapter.itemCount ==0){
+                        setEmpty_ErrorStateTitleAndSubtitle(getString(R.string.error_state_title), getString(R.string.empty_title))
+                        onErrorOrEmptyDataShowErrorOrEmptyState()
+                        onDataLoadingFailureShowRetryButtonAndSetUpRetryAction()
+                    }else{
+                        onDataLoadedSuccessfullyShowData()
+                    }
+                }
+                is LoadState.Loading-> onLoadingShowLoadingState()
+                is LoadState.Error->{
+                    val throwable_ = (it.refresh as LoadState.Error).error
+                    val errorMessage = when(throwable_){
+                        is UnknownHostException, is SocketTimeoutException, is ConnectException->{
+                            getString(R.string.network_error_msg)
+                        }
+                        else-> "Loading of data failed due: ${throwable_.message} ${System.lineSeparator()}Please try again later"
+                    }
+                    mainFragmentFrameLayoutContainer.showSnackBar(errorMessage)
+                    setEmpty_ErrorStateTitleAndSubtitle(getString(R.string.error_state_title),
+                    errorMessage)
+                    // retry perphaps
+                    onDataLoadingFailureShowRetryButtonAndSetUpRetryAction()
+                    onErrorOrEmptyDataShowErrorOrEmptyState()
+                }
+            }
+            setUpSwipeRefreshWidgetState(mainFragmentSwipeRefreshLayout.isRefreshing && (it.refresh is LoadState.Loading))
+        }
+
+    }
+    private fun onDataLoadingFailureShowRetryButtonAndSetUpRetryAction(){
+        mainFragmentRetryButton.isVisible=true
+        mainFragmentRetryButton.setOnClickListener {
+            comicsByGenreAdapter.retry()
         }
     }
-    private fun updateMainFragmentFabActionButtonInsets(){
-        mainFragmentExtendedFabActionButton.doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
-            val systemBarInsets = windowInsetsCompat.getInsets(WindowInsets.Type.systemBars())
-            view.updatePadding(bottom = viewPaddingState.bottom + systemBarInsets.bottom)
-        }
-    }
+
     private fun onComicClicked(comicItem: ViewComics){
         Toast.makeText(requireContext(),"${comicItem.comicLink} clicked", Toast.LENGTH_SHORT).show()
     }
-    private fun resolveFilterFragmentInstance():ComicFilterFragment?{
-        return childFragmentManager.findFragmentById(R.id.filter_sheet) as? ComicFilterFragment
+    private fun setUpSwipeRefreshWidgetState(isRefreshing:Boolean){
+        mainFragmentSwipeRefreshLayout.isRefreshing = isRefreshing
     }
+    private fun setEmpty_ErrorStateTitleAndSubtitle(title:String,subtitle:String){
+        mainFragmentError_EmptyTitle.text = title
+        mainFragmentError_EmptySubtitle.text = subtitle
+    }
+    private fun setUpMainFragmentRecyclerView(uiMeasureSpec: UiMeasureSpec){
+        val spanCount = uiMeasureSpec.recyclerViewColumns
+        with(mainFragmentRecyclerView){
+            applyBottomInsets()
+            scrollToTop()
+            layoutManager = gridLayoutManager(spanCount = spanCount)
+            addItemDecoration(RecyclerViewItemDecoration(spanCount,
+            includeEdge = true, spacing = requireActivity().convertToPxFromDp(uiMeasureSpec.recyclerViewMargin)))
+        }
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
         _comicsByGenreBinding = null
     }
+
 
 }

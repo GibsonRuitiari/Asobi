@@ -11,9 +11,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.gibsonruitiari.asobi.ui.MainFragment
+import com.gibsonruitiari.asobi.ui.uiModels.UiMeasureSpec
+import com.gibsonruitiari.asobi.utilities.ScreenSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
+private  const val  defaultNumberOfColumns =2
+private const val defaultSpacing = 4
+private const val mediumNumberOfColumns = 4
+private const val mediumSpacing = 8
+private const val extendedNumberOfColumns = 6
+private const val extendedSpacing = 12
 /** Convenience for callbacks/listeners whose return value indicates an event was consumed. */
 inline fun consume(f: () -> Unit): Boolean {
     f()
@@ -29,6 +37,22 @@ crossinline block:suspend CoroutineScope.()->Unit){
     }
 }
 fun Fragment.resourcesInstance():Resources = requireContext().resources
+fun ScreenSize.constructUiMeasureSpecFromScreenSize()=when(this){
+    ScreenSize.COMPACT->{
+        /* layout grid uses 4 columns so for the recycler view's grid layout we need 2 columns */
+        /* layout grid uses 16.dp gutter for 4 columns so for the recycler view's grid layout spacing in between columns ought to be 4.dp */
+        UiMeasureSpec(recyclerViewColumns = defaultNumberOfColumns, recyclerViewMargin = defaultSpacing)
+    }
+    ScreenSize.MEDIUM->{
+        /* layout grid uses 8 columns so for the recycler view's grid layout we need 4 columns */
+        /* layout grid uses 24.dp gutter for 8 columns so for the recycler view's grid layout spacing in between columns ought to be 8.dp */
+        UiMeasureSpec(recyclerViewColumns = mediumNumberOfColumns, recyclerViewMargin = mediumSpacing)
+    }
+    ScreenSize.EXPANDED->{
+        /* layout grid uses 12 columns so for the recycler view's grid layout we need 6 columns */
+        UiMeasureSpec(recyclerViewColumns = extendedNumberOfColumns, recyclerViewMargin = extendedSpacing)
+    }
+}
 
 /**
  * Map a slideOffset (in the range `[-1, 1]`) to an alpha value based on the desired range.

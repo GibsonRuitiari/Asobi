@@ -6,6 +6,7 @@ import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -55,6 +56,13 @@ private fun getContentMaxWidthPercent(maxWidthDp:Int):Float{
         maxWidthDp >= 840 -> 0.7f
         maxWidthDp >= 600 -> 0.8f
         else->1f
+    }
+}
+fun View.applyBottomInsets(){
+    doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+        val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type
+            .ime())
+        view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom)
     }
 }
 fun View.doOnApplyWindowInsets(f:(View,WindowInsetsCompat,ViewPaddingState)->Unit){

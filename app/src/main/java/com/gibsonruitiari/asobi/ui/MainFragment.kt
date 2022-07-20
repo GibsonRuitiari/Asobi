@@ -129,13 +129,7 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
     private fun setUpSwipeRefreshWidgetState(isRefreshing:Boolean){
         fragmentBinding.baseFragSwipeRefresh.isRefreshing=isRefreshing
     }
-//    private fun showFilterBottomSheet(){
-//        /* use childFragmentManager to search for the filter bottom sheet since we are in a fragment we cannot use supportFragmentManager */
-//        val filterSheetFragment = childFragmentManager.findFragmentById(R.id.filter_sheet) as? ComicsFilterBottomSheet
-//        fragmentBinding.filterByGenreButton.setOnClickListener {
-//            filterSheetFragment?.showFiltersSheet()
-//        }
-//    }
+
 
     private fun setEmptyStateText(title: String, subtitle: String) {
         fragmentBinding.emptyStateLayout.emptyErrorStateTitle.text = title

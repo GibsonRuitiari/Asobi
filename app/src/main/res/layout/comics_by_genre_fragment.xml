@@ -18,7 +18,6 @@
             android:id="@+id/toolbar"
             app:title="@string/comics_by_genre"
             app:titleCentered="true"
-            app:menu="@menu/base_frag_menu"
             tools:title="@string/comics_by_genre"
             app:titleTextColor="@color/black"
             app:titleTextAppearance="@style/TextAppearance.Asobi.Headline6"
