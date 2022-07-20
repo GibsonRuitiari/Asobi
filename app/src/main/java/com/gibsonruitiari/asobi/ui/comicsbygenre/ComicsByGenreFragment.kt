@@ -2,6 +2,7 @@ package com.gibsonruitiari.asobi.ui.comicsbygenre
 
 import android.animation.LayoutTransition
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -21,6 +22,7 @@ import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.gibsonruitiari.asobi.BuildConfig
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.databinding.ComicsByGenreFragmentBinding
@@ -388,7 +390,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
             }
             setOnRefreshListener { comicsByGenreAdapter?.refresh() }
             var height =0
-            val cutout=requireActivity().window.decorView.rootWindowInsets.displayCutout
+            val cutout=activity?.window?.decorView?.rootWindowInsets?.displayCutout
             if (cutout!=null){
                 if (cutout.boundingRects.size >0){
                     height=  max(0,min(cutout.boundingRects[0].width(), cutout.boundingRects[0].height()))
@@ -399,7 +401,11 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         }
     }
     private fun setUpMainFragmentRecyclerView(){
-       val screenWidth= resourcesInstance().displayMetrics.run { widthPixels/density }
+       val screenWidth= resourcesInstance().displayMetrics.run {
+           if (BuildConfig.DEBUG){
+               println("widthpixels: $widthPixels density $density")
+           }
+           widthPixels/density }
         with(mainFragmentRecyclerView){
             doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
                 val systemInsets = windowInsetsCompat.getInsets(
@@ -410,6 +416,8 @@ class ComicsByGenreFragment: MainNavigationFragment() {
             setHasFixedSize(true)
             scrollToTop()
             adapter = comicsByGenreAdapter
+            /*By default the medium density is 160f so we minus 4 just incase to accomodate smaller screens and come up with a proper
+            * no of spancount for our grid layout */
             layoutManager = gridLayoutManager(spanCount = (screenWidth/156f).toInt())
         }
     }
