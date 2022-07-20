@@ -417,7 +417,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
             scrollToTop()
             adapter = comicsByGenreAdapter
             /*By default the medium density is 160f so we minus 4 just incase to accomodate smaller screens and come up with a proper
-            * no of spancount for our grid layout */
+            * no of span count for our grid layout */
             layoutManager = gridLayoutManager(spanCount = (screenWidth/156f).toInt())
         }
     }
