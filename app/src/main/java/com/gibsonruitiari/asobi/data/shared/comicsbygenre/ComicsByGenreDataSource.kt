@@ -5,7 +5,9 @@ import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.data.datamodels.SManga
 import com.gibsonruitiari.asobi.data.shared.BaseDataSource
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 
 class ComicsByGenreDataSource (private val logger: Logger,
 private val comicsByGenreRepo: ComicsByGenreRepo
@@ -17,6 +19,8 @@ private val comicsByGenreRepo: ComicsByGenreRepo
         logger.i("new genre set ${genre.value}")
     }
     override suspend fun loadData(page: Int): List<SManga> {
-      return comicsByGenreRepo.getComicsByGenre(page,genre.value).firstOrNull() ?: emptyList()
+       val genre= genre.firstOrNull() ?: Genres.DC_COMICS
+
+    return comicsByGenreRepo.getComicsByGenre(page,genre).firstOrNull() ?: emptyList()
     }
 }

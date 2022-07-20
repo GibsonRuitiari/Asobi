@@ -153,9 +153,9 @@ class MainActivity : AppCompatActivity(), NavigationHost {
     private fun computeWindowSizeClasses():ScreenSize{
         val metrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(this)
         val widthDp = metrics.bounds.width()/resources.displayMetrics.density
-        return when{
-            widthDp < 600f -> ScreenSize.COMPACT
-            widthDp < 640f-> ScreenSize.MEDIUM
+        return when(widthDp.toInt()){
+             in 0..599 -> ScreenSize.COMPACT
+             in 600..640-> ScreenSize.MEDIUM
             else -> ScreenSize.EXPANDED
         }
     }

@@ -21,8 +21,9 @@ val logger: Logger, private val comicsByGenreRepo: ComicsByGenreRepo
     override fun createObservable(params: PagedComicsByGenreParams): Flow<PagingData<ViewComics>> {
         params.genre
         val genreDataSource= ComicsByGenreDataSource(logger,comicsByGenreRepo)
-        genreDataSource.setGenre(params.genre)
-        return Pager(config = params.pagingConfig, pagingSourceFactory = {genreDataSource}).flow.map {
+        return Pager(config = params.pagingConfig, pagingSourceFactory = {ComicsByGenreDataSource(logger, comicsByGenreRepo).apply {
+            setGenre(params.genre)
+        }}).flow.map {
             value ->
             value.map { sMangaToViewComicMapper(it) }
         }

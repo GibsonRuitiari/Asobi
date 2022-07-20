@@ -13,11 +13,8 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.BaseFragmentBinding
-import com.gibsonruitiari.asobi.ui.comicfilter.ComicsFilterBottomSheet
 import com.gibsonruitiari.asobi.ui.uiModels.UiMeasureSpec
-import com.gibsonruitiari.asobi.utilities.RecyclerViewItemDecoration
 import com.gibsonruitiari.asobi.utilities.ScreenSize
-import com.gibsonruitiari.asobi.utilities.convertToPxFromDp
 import com.gibsonruitiari.asobi.utilities.extensions.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -140,16 +137,19 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
         ScreenSize.COMPACT->{
             /* layout grid uses 4 columns so for the recycler view's grid layout we need 2 columns */
             /* layout grid uses 16.dp gutter for 4 columns so for the recycler view's grid layout spacing in between columns ought to be 4.dp */
-            UiMeasureSpec(recyclerViewColumns = defaultNumberOfColumns, recyclerViewMargin = defaultSpacing)
+            UiMeasureSpec(recyclerViewColumns = defaultNumberOfColumns,
+                recyclerViewMargin = defaultSpacing.dp,8.dp)
         }
         ScreenSize.MEDIUM->{
             /* layout grid uses 8 columns so for the recycler view's grid layout we need 4 columns */
             /* layout grid uses 24.dp gutter for 8 columns so for the recycler view's grid layout spacing in between columns ought to be 8.dp */
-            UiMeasureSpec(recyclerViewColumns = mediumNumberOfColumns, recyclerViewMargin = mediumSpacing)
+            UiMeasureSpec(recyclerViewColumns = mediumNumberOfColumns,
+                recyclerViewMargin = mediumSpacing,16.dp)
         }
         ScreenSize.EXPANDED->{
             /* layout grid uses 12 columns so for the recycler view's grid layout we need 6 columns */
-            UiMeasureSpec(recyclerViewColumns = extendedNumberOfColumns, recyclerViewMargin = extendedSpacing)
+            UiMeasureSpec(recyclerViewColumns = extendedNumberOfColumns,
+                recyclerViewMargin = extendedSpacing,16.dp)
         }
     }
     private fun showSuccessState() {
@@ -215,11 +215,7 @@ abstract class MainFragment<Item:Any>:MainNavigationFragment(){
             adapter = pagingListAdapter!!
             val spanCount = uiMeasureSpec.recyclerViewColumns
             layoutManager = gridLayoutManager(spanCount = spanCount)
-            addItemDecoration(
-                RecyclerViewItemDecoration(spanCount,
-                includeEdge = true,
-                spacing = requireActivity().convertToPxFromDp(uiMeasureSpec.recyclerViewMargin))
-            )
+
         }
     }
     override fun onDestroy() {
