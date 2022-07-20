@@ -5,10 +5,7 @@ import android.animation.LayoutTransition
 import android.graphics.Typeface
 import android.opengl.Visibility
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.view.animation.LayoutAnimationController
@@ -21,9 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.graphics.TypefaceCompat
-import androidx.core.view.GravityCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.marginEnd
+import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -41,9 +36,7 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ExtendedFabBehavior
 import com.gibsonruitiari.asobi.utilities.StatusBarScrimBehavior
-import com.gibsonruitiari.asobi.utilities.extensions.gridLayoutManager
-import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
-import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
+import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -54,6 +47,19 @@ class ComicsByGenreFragment: MainNavigationFragment() {
     private var _comicsByGenreBinding:ComicsByGenreFragmentBinding?=null
     private val comicsByGenreBinding:ComicsByGenreFragmentBinding get() = _comicsByGenreBinding!!
     private val mainActivityViewModel:MainActivityViewModel by viewModel()
+
+    /* Start of view variables  */
+    private lateinit var mainFragmentSwipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var mainFragmentRecyclerView:RecyclerView
+    private lateinit var mainFragmentExtendedFabActionButton:ExtendedFloatingActionButton
+    private lateinit var mainFragmentConstraintLayoutContainer:ConstraintLayout
+    private lateinit var mainFragmentFrameLayoutContainer:FrameLayout
+    private lateinit var mainFragmentError_EmptyLayoutContainer:ConstraintLayout
+    private lateinit var mainFragmentError_EmptyLayoutImageView:AppCompatImageView
+    private lateinit var mainFragmentError_EmptySubtitle:AppCompatTextView
+    private lateinit var mainFragmentError_EmptyTitle:AppCompatTextView
+
+    /* End of view variables  */
 
     private val comicsByGenreAdapter =  composedPagedAdapter(createViewHolder = { viewGroup: ViewGroup, _: Int ->
         viewGroup.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
@@ -78,8 +84,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val resourcesInstance = requireActivity().resources
-        val colorSchemes=resourcesInstance.getIntArray(R.array.swipe_refresh_colors)
+        val colorSchemes=resourcesInstance().getIntArray(R.array.swipe_refresh_colors)
         _comicsByGenreBinding = ComicsByGenreFragmentBinding.inflate(inflater,container,false)
         val parentContainer = comicsByGenreBinding.root
         val appBarScrimVew = View(parentContainer.context).apply {
@@ -92,59 +97,71 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         parentContainer.addView(appBarScrimVew)
 
         /* Add extended floating button */
-        val extendedFloatingActionButton = ExtendedFloatingActionButton(parentContainer.context).apply {
+        mainFragmentExtendedFabActionButton = ExtendedFloatingActionButton(parentContainer.context).apply {
             id = ViewCompat.generateViewId()
-            text = resourcesInstance.getText(R.string.filter)
-            icon = resourcesInstance.getDrawable(R.drawable.ic_baseline_filter_list_24, null)
-            contentDescription=resourcesInstance.getString(R.string.filter_comics_by_genre)
+            text = resourcesInstance().getText(R.string.filter)
+            icon = resourcesInstance().getDrawable(R.drawable.ic_baseline_filter_list_24, null)
+            contentDescription=resourcesInstance().getString(R.string.filter_comics_by_genre)
             layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            (layoutParams as CoordinatorLayout.LayoutParams).setMargins(resourcesInstance.getDimension(R.dimen.keyline_7).toInt(),
-            resourcesInstance.getDimension(R.dimen.keyline_7).toInt(),
-            resourcesInstance.getDimension(R.dimen.keyline_7).toInt(),
-            resourcesInstance.getDimension(R.dimen.keyline_7).toInt())
+            (layoutParams as CoordinatorLayout.LayoutParams).setMargins(resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),
+                resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),
+                resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),
+                resourcesInstance().getDimension(R.dimen.keyline_7).toInt())
             (layoutParams as CoordinatorLayout.LayoutParams).gravity =Gravity.BOTTOM+Gravity.END
             (layoutParams as CoordinatorLayout.LayoutParams).behavior= ExtendedFabBehavior(parentContainer.context)
         }
-        parentContainer.addView(extendedFloatingActionButton)
 
-        /* Add  constraint layout */
-        val constraintLayout = ConstraintLayout(parentContainer.context).apply {
+        parentContainer.addView(mainFragmentExtendedFabActionButton)
+
+        /* Add  constraint layout  container*/
+
+        mainFragmentConstraintLayoutContainer = ConstraintLayout(parentContainer.context).apply {
             id = ViewCompat.generateViewId()
             layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
             (layoutParams as CoordinatorLayout.LayoutParams).behavior = AppBarLayout.ScrollingViewBehavior()
         }
-        parentContainer.addView(constraintLayout)
+        parentContainer.addView(mainFragmentConstraintLayoutContainer)
 
         /* Add swipe refresh layout */
-        val swipeRefreshLayout = SwipeRefreshLayout(constraintLayout.context).apply {
+        mainFragmentSwipeRefreshLayout = SwipeRefreshLayout(mainFragmentConstraintLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
           //  (layoutParams as CoordinatorLayout.LayoutParams).behavior = AppBarLayout.ScrollingViewBehavior()
             setColorSchemeColors(*colorSchemes)
         }
-        constraintLayout.addView(swipeRefreshLayout)
+        mainFragmentConstraintLayoutContainer.addView(mainFragmentSwipeRefreshLayout)
         val set= ConstraintSet()
-        set.clone(constraintLayout)
+        set.clone(mainFragmentConstraintLayoutContainer)
         /* set constraints for swipe refresh layout*/
-        set.constrainWidth(swipeRefreshLayout.id,0)
-        set.constrainHeight(swipeRefreshLayout.id,0) // spread as far as possible
-        set.connect(swipeRefreshLayout.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        set.connect(swipeRefreshLayout.id,ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        set.connect(swipeRefreshLayout.id,ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-        set.connect(swipeRefreshLayout.id,ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
-        set.applyTo(constraintLayout)
+        set.constrainWidth(mainFragmentSwipeRefreshLayout.id,resourcesInstance().getDimension(R.dimen.match_constraint_value).toInt())
+        set.constrainHeight(mainFragmentSwipeRefreshLayout.id,resourcesInstance().getDimension(R.dimen.match_constraint_value).toInt()) // spread as far as possible
+        set.connect(mainFragmentSwipeRefreshLayout.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        set.connect(mainFragmentSwipeRefreshLayout.id,ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        set.connect(mainFragmentSwipeRefreshLayout.id,ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+        set.connect(mainFragmentSwipeRefreshLayout.id,ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+        set.applyTo(mainFragmentConstraintLayoutContainer)
 
-        /* add frame layout for swipe refresh layout*/
-        val frameLayoutContainer = FrameLayout(swipeRefreshLayout.context).apply {
+
+        /* add frame layout to swipe refresh layout*/
+        mainFragmentFrameLayoutContainer = FrameLayout(mainFragmentSwipeRefreshLayout.context).apply {
             id= ViewCompat.generateViewId()
             layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT)
             /* animate layout changes using the default LayoutTransition() */
             layoutTransition= LayoutTransition()
         }
-        swipeRefreshLayout.addView(frameLayoutContainer)
+        mainFragmentSwipeRefreshLayout.addView(mainFragmentFrameLayoutContainer)
 
         /* Stack things up on the frame layout container-> recycler view;error-layout;empty-layout;loading-layout */
-        val genreRecyclerView = RecyclerView(frameLayoutContainer.context).apply {
+
+        /* Loading layout initially the view is visible */
+        val loadingLayout = LoadingLayout(mainFragmentFrameLayoutContainer.context).apply {
+            id=ViewCompat.generateViewId()
+            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+        }
+        mainFragmentFrameLayoutContainer.addView(loadingLayout)
+
+        /* Recycler View that holds the paginated data initially is it invisible/gone */
+        mainFragmentRecyclerView = RecyclerView(mainFragmentFrameLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
             layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT)
@@ -155,88 +172,95 @@ class ComicsByGenreFragment: MainNavigationFragment() {
             setHasFixedSize(true)
             visibility = View.GONE
         }
-        frameLayoutContainer.addView(genreRecyclerView)
-        val errorEmptyLayout = ConstraintLayout(frameLayoutContainer.context).apply {
+        mainFragmentFrameLayoutContainer.addView(mainFragmentRecyclerView)
+
+
+        /* The Error Empty Layout (for lack of a better word) basically the layout that will be shown in-case data is empty
+        * or there is an error while loading the data from network  */
+
+        mainFragmentError_EmptyLayoutContainer = ConstraintLayout(mainFragmentFrameLayoutContainer.context).apply {
             id= ViewCompat.generateViewId()
             layoutParams=FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.WRAP_CONTENT)
             (layoutParams as FrameLayout.LayoutParams).gravity = Gravity.CENTER
-            background = resourcesInstance.getDrawable(R.color.color_surface,null)
-
+            background = resourcesInstance().getDrawable(R.color.color_surface,null)
+            visibility = View.GONE
         }
 
-        frameLayoutContainer.addView(errorEmptyLayout)
+        mainFragmentFrameLayoutContainer.addView(mainFragmentError_EmptyLayoutContainer)
 
-        val errorImageView = AppCompatImageView(errorEmptyLayout.context).apply{
+        /* Add things to the Error_EmptyLayout Container -> image to be shown to indicate error
+        * title and subtitle to show the user */
+
+        mainFragmentError_EmptyLayoutImageView = AppCompatImageView(mainFragmentError_EmptyLayoutContainer.context).apply{
             id= ViewCompat.generateViewId()
             scaleType = ImageView.ScaleType.CENTER_CROP
-            setImageResource(R.drawable.no_internet_connection_image)
+            setImageResource( R.drawable.no_internet_connection_image)
             contentDescription= getString(R.string.error_image)
         }
 
-        errorEmptyLayout.addView(errorImageView)
-        val emptyErrorStateTitle = AppCompatTextView(errorEmptyLayout.context).apply {
+        mainFragmentError_EmptyLayoutContainer.addView(mainFragmentError_EmptyLayoutImageView)
+
+
+         mainFragmentError_EmptyTitle = AppCompatTextView(mainFragmentError_EmptyLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
             gravity= Gravity.CENTER
-            textSize = 16f
+            textSize = resourcesInstance().getDimension(R.dimen.error_empty_title_size)
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             typeface = Typeface.SANS_SERIF
-            text = "Nothing to see here.."
 
         }
-        errorEmptyLayout.addView(emptyErrorStateTitle)
+        mainFragmentError_EmptyLayoutContainer.addView(mainFragmentError_EmptyTitle)
 
-        val emptyErrorStateSubtitle = AppCompatTextView(errorEmptyLayout.context).apply {
+         mainFragmentError_EmptySubtitle = AppCompatTextView(mainFragmentError_EmptyLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
             gravity=Gravity.CENTER
-            textSize = 14f
+            textSize =   resourcesInstance().getDimension(R.dimen.error_empty_subtitle_size)
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             text="Try searching for something"
         }
-        errorEmptyLayout.addView(emptyErrorStateSubtitle)
+        mainFragmentError_EmptyLayoutContainer.addView(mainFragmentError_EmptySubtitle)
+
+        /* Apply constraints to emptyErrorLayoutContainer together with it's children */
 
         val errorEmptyLayoutConstraintSet = ConstraintSet()
-        errorEmptyLayoutConstraintSet.clone(errorEmptyLayout)
+        errorEmptyLayoutConstraintSet.clone(mainFragmentError_EmptyLayoutContainer)
 
-        errorEmptyLayoutConstraintSet.constrainWidth(emptyErrorStateTitle.id,0)
-        errorEmptyLayoutConstraintSet.constrainHeight(emptyErrorStateTitle.id,ConstraintSet.WRAP_CONTENT)
+        /*Set the width and height of the error_empty layout container's children views  */
+        errorEmptyLayoutConstraintSet.constrainWidth(mainFragmentError_EmptyTitle.id, resourcesInstance().getDimension(R.dimen.match_constraint_value).toInt())
+        errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentError_EmptyTitle.id,ConstraintSet.WRAP_CONTENT)
 
-
-
-        errorEmptyLayoutConstraintSet.constrainHeight(errorImageView.id,180)
-        errorEmptyLayoutConstraintSet.constrainWidth(errorImageView.id,180)
-
-
-        errorEmptyLayoutConstraintSet.constrainWidth(emptyErrorStateSubtitle.id,0)
-        errorEmptyLayoutConstraintSet.constrainHeight(emptyErrorStateSubtitle.id, ConstraintSet.WRAP_CONTENT)
-
-        errorEmptyLayoutConstraintSet.setMargin(emptyErrorStateSubtitle.id,ConstraintSet.TOP,24)
-
-        errorEmptyLayoutConstraintSet.connect(errorImageView.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        errorEmptyLayoutConstraintSet.connect(errorImageView.id,ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        errorEmptyLayoutConstraintSet.connect(errorImageView.id,ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-        errorEmptyLayoutConstraintSet.connect(errorImageView.id,ConstraintSet.BOTTOM, emptyErrorStateTitle.id, ConstraintSet.TOP)
-
-        errorEmptyLayoutConstraintSet.connect(emptyErrorStateSubtitle.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        errorEmptyLayoutConstraintSet.connect(emptyErrorStateSubtitle.id,ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        errorEmptyLayoutConstraintSet.connect(emptyErrorStateSubtitle.id,ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
-        errorEmptyLayoutConstraintSet.connect(emptyErrorStateSubtitle.id,ConstraintSet.TOP,emptyErrorStateTitle.id, ConstraintSet.BOTTOM)
-
-        errorEmptyLayoutConstraintSet.connect(emptyErrorStateTitle.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        errorEmptyLayoutConstraintSet.connect(emptyErrorStateTitle.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        errorEmptyLayoutConstraintSet.connect(emptyErrorStateTitle.id, ConstraintSet.TOP,errorImageView.id, ConstraintSet.BOTTOM)
-        errorEmptyLayoutConstraintSet.connect(emptyErrorStateTitle.id, ConstraintSet.BOTTOM,emptyErrorStateSubtitle.id, ConstraintSet.TOP)
+        errorEmptyLayoutConstraintSet.constrainWidth(mainFragmentError_EmptySubtitle.id, resourcesInstance().getDimension(R.dimen.match_constraint_value).toInt())
+        errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentError_EmptySubtitle.id, ConstraintSet.WRAP_CONTENT)
 
 
-        errorEmptyLayoutConstraintSet.applyTo(errorEmptyLayout)
+        errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentError_EmptyLayoutImageView.id,resourcesInstance().getDimension(R.dimen.comic_item_width).toInt())
+        errorEmptyLayoutConstraintSet.constrainWidth(mainFragmentError_EmptyLayoutImageView.id,resourcesInstance().getDimension(R.dimen.comic_item_width).toInt())
 
-        val loadingLayout = LoadingLayout(frameLayoutContainer.context).apply {
-            id=ViewCompat.generateViewId()
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT)
-            visibility=View.GONE
-        }
-        frameLayoutContainer.addView(loadingLayout)
+        /* Set the top margin for one of the error_empty layout container's children views */
+
+        errorEmptyLayoutConstraintSet.setMargin(mainFragmentError_EmptySubtitle.id,ConstraintSet.TOP,resourcesInstance().getDimension(R.dimen.keyline_8).toInt())
+
+        /* Set the constraints for error_empty layout container's children views */
+
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptyLayoutImageView.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptyLayoutImageView.id,ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptyLayoutImageView.id,ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptyLayoutImageView.id,ConstraintSet.BOTTOM, mainFragmentError_EmptyTitle.id, ConstraintSet.TOP)
+
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptySubtitle.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptySubtitle.id,ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptySubtitle.id,ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptySubtitle.id,ConstraintSet.TOP,mainFragmentError_EmptyTitle.id, ConstraintSet.BOTTOM)
+
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptyTitle.id,ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptyTitle.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptyTitle.id, ConstraintSet.TOP,mainFragmentError_EmptyLayoutImageView.id, ConstraintSet.BOTTOM)
+        errorEmptyLayoutConstraintSet.connect(mainFragmentError_EmptyTitle.id, ConstraintSet.BOTTOM,mainFragmentError_EmptySubtitle.id, ConstraintSet.TOP)
+
+        /* Apply the constraints to EmptyError Layout container */
+        errorEmptyLayoutConstraintSet.applyTo(mainFragmentError_EmptyLayoutContainer)
+
 
         return parentContainer
     }
@@ -244,10 +268,17 @@ class ComicsByGenreFragment: MainNavigationFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         resolveFilterFragmentInstance()
+        updateMainFragmentFabActionButtonInsets()
 
         /* Listen to/collect data in this lifecycle scope  */
         launchAndRepeatWithViewLifecycle {
 
+        }
+    }
+    private fun updateMainFragmentFabActionButtonInsets(){
+        mainFragmentExtendedFabActionButton.doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+            val systemBarInsets = windowInsetsCompat.getInsets(WindowInsets.Type.systemBars())
+            view.updatePadding(bottom = viewPaddingState.bottom + systemBarInsets.bottom)
         }
     }
     private fun onComicClicked(comicItem: ViewComics){

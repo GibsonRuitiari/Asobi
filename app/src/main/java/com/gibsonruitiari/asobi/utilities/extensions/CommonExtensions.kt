@@ -1,5 +1,6 @@
 package com.gibsonruitiari.asobi.utilities.extensions
 
+import android.content.res.Resources
 import android.os.Parcel
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +28,8 @@ crossinline block:suspend CoroutineScope.()->Unit){
         }
     }
 }
+fun Fragment.resourcesInstance():Resources = requireContext().resources
+
 /**
  * Map a slideOffset (in the range `[-1, 1]`) to an alpha value based on the desired range.
  * For example, `slideOffsetToAlpha(0.5, 0.25, 1) = 0.33` because 0.5 is 1/3 of the way between
