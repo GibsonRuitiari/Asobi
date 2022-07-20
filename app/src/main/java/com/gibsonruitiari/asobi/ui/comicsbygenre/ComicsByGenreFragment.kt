@@ -42,6 +42,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import kotlin.math.max
+import kotlin.math.min
 
 @Suppress("UNCHECKED_CAST")
 class ComicsByGenreFragment: MainNavigationFragment() {
@@ -364,7 +366,6 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         mainFragmentErrorEmptySubtitle.text = subtitle
     }
 
-
     private fun onComicClicked(comicItem: ViewComics){
         Toast.makeText(requireContext(),"${comicItem.comicLink} clicked", Toast.LENGTH_SHORT).show()
     }
@@ -375,13 +376,27 @@ class ComicsByGenreFragment: MainNavigationFragment() {
     }, bindViewHolder = { viewHolder: RecyclerView.ViewHolder, item: ViewComics?, _ ->
         (viewHolder as BindingViewHolder<ComicItemLayoutBinding>).bind(item)
     })
+
     private fun setUpSwipeRefreshWidgetState(isRefreshing:Boolean){
         mainFragmentSwipeRefreshLayout.isRefreshing = isRefreshing
     }
-
     private fun setUpSwipeRefreshWidget(){
-        mainFragmentSwipeRefreshLayout.doOnNextLayout { setContentToMaxWidth(mainFragmentSwipeRefreshLayout) }
-        mainFragmentSwipeRefreshLayout.setOnRefreshListener { comicsByGenreAdapter?.refresh() }
+        with(mainFragmentSwipeRefreshLayout){
+            doOnNextLayout {
+                // similar to Modifier.maxWidth() in compose
+                setContentToMaxWidth(mainFragmentSwipeRefreshLayout)
+            }
+            setOnRefreshListener { comicsByGenreAdapter?.refresh() }
+            var height =0
+            val cutout=requireActivity().window.decorView.rootWindowInsets.displayCutout
+            if (cutout!=null){
+                if (cutout.boundingRects.size >0){
+                    height=  max(0,min(cutout.boundingRects[0].width(), cutout.boundingRects[0].height()))
+                }
+            }
+            setSlingshotDistance(128+height)
+            setProgressViewEndTarget(false, height+128)
+        }
     }
     private fun setUpMainFragmentRecyclerView(){
        val screenWidth= resourcesInstance().displayMetrics.run { widthPixels/density }
@@ -398,6 +413,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
             layoutManager = gridLayoutManager(spanCount = (screenWidth/156f).toInt())
         }
     }
+    /* End: Setting up Ui Components */
 
     override fun onDestroy() {
         super.onDestroy()
