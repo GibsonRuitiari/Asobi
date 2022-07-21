@@ -31,7 +31,7 @@ ComicFilterViewModel by filterViewModel{
         pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(genre, pagingConfig))
     }
     companion object{
-        val pagingConfig = PagingConfig(pageSize = 36,
-            initialLoadSize = 36)
+        val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10, initialLoadSize = 30,
+            enablePlaceholders = false)
     }
 }
