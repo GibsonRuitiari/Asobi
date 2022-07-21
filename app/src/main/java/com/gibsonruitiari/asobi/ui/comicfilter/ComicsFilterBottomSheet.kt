@@ -29,6 +29,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@Suppress("DEPRECATION")
 abstract class ComicsFilterBottomSheet:Fragment() {
     companion object{
         /* Threshold for when the contents of the bottom sheet should become invisible */
