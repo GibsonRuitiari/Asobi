@@ -1,29 +1,19 @@
 package com.gibsonruitiari.asobi.ui
 
-import android.content.res.Configuration
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.Insets
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
-import androidx.core.view.WindowCompat
-import androidx.core.view.updatePadding
+import androidx.core.view.*
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
-import androidx.window.layout.WindowMetricsCalculator
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
-import com.gibsonruitiari.asobi.utilities.ScreenSize
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigationrail.NavigationRailView
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity(), NavigationHost {
     companion object{
@@ -34,7 +24,6 @@ class MainActivity : AppCompatActivity(), NavigationHost {
             R.id.navigation_popular_comics)
     }
     private lateinit var binding: ActivityMainBinding
-    private val mainActivityViewModel: MainActivityViewModel by viewModel()
     private var currentNavId = NAV_ID_NONE
 
     private lateinit var navController: NavController
@@ -44,32 +33,21 @@ class MainActivity : AppCompatActivity(), NavigationHost {
      WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val container:ViewGroup = binding.root
-        /* https://issuetracker.google.com/202338815 hook a utility view to listen to configurationChanges */
-        container.addView(object:View(this){
-            override fun onConfigurationChanged(newConfig: Configuration?) {
-                super.onConfigurationChanged(newConfig)
-                mainActivityViewModel.setScreenWidth(computeWindowSizeClasses())
-            }
-        })
-        /* cannot initialize navController from FragmentContainerView since navController does not depend on fragment
-         adding FragmentContainerView breaks code, so don't use it instead use fragment if you can (despite AS Warning)
-          see issue https://issuetracker.google.com/issues/142847973 */
         navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
         navController = navHostFragment.navController
-        //navController = findNavController(R.id.nav_host_fragment_content_main)
         hookUpNavControllerToDestinationChangedListener()
         /* get an instance of navigation bar view, note: chances of both being null at the same time are one in a million*/
         val navigationBarView:NavigationBarView = (binding.navRailView ?: binding.navigation) as NavigationBarView
         NavigationUI.setupWithNavController(navigationBarView, navController)
         setUpNavigationBarViews()
+
         if (savedInstanceState==null){
             currentNavId = navController.graph.startDestinationId
             val requestedNavId = intent.getIntExtra(EXTRA_NAVIGATION_ID, currentNavId)
             navigateTo(requestedNavId)
         }
         applyWindowInsetsOnStatusBarScrim()
-      applyWindowInsetsOnRootContainer()
+        applyWindowInsetsOnRootContainer()
     }
     private fun setUpNavigationBarViews(){
         binding.navigation?.let {
@@ -128,18 +106,15 @@ class MainActivity : AppCompatActivity(), NavigationHost {
     }
     private val navigationBarViewClickListener = NavigationBarView.OnItemSelectedListener {
         when(it.itemId){
-            R.id.menu_item_settings ->{
-                it.isChecked = true
+            R.id.menu_item_library ->{
             //    navController.navigate(R.id.action_FirstFragment_to_SecondFragment)
                 true
             }
             R.id.menu_item_home ->{
-                it.isChecked = true
 
                 true
             }
-            R.id.menu_item_favorites ->{
-                it.isChecked = true
+            R.id.menu_item_search ->{
                 true
             }
             else-> false
@@ -149,15 +124,6 @@ class MainActivity : AppCompatActivity(), NavigationHost {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         currentNavId = navController.currentDestination?.id ?: NAV_ID_NONE
-    }
-    private fun computeWindowSizeClasses():ScreenSize{
-        val metrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(this)
-        val widthDp = metrics.bounds.width()/resources.displayMetrics.density
-        return when(widthDp.toInt()){
-             in 0..599 -> ScreenSize.COMPACT
-             in 600..640-> ScreenSize.MEDIUM
-            else -> ScreenSize.EXPANDED
-        }
     }
 
     override fun onUserInteraction() {

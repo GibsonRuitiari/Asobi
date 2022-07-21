@@ -22,7 +22,7 @@
     <string name="menu_item_settings">settings</string>
     <string name="action_search">search comics</string>
     <string name="error_state_title">Shucks! X_x</string>
-    <string name="empty_title">Nothing to see here…try loading/retrying</string>
+    <string name="empty_title">Data was empty, try retrying by pulling up the swipe-refresh listener/choose another genre</string>
     <string name="empty_subtitle">Try retrying or search for something..</string>
     <string name="cd_retry">retry</string>
     <string name="network_error_msg">Loading of comics failed due to network error; check your internet connection</string>

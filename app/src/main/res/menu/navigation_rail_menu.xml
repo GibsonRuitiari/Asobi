@@ -6,13 +6,15 @@
         android:icon="@drawable/ic_baseline_weekend_24"
         android:title="@string/menu_item_home"/>
     <item
-        android:id="@+id/menu_item_favorites"
+        android:id="@+id/menu_item_search"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_favorite_border_24"
-        android:title="@string/menu_item_favourites"/>
+        android:icon="@drawable/ic_baseline_search_24"
+        android:title="@string/menu_item_search"/>
     <item
-        android:id="@+id/menu_item_settings"
+        android:id="@+id/menu_item_library"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_bookmarks_24"
         android:title="@string/menu_item_library"/>
+
+
 </menu>

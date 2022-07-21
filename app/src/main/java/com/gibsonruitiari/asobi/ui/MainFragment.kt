@@ -24,6 +24,7 @@ import com.gibsonruitiari.asobi.BuildConfig
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.BaseFragmentBinding
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
+import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterFragment
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.composedPagedAdapter
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
@@ -34,9 +35,10 @@ import com.gibsonruitiari.asobi.utilities.StatusBarScrimBehavior
 import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -45,6 +47,7 @@ import java.net.UnknownHostException
 abstract class MainFragment:MainNavigationFragment(){
     private var _baseFragmentBinding: BaseFragmentBinding?=null
     private val fragmentBinding get() = _baseFragmentBinding!!
+    private val mainActivityViewModel:MainActivityViewModel by viewModel()
     var pagingListAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
     abstract val toolbarTitle:String
     abstract suspend fun observePagedData()
@@ -62,7 +65,6 @@ abstract class MainFragment:MainNavigationFragment(){
     private lateinit var mainFragmentErrorEmptyLayoutImageView:AppCompatImageView
     private lateinit var mainFragmentErrorEmptySubtitle:AppCompatTextView
     private lateinit var mainFragmentErrorEmptyTitle:AppCompatTextView
-    private lateinit var mainFragmentRetryButton:MaterialButton
     /* End of view variables  */
 
 
@@ -102,6 +104,7 @@ abstract class MainFragment:MainNavigationFragment(){
             (layoutParams as CoordinatorLayout.LayoutParams).setMargins(resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),resourcesInstance().getDimension(R.dimen.keyline_7).toInt())
             (layoutParams as CoordinatorLayout.LayoutParams).gravity = Gravity.BOTTOM+ Gravity.END
             (layoutParams as CoordinatorLayout.LayoutParams).behavior= ExtendedFabBehavior(parentContainer.context)
+            visibility = View.GONE
         }
 
         parentContainer.addView(mainFragmentExtendedFabActionButton)
@@ -118,7 +121,6 @@ abstract class MainFragment:MainNavigationFragment(){
         /* Add swipe refresh layout */
         mainFragmentSwipeRefreshLayout = SwipeRefreshLayout(mainFragmentConstraintLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
-
 
             setColorSchemeColors(*colorSchemes)
         }
@@ -218,17 +220,7 @@ abstract class MainFragment:MainNavigationFragment(){
 
         mainFragmentErrorEmptyLayoutContainer.addView(mainFragmentErrorEmptySubtitle)
 
-        mainFragmentRetryButton = MaterialButton(mainFragmentErrorEmptyLayoutContainer.context).apply{
-            id = ViewCompat.generateViewId()
-            gravity = Gravity.CENTER
-            text=getString(R.string.cd_retry)
-            textSize= 14f
-            textAlignment=View.TEXT_ALIGNMENT_CENTER
-            typeface = Typeface.SANS_SERIF
-            visibility=View.GONE
 
-        }
-        mainFragmentErrorEmptyLayoutContainer.addView(mainFragmentRetryButton)
 
         /* Apply constraints to emptyErrorLayoutContainer together with it's children */
 
@@ -246,14 +238,6 @@ abstract class MainFragment:MainNavigationFragment(){
         errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentErrorEmptyLayoutImageView.id,resourcesInstance().getDimension(R.dimen.comic_item_width).toInt())
         errorEmptyLayoutConstraintSet.constrainWidth(mainFragmentErrorEmptyLayoutImageView.id,resourcesInstance().getDimension(R.dimen.comic_item_width).toInt())
 
-        errorEmptyLayoutConstraintSet.constrainWidth(mainFragmentRetryButton.id,resourcesInstance().getDimension(R.dimen.retry_button_width_dimen).toInt())
-        errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentRetryButton.id,resourcesInstance().getDimension(R.dimen.retry_button_height_dimen).toInt())
-
-
-        /* Set the top margin for one of the error_empty layout container's children views */
-
-
-        errorEmptyLayoutConstraintSet.setMargin(mainFragmentRetryButton.id, ConstraintSet.TOP,10)
 
         /* Set the constraints for error_empty layout container's children views */
 
@@ -281,20 +265,13 @@ abstract class MainFragment:MainNavigationFragment(){
         errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptyTitle.id, ConstraintSet.TOP,mainFragmentErrorEmptyLayoutImageView.id, ConstraintSet.BOTTOM)
         errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptyTitle.id, ConstraintSet.BOTTOM,mainFragmentErrorEmptySubtitle.id, ConstraintSet.TOP)
 
-        errorEmptyLayoutConstraintSet.connect(mainFragmentRetryButton.id,
-            ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentRetryButton.id,
-            ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentRetryButton.id,
-            ConstraintSet.TOP, mainFragmentErrorEmptySubtitle.id, ConstraintSet.BOTTOM)
 
         /* Apply the constraints to EmptyError Layout container */
         errorEmptyLayoutConstraintSet.applyTo(mainFragmentErrorEmptyLayoutContainer)
-
-
         return parentContainer
 
     }
+    private fun constructComicFilterFragmentInstance():ComicFilterFragment = childFragmentManager.findFragmentById(R.id.filter_sheet) as ComicFilterFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         pagingListAdapter = setUpRecyclerViewAdapter()
@@ -302,10 +279,21 @@ abstract class MainFragment:MainNavigationFragment(){
         setUpMainFragmentRecyclerView()
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
+        showBottomSheetOnlyWhenMainFabButtonIsVisible()
+        fragmentBinding.toolbar.title = toolbarTitle
+
         /*Perform collection of multiple flows here  */
         launchAndRepeatWithViewLifecycle {
             launch {  /* Observe paged data */ observePagedData() }
+            launch { mainActivityViewModel.isInComicsByGenreFragment.collectLatest { showUpFilterButtonWhenInGenreFragment(it) }}
 
+        }
+    }
+    private fun showBottomSheetOnlyWhenMainFabButtonIsVisible(){
+        if (mainFragmentExtendedFabActionButton.visibility == View.VISIBLE){
+            mainFragmentExtendedFabActionButton.setOnClickListener {
+                constructComicFilterFragmentInstance().showFiltersSheet()
+            }
         }
     }
 
@@ -335,7 +323,6 @@ abstract class MainFragment:MainNavigationFragment(){
                     if (pagingListAdapter?.itemCount ==0){
                         setEmptyErrorStateTitleAndSubtitle(getString(R.string.error_state_title), getString(R.string.empty_title))
                         onErrorOrEmptyDataShowErrorOrEmptyState()
-                        onDataLoadingFailureShowRetryButtonAndSetUpRetryAction()
                     }else{
                         onDataLoadedSuccessfullyShowData()
                     }
@@ -351,7 +338,6 @@ abstract class MainFragment:MainNavigationFragment(){
                     mainFragmentFrameLayoutContainer.showSnackBar(errorMessage)
                     setEmptyErrorStateTitleAndSubtitle(getString(R.string.error_state_title),
                         errorMessage)
-                    onDataLoadingFailureShowRetryButtonAndSetUpRetryAction()
                     onErrorOrEmptyDataShowErrorOrEmptyState()
                 }
             }
@@ -359,18 +345,19 @@ abstract class MainFragment:MainNavigationFragment(){
         }
 
     }
-    private fun onDataLoadingFailureShowRetryButtonAndSetUpRetryAction(){
-        mainFragmentRetryButton.isVisible=true
-        mainFragmentRetryButton.setOnClickListener {
-            pagingListAdapter?.retry()
-        }
-    }
+
     /* Start: Setting up Ui Components */
     private fun setEmptyErrorStateTitleAndSubtitle(title:String, subtitle:String){
         mainFragmentErrorEmptyTitle.text = title
         mainFragmentErrorEmptySubtitle.text = subtitle
     }
-
+    private fun showUpFilterButtonWhenInGenreFragment(isInComicGenreFragment:Boolean){
+        if (isInComicGenreFragment){
+            mainFragmentExtendedFabActionButton.visibility=View.VISIBLE
+        }else{
+            mainFragmentExtendedFabActionButton.visibility=View.GONE
+        }
+    }
 
     private fun setUpRecyclerViewAdapter():PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> = composedPagedAdapter(createViewHolder = { viewGroup: ViewGroup, _: Int ->
         viewGroup.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {

@@ -150,9 +150,13 @@ class DiscoverFragment:MainNavigationFragment() {
                             val ongoingComics = it.comicsData.ongoingComics.comicsData
                             val comicsByGenre = it.comicsData.comicsByGenre.comicsData
                             when{
-                                completedComics.isEmpty() || popularComics.isEmpty() || latestComics.isEmpty() ||comicsByGenre.isEmpty()|| ongoingComics.isEmpty()-> {
+                                completedComics.isEmpty() && !it.comicsData.completedComics.isLoading && popularComics.isEmpty()  && !it.comicsData.latestComics.isLoading && latestComics.isEmpty()
+                                        && !it.comicsData.completedComics.isLoading
+                                        &&comicsByGenre.isEmpty() && !it.comicsData.comicsByGenre.isLoading && !it.comicsData.ongoingComics.isLoading && ongoingComics.isEmpty()-> {
                                     onDataEmptyShowEmptyLayout()
                                 }
+                                it.comicsData.completedComics.isLoading || it.comicsData.comicsByGenre.isLoading
+                                        || it.comicsData.ongoingComics.isLoading ||it.comicsData.popularComics.isLoading-> onLoadingShowLoadingLayout()
                                 else->{
                                     completedComicsAdapter.submitList(completedComics)
                                     popularComicsAdapter.submitList(popularComics)
@@ -303,7 +307,6 @@ class DiscoverFragment:MainNavigationFragment() {
         }
     }
     /* End: Respond to events by showing the requisite state on the screen to the user */
-
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
