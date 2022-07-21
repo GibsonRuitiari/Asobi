@@ -204,7 +204,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
          mainFragmentErrorEmptyTitle = AppCompatTextView(mainFragmentErrorEmptyLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
             gravity= Gravity.CENTER
-            textSize = resourcesInstance().getDimension(R.dimen.error_empty_title_size)
+            textSize = 17f
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             typeface = Typeface.SANS_SERIF
 
@@ -214,7 +214,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
          mainFragmentErrorEmptySubtitle = AppCompatTextView(mainFragmentErrorEmptyLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
             gravity=Gravity.CENTER
-            textSize =   resourcesInstance().getDimension(R.dimen.error_empty_subtitle_size)
+            textSize =  14f
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             text="Try searching for something"
         }
@@ -225,7 +225,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
             id = ViewCompat.generateViewId()
             gravity = Gravity.CENTER
             text=getString(R.string.cd_retry)
-            textSize= resourcesInstance().getDimension(R.dimen.error_empty_subtitle_size)
+            textSize= 14f
             textAlignment=View.TEXT_ALIGNMENT_CENTER
             typeface = Typeface.SANS_SERIF
             visibility=View.GONE
@@ -253,10 +253,8 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentRetryButton.id,resourcesInstance().getDimension(R.dimen.retry_button_height_dimen).toInt())
 
 
-        /* Set the top margin for one of the error_empty layout container's children views */
 
-        errorEmptyLayoutConstraintSet.setMargin(mainFragmentErrorEmptySubtitle.id,ConstraintSet.TOP,resourcesInstance().getDimension(R.dimen.keyline_8).toInt())
-        errorEmptyLayoutConstraintSet.setMargin(mainFragmentRetryButton.id, ConstraintSet.TOP, resourcesInstance().getDimension(R.dimen.keyline_7).toInt())
+
 
         /* Set the constraints for error_empty layout container's children views */
 
@@ -294,9 +292,11 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         setUpMainFragmentRecyclerView()
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
-        mainFragmentExtendedFabActionButton.setOnClickListener {
+
+
+      mainFragmentExtendedFabActionButton.setOnClickListener {
           constructComicFilterFramentInstance().showFiltersSheet()
-        }
+      }
 
         /* Listen to/collect data in this lifecycle scope  */
         launchAndRepeatWithViewLifecycle {
@@ -339,7 +339,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
                     if (comicsByGenreAdapter?.itemCount ==0){
                         setEmptyErrorStateTitleAndSubtitle(getString(R.string.error_state_title), getString(R.string.empty_title))
                         onErrorOrEmptyDataShowErrorOrEmptyState()
-                        onDataLoadingFailureShowRetryButtonAndSetUpRetryAction()
+                        //onDataLoadingFailureShowRetryButtonAndSetUpRetryAction()
                     }else{
                         onDataLoadedSuccessfullyShowData()
                     }
@@ -355,7 +355,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
                     mainFragmentFrameLayoutContainer.showSnackBar(errorMessage)
                     setEmptyErrorStateTitleAndSubtitle(getString(R.string.error_state_title),
                     errorMessage)
-                    onDataLoadingFailureShowRetryButtonAndSetUpRetryAction()
+                 //   onDataLoadingFailureShowRetryButtonAndSetUpRetryAction()
                     onErrorOrEmptyDataShowErrorOrEmptyState()
                 }
             }

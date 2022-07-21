@@ -3,6 +3,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/filter_label"
+    android:layout_margin="2dp"
     style="@style/Widget.Asobi.FilterChip.Selectable"
     xmlns:tools="http://schemas.android.com/tools"
     tools:text="ImageComics" />

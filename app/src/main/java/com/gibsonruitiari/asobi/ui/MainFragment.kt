@@ -201,7 +201,7 @@ abstract class MainFragment:MainNavigationFragment(){
         mainFragmentErrorEmptyTitle = AppCompatTextView(mainFragmentErrorEmptyLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
             gravity= Gravity.CENTER
-            textSize = resourcesInstance().getDimension(R.dimen.error_empty_title_size)
+            textSize = 16f
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             typeface = Typeface.SANS_SERIF
 
@@ -211,7 +211,7 @@ abstract class MainFragment:MainNavigationFragment(){
         mainFragmentErrorEmptySubtitle = AppCompatTextView(mainFragmentErrorEmptyLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
             gravity= Gravity.CENTER
-            textSize =   resourcesInstance().getDimension(R.dimen.error_empty_subtitle_size)
+            textSize = 14f
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             text="Try searching for something"
         }
@@ -222,7 +222,7 @@ abstract class MainFragment:MainNavigationFragment(){
             id = ViewCompat.generateViewId()
             gravity = Gravity.CENTER
             text=getString(R.string.cd_retry)
-            textSize= resourcesInstance().getDimension(R.dimen.error_empty_subtitle_size)
+            textSize= 14f
             textAlignment=View.TEXT_ALIGNMENT_CENTER
             typeface = Typeface.SANS_SERIF
             visibility=View.GONE
@@ -252,9 +252,8 @@ abstract class MainFragment:MainNavigationFragment(){
 
         /* Set the top margin for one of the error_empty layout container's children views */
 
-        errorEmptyLayoutConstraintSet.setMargin(mainFragmentErrorEmptySubtitle.id,
-            ConstraintSet.TOP,resourcesInstance().getDimension(R.dimen.keyline_8).toInt())
-        errorEmptyLayoutConstraintSet.setMargin(mainFragmentRetryButton.id, ConstraintSet.TOP, resourcesInstance().getDimension(R.dimen.keyline_7).toInt())
+
+        errorEmptyLayoutConstraintSet.setMargin(mainFragmentRetryButton.id, ConstraintSet.TOP,10)
 
         /* Set the constraints for error_empty layout container's children views */
 

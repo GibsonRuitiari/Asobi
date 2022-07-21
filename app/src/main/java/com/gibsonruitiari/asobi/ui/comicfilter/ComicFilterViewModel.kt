@@ -36,11 +36,18 @@ class ComicFilterViewModelImpl(private val scope:CoroutineScope):ComicFilterView
         get() = _selectedFilterChip
 
     override fun setGenre(selectedGenre:Genres) {
-       _selectedGenre.value= selectedGenre
+        toggle(_selectedGenre.value,true)
+        _selectedGenre.value= selectedGenre
         _selectedFilterChip.value = _selectedGenre.value.asChip(true)
     }
+    fun toggle(previousSelectedGenre: Genres, unselected:Boolean){
+        _selectedFilterChip.value =_selectedFilterChip.value.copy(genres = previousSelectedGenre, isSelected = !unselected)
+    }
+
+
     override fun resetFilterChoice() {
        // reset to default
         _selectedGenre.value = Genres.DC_COMICS
+        _selectedFilterChip.value = _selectedGenre.value.asChip(true)
     }
 }

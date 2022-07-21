@@ -5,10 +5,11 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/filter_sheet"
-
     android:background="?attr/colorSurface"
     android:clickable="true"
-    android:focusable="true">
+    android:elevation="8dp"
+    android:focusable="true"
+    tools:targetApi="lollipop">
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guide_header_height"
         android:layout_width="0dp"
@@ -17,13 +18,15 @@
         app:layout_constraintGuide_begin="@dimen/genre_bottom_sheet_peek_height"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_genre_filters"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:clipToPadding="false"
         android:paddingHorizontal="@dimen/margin_normal"
+        android:nestedScrollingEnabled="false"
         app:layoutManager="com.google.android.flexbox.FlexboxLayoutManager"
         android:paddingVertical="@dimen/spacing_normal"
+        android:alpha="0"
         tools:listitem="@layout/selectable_filter_chip_item"
         android:scrollbarStyle="outsideOverlay"
         app:layout_constraintLeft_toLeftOf="parent"
