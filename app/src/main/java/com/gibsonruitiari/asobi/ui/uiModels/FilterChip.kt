@@ -26,12 +26,7 @@ fun Genres.asChip(isGenreSelected:Boolean):FilterChip = when(this){
         genres = this, text = genreName)
     Genres.COMEDY -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
-    Genres.CYBORGS -> FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
-    Genres.DARK_HORSE -> FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
-    Genres.DEMONS -> FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
+
     Genres.DRAMA -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
     Genres.FANTASY -> FilterChip(isSelected = isGenreSelected,
@@ -39,8 +34,6 @@ fun Genres.asChip(isGenreSelected:Boolean):FilterChip = when(this){
     Genres.FAMILY -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
     Genres.FIGHTING -> FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
-    Genres.GORE -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
     Genres.GRAPHIC_NOVELS -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
@@ -56,24 +49,17 @@ fun Genres.asChip(isGenreSelected:Boolean):FilterChip = when(this){
         genres = this, text = genreName)
     Genres.MARTIAL_ARTS -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
-    Genres.MECHA ->FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
     Genres.MATURE -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
     Genres.MILITARY -> FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
-    Genres.MOVIE_CINEMATIC -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
     Genres.MYSTERY ->FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
     Genres.MYTHOLOGY ->FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
-    Genres.PERSONAL -> FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
     Genres.POLITICAL -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
-    Genres.PSYCHOLOGICAL -> FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
+
     Genres.POST_APOCALYPTIC ->FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
     Genres.PULP -> FilterChip(isSelected = isGenreSelected,
@@ -86,8 +72,7 @@ fun Genres.asChip(isGenreSelected:Boolean):FilterChip = when(this){
         genres = this, text = genreName)
     Genres.SPY ->FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
-    Genres.SPORTS ->FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
+
     Genres.SUPERHERO -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
     Genres.SUPERNATURAL -> FilterChip(isSelected = isGenreSelected,
@@ -100,11 +85,7 @@ fun Genres.asChip(isGenreSelected:Boolean):FilterChip = when(this){
         genres = this, text = genreName)
     Genres.THRILLER -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
-    Genres.TRAGEDY -> FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
     Genres.VAMPIRES -> FilterChip(isSelected = isGenreSelected,
-        genres = this, text = genreName)
-    Genres.VERTIGO ->FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
     Genres.VIDEO_GAMES -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
@@ -113,6 +94,10 @@ fun Genres.asChip(isGenreSelected:Boolean):FilterChip = when(this){
     Genres.WESTERN -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
     Genres.ZOMBIES -> FilterChip(isSelected = isGenreSelected,
+        genres = this, text = genreName)
+    Genres.HORROR -> FilterChip(isSelected = isGenreSelected,
+        genres = this, text = genreName)
+    Genres.CRIME -> FilterChip(isSelected = isGenreSelected,
         genres = this, text = genreName)
 }
 
