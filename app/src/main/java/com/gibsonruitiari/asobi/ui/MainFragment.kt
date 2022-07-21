@@ -24,7 +24,6 @@ import com.gibsonruitiari.asobi.BuildConfig
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.BaseFragmentBinding
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
-import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterFragment
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.composedPagedAdapter
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
@@ -36,9 +35,7 @@ import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -47,7 +44,6 @@ import java.net.UnknownHostException
 abstract class MainFragment:MainNavigationFragment(){
     private var _baseFragmentBinding: BaseFragmentBinding?=null
     private val fragmentBinding get() = _baseFragmentBinding!!
-    private val mainActivityViewModel:MainActivityViewModel by viewModel()
     var pagingListAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
     abstract val toolbarTitle:String
     abstract suspend fun observePagedData()
@@ -58,6 +54,7 @@ abstract class MainFragment:MainNavigationFragment(){
     private lateinit var mainFragmentSwipeRefreshLayout: SwipeRefreshLayout
     private lateinit var mainFragmentRecyclerView:RecyclerView
     private lateinit var mainFragmentExtendedFabActionButton:ExtendedFloatingActionButton
+    val filterFabButton:ExtendedFloatingActionButton get() = mainFragmentExtendedFabActionButton
     private lateinit var mainFragmentConstraintLayoutContainer:ConstraintLayout
     private lateinit var mainFragmentFrameLayoutContainer:FrameLayout
     private lateinit var loadingLayout: LoadingLayout
@@ -271,7 +268,6 @@ abstract class MainFragment:MainNavigationFragment(){
         return parentContainer
 
     }
-    private fun constructComicFilterFragmentInstance():ComicFilterFragment = childFragmentManager.findFragmentById(R.id.filter_sheet) as ComicFilterFragment
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         pagingListAdapter = setUpRecyclerViewAdapter()
@@ -279,23 +275,15 @@ abstract class MainFragment:MainNavigationFragment(){
         setUpMainFragmentRecyclerView()
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
-        showBottomSheetOnlyWhenMainFabButtonIsVisible()
         fragmentBinding.toolbar.title = toolbarTitle
 
         /*Perform collection of multiple flows here  */
         launchAndRepeatWithViewLifecycle {
             launch {  /* Observe paged data */ observePagedData() }
-            launch { mainActivityViewModel.isInComicsByGenreFragment.collectLatest { showUpFilterButtonWhenInGenreFragment(it) }}
 
         }
     }
-    private fun showBottomSheetOnlyWhenMainFabButtonIsVisible(){
-        if (mainFragmentExtendedFabActionButton.visibility == View.VISIBLE){
-            mainFragmentExtendedFabActionButton.setOnClickListener {
-                constructComicFilterFragmentInstance().showFiltersSheet()
-            }
-        }
-    }
+
 
     /*Start:Show Correct State based on the data events observed above */
     private fun onDataLoadedSuccessfullyShowData(){
@@ -351,13 +339,6 @@ abstract class MainFragment:MainNavigationFragment(){
         mainFragmentErrorEmptyTitle.text = title
         mainFragmentErrorEmptySubtitle.text = subtitle
     }
-    private fun showUpFilterButtonWhenInGenreFragment(isInComicGenreFragment:Boolean){
-        if (isInComicGenreFragment){
-            mainFragmentExtendedFabActionButton.visibility=View.VISIBLE
-        }else{
-            mainFragmentExtendedFabActionButton.visibility=View.GONE
-        }
-    }
 
     private fun setUpRecyclerViewAdapter():PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> = composedPagedAdapter(createViewHolder = { viewGroup: ViewGroup, _: Int ->
         viewGroup.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
@@ -398,7 +379,7 @@ abstract class MainFragment:MainNavigationFragment(){
                 val systemInsets = windowInsetsCompat.getInsets(
                     WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type
                         .ime())
-                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom, top= viewPaddingState.top + systemInsets.top)
+                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom)
             }
             setHasFixedSize(true)
             scrollToTop()
