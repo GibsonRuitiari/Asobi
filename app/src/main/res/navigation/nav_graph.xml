@@ -42,15 +42,5 @@
         android:label="@string/ongoing_comics" />
     <fragment android:id="@+id/navigation_comics_by_genre"
         android:label="@string/comics_by_genre"
-        android:name="com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreFragment"
-        >
-        <action
-            android:id="@+id/action_show_comic_filter_sheet"
-            app:destination="@+id/bottomSheet"/>
-    </fragment>
-    <dialog android:id="@+id/bottomSheet"
-        android:label="Comic Sheet Filter"
-        android:name="com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterFragment"
-        tools:layout="@layout/comic_filter_fragment"/>
-
+        android:name="com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreFragment" />
 </navigation>
