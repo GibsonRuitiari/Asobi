@@ -16,7 +16,6 @@ class ComicsByGenreFragment: MainFragment() {
     private val comicsByGenreViewModel:ComicsByGenreViewModel by viewModel()
     private val backPressHandlerCallback = object: OnBackPressedCallback(false){
         override fun handleOnBackPressed() {
-            // set it to false once we exit the fragment
            filterFabButton.visibility = View.GONE
         }
     }
