@@ -2,7 +2,6 @@ package com.gibsonruitiari.asobi.ui.comicsbygenre
 
 import android.animation.LayoutTransition
 import android.graphics.Typeface
-import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -18,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.*
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -27,12 +27,14 @@ import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.databinding.ComicsByGenreFragmentBinding
 import com.gibsonruitiari.asobi.ui.MainNavigationFragment
+import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterFragment
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.composedPagedAdapter
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
-import com.gibsonruitiari.asobi.utilities.*
+import com.gibsonruitiari.asobi.utilities.ExtendedFabBehavior
+import com.gibsonruitiari.asobi.utilities.StatusBarScrimBehavior
 import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
@@ -97,6 +99,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         }
         parentContainer.addView(appBarScrimVew)
 
+
         /* Add extended floating button */
         mainFragmentExtendedFabActionButton = ExtendedFloatingActionButton(parentContainer.context).apply {
             id = ViewCompat.generateViewId()
@@ -123,7 +126,6 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         /* Add swipe refresh layout */
         mainFragmentSwipeRefreshLayout = SwipeRefreshLayout(mainFragmentConstraintLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
-
 
             setColorSchemeColors(*colorSchemes)
         }
@@ -288,9 +290,13 @@ class ComicsByGenreFragment: MainNavigationFragment() {
         super.onViewCreated(view, savedInstanceState)
         comicsByGenreAdapter = setUpRecyclerViewAdapter()
         mainFragmentExtendedFabActionButton.applyBottomInsets()
+
         setUpMainFragmentRecyclerView()
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
+        mainFragmentExtendedFabActionButton.setOnClickListener {
+          constructComicFilterFramentInstance().showFiltersSheet()
+        }
 
         /* Listen to/collect data in this lifecycle scope  */
         launchAndRepeatWithViewLifecycle {
@@ -298,6 +304,7 @@ class ComicsByGenreFragment: MainNavigationFragment() {
 
         }
     }
+    private fun constructComicFilterFramentInstance():ComicFilterFragment = childFragmentManager.findFragmentById(R.id.filter_sheet) as ComicFilterFragment
     /* Observe data start */
     private suspend fun observePagedDataAndSubmitItToRecyclerView(){
         comicsByGenreViewModel.comicsList.collectLatest {

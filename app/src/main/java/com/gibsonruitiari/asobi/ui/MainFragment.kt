@@ -40,8 +40,6 @@ import kotlinx.coroutines.launch
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import kotlin.math.max
-import kotlin.math.min
 
 @Suppress("UNCHECKED_CAST")
 abstract class MainFragment:MainNavigationFragment(){
@@ -393,15 +391,12 @@ abstract class MainFragment:MainNavigationFragment(){
                 setContentToMaxWidth(mainFragmentSwipeRefreshLayout)
             }
             setOnRefreshListener { pagingListAdapter?.refresh() }
-            var height =0
-            val cutout=activity?.window?.decorView?.rootWindowInsets?.displayCutout
-            if (cutout!=null){
-                if (cutout.boundingRects.size >0){
-                    height=  max(0,
-                        min(cutout.boundingRects[0].width(), cutout.boundingRects[0].height())
-                    )
-                }
-            }
+
+            val ct=WindowInsetsCompat.Type.displayCutout()
+
+            val height = if (ct!=0){
+                ct +height
+            }else 0
             setSlingshotDistance(128+height)
             setProgressViewEndTarget(false, height+128)
         }

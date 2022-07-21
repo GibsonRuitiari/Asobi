@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
-import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
+import com.gibsonruitiari.asobi.databinding.ComicItemLayoutDiscoverBinding
 import com.gibsonruitiari.asobi.databinding.DiscoverComicsFragmentBinding
 import com.gibsonruitiari.asobi.ui.MainNavigationFragment
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
@@ -35,37 +35,37 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class DiscoverFragment:MainNavigationFragment() {
     private var _binding:DiscoverComicsFragmentBinding?=null
     private val discoverComicsFragmentBinding:DiscoverComicsFragmentBinding get() = _binding!!
-    private var BindingViewHolder<ComicItemLayoutBinding>.completedComics by viewHolderDelegate<ViewComics>()
-    private var BindingViewHolder<ComicItemLayoutBinding>.ongoingComics by viewHolderDelegate<ViewComics>()
-    private var BindingViewHolder<ComicItemLayoutBinding>.latestComics by viewHolderDelegate<ViewComics>()
-    private var BindingViewHolder<ComicItemLayoutBinding>.popularComics by viewHolderDelegate<ViewComics>()
-    private var BindingViewHolder<ComicItemLayoutBinding>.comicsByGenre by viewHolderDelegate<ViewComics>()
+    private var BindingViewHolder<ComicItemLayoutDiscoverBinding>.completedComics by viewHolderDelegate<ViewComics>()
+    private var BindingViewHolder<ComicItemLayoutDiscoverBinding>.ongoingComics by viewHolderDelegate<ViewComics>()
+    private var BindingViewHolder<ComicItemLayoutDiscoverBinding>.latestComics by viewHolderDelegate<ViewComics>()
+    private var BindingViewHolder<ComicItemLayoutDiscoverBinding>.popularComics by viewHolderDelegate<ViewComics>()
+    private var BindingViewHolder<ComicItemLayoutDiscoverBinding>.comicsByGenre by viewHolderDelegate<ViewComics>()
 
-    private fun BindingViewHolder<ComicItemLayoutBinding>.bindComicsByGenre(viewComics: ViewComics){
+    private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindComicsByGenre(viewComics: ViewComics){
         this.comicsByGenre = viewComics
         with(binding){
             comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
         }
     }
-    private fun BindingViewHolder<ComicItemLayoutBinding>.bindCompletedComics(viewComics: ViewComics){
+    private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindCompletedComics(viewComics: ViewComics){
         this.completedComics = viewComics
         with(binding){
             comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
         }
     }
-    private fun BindingViewHolder<ComicItemLayoutBinding>.bindPopularComics(viewComics: ViewComics){
+    private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindPopularComics(viewComics: ViewComics){
         this.popularComics = viewComics
         with(binding){
             comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
         }
     }
-    private fun BindingViewHolder<ComicItemLayoutBinding>.bindOngoingComics(viewComics: ViewComics){
+    private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindOngoingComics(viewComics: ViewComics){
         this.ongoingComics = viewComics
         with(binding){
             comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
         }
     }
-    private fun BindingViewHolder<ComicItemLayoutBinding>.bindLatestComics(viewComics: ViewComics){
+    private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindLatestComics(viewComics: ViewComics){
         this.latestComics = viewComics
         with(binding){
             comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
@@ -73,50 +73,50 @@ class DiscoverFragment:MainNavigationFragment() {
     }
     private val comicsByGenreAdapter = listAdapterOf(initialItems = emptyList(),
     viewHolderCreator = {parent: ViewGroup, _: Int ->
-        parent.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
+        parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
             itemView.setOnClickListener {  Toast.makeText(requireContext(), "${comicsByGenre.comicLink} clicked", Toast.LENGTH_SHORT).show() }
         }
-    }, viewHolderBinder = {holder:BindingViewHolder<ComicItemLayoutBinding>, item:ViewComics,_->
+    }, viewHolderBinder = {holder:BindingViewHolder<ComicItemLayoutDiscoverBinding>, item:ViewComics,_->
             holder.bindComicsByGenre(item)
         })
     private val latestComicsAdapter = listAdapterOf(initialItems = emptyList(),
     viewHolderCreator = {
         parent: ViewGroup, _: Int ->
-        parent.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
+        parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
             itemView.setOnClickListener {
                 Toast.makeText(requireContext(), "${latestComics.comicLink} clicked", Toast.LENGTH_SHORT).show()
             }
         }
-    }, viewHolderBinder = {holder:BindingViewHolder<ComicItemLayoutBinding>, item:ViewComics, _ ->
+    }, viewHolderBinder = {holder:BindingViewHolder<ComicItemLayoutDiscoverBinding>, item:ViewComics, _ ->
             holder.bindLatestComics(item)
         })
     private val popularComicsAdapter = listAdapterOf(initialItems = emptyList(),
     viewHolderCreator = {parent: ViewGroup, _: Int ->
-        parent.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
+        parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
             itemView.setOnClickListener {
                 Toast.makeText(requireContext(), "${popularComics.comicLink} clicked", Toast.LENGTH_SHORT).show()
             }
         }
     }, viewHolderBinder = {holder: RecyclerView.ViewHolder, item: ViewComics, _: Int ->
-            (holder as BindingViewHolder<ComicItemLayoutBinding>).bindPopularComics(item)
+            (holder as BindingViewHolder<ComicItemLayoutDiscoverBinding>).bindPopularComics(item)
         })
     private val completedComicsAdapter = listAdapterOf(initialItems = emptyList(),
     viewHolderCreator = {parent, _ ->
-        parent.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
+        parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
             itemView.setOnClickListener {        Toast.makeText(requireContext(), "${completedComics.comicLink} clicked", Toast.LENGTH_SHORT).show() }
         }
     }, viewHolderBinder = {holder:RecyclerView.ViewHolder,item:ViewComics,_ ->
-            (holder as BindingViewHolder<ComicItemLayoutBinding>).bindCompletedComics(item)
+            (holder as BindingViewHolder<ComicItemLayoutDiscoverBinding>).bindCompletedComics(item)
         })
     private val ongoingComicsAdapter = listAdapterOf(initialItems = emptyList(),
     viewHolderCreator = {parent, _ ->
-        parent.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
+        parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
             itemView.setOnClickListener {
                 Toast.makeText(requireContext(), "${ongoingComics.comicLink} clicked", Toast.LENGTH_SHORT).show()
             }
         }
     }, viewHolderBinder = {holder:RecyclerView.ViewHolder,item:ViewComics,_->
-            (holder as BindingViewHolder<ComicItemLayoutBinding>).bindOngoingComics(item)
+            (holder as BindingViewHolder<ComicItemLayoutDiscoverBinding>).bindOngoingComics(item)
         })
 
     private val discoverViewModel:DiscoverViewModel by viewModel()
@@ -150,7 +150,9 @@ class DiscoverFragment:MainNavigationFragment() {
                             val ongoingComics = it.comicsData.ongoingComics.comicsData
                             val comicsByGenre = it.comicsData.comicsByGenre.comicsData
                             when{
-                                completedComics.isEmpty() || popularComics.isEmpty() || latestComics.isEmpty() ||comicsByGenre.isEmpty()|| ongoingComics.isEmpty()->onDataEmptyShowEmptyLayout()
+                                completedComics.isEmpty() || popularComics.isEmpty() || latestComics.isEmpty() ||comicsByGenre.isEmpty()|| ongoingComics.isEmpty()-> {
+                                    onDataEmptyShowEmptyLayout()
+                                }
                                 else->{
                                     completedComicsAdapter.submitList(completedComics)
                                     popularComicsAdapter.submitList(popularComics)

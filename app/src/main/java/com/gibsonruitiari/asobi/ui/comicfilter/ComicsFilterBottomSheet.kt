@@ -10,13 +10,15 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicFilterFragmentBinding
 import com.gibsonruitiari.asobi.databinding.SelectableFilterChipItemBinding
-import com.gibsonruitiari.asobi.ui.comicsadapters.*
-import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreViewModel
+import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
+import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
+import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
+import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.FilterChip
 import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
 import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
@@ -39,6 +41,7 @@ abstract class ComicsFilterBottomSheet:Fragment() {
     private lateinit var filterViewModel:ComicFilterViewModel
     private lateinit var comicFilterFragmentBinding:ComicFilterFragmentBinding
     private lateinit var behavior:BottomSheetBehavior<*>
+    private var filterRecyclerViewAdapter: ListAdapter<FilterChip, BindingViewHolder<SelectableFilterChipItemBinding>> ?=null
 
 
     private val backPressedCallback = object :OnBackPressedCallback(false){
@@ -88,13 +91,13 @@ abstract class ComicsFilterBottomSheet:Fragment() {
         return comicFilterFragmentBinding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         filterViewModel = resolveViewModelDelegate()
-        val filterRecyclerViewAdapter = listAdapterOf(initialItems = filterViewModel.genresList.value,
+        filterRecyclerViewAdapter = listAdapterOf(initialItems = filterViewModel.genresList.value,
             viewHolderCreator = {parent: ViewGroup, _: Int ->
                 parent.viewHolderFrom(SelectableFilterChipItemBinding::inflate)
-        }, viewHolderBinder = {holder: BindingViewHolder<SelectableFilterChipItemBinding>, item: FilterChip, _: Int -> holder.bindFilterChip(item)})
+            }, viewHolderBinder = {holder: BindingViewHolder<SelectableFilterChipItemBinding>, item: FilterChip, _: Int -> holder.bindFilterChip(item)})
         behavior = from(comicFilterFragmentBinding.filterSheet)
         comicFilterFragmentBinding.recyclerviewGenreFilters.apply {
             adapter = filterRecyclerViewAdapter
@@ -130,7 +133,7 @@ abstract class ComicsFilterBottomSheet:Fragment() {
             }
 
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-               updateBackPressedCallbackEnabled(newState)
+                updateBackPressedCallbackEnabled(newState)
             }
         })
         comicFilterFragmentBinding.collapseArrow.setOnClickListener {
@@ -150,6 +153,15 @@ abstract class ComicsFilterBottomSheet:Fragment() {
         }
         updateBackPressedCallbackEnabled(behavior.state)
         resetFilterChoice()
+    }
+    /* this method is called after the fragment is attached to view hierarchy of the parent
+    * Thus initializing the behavior to be associated with our sheet whilst our root component/view isn't
+    * a direct child of Coordinator Layout throws an massive InflateException Error
+    * thus the reason why we do inflation and initialization of most components in onActivityCreated despite
+    * it being deprecated*/
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         launchAndRepeatWithViewLifecycle {
             launch {
                 filterViewModel.contentAlpha.collectLatest {
@@ -158,7 +170,7 @@ abstract class ComicsFilterBottomSheet:Fragment() {
                     comicFilterFragmentBinding.resetFilterBtn.isClickable = it>0f
                 }
             }
-            launch { filterViewModel.genresList.collectLatest { filterRecyclerViewAdapter.submitList(it) }}
+            launch { filterViewModel.genresList.collectLatest { filterRecyclerViewAdapter?.submitList(it) }}
         }
         initializeBasicUiComponents()
     }

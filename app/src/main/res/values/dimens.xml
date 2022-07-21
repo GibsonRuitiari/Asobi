@@ -43,7 +43,8 @@
     <dimen name="margin_small">8dp</dimen>
     <dimen name="ally_min_touch_target">48dp</dimen>
 
-    <dimen name="chip_bg_alpha_checked">0.18dp</dimen>
+    <item name="chip_bg_alpha_checked" format="float" type="dimen">0.18</item>
+
     <dimen name="default_padding">5dp</dimen>
     <dimen name="margin_large">20dp</dimen>
     <dimen name="error_empty_title_size">19sp</dimen>

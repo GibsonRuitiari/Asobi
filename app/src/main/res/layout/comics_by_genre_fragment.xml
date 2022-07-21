@@ -24,5 +24,16 @@
             android:layout_height="?actionBarSize">
         </com.google.android.material.appbar.MaterialToolbar>
     </com.google.android.material.appbar.AppBarLayout>
-
+ <fragment
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     android:id="@+id/filter_sheet"
+     android:name="com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterFragment"
+     android:layout_gravity="bottom"
+     app:behavior_peekHeight="0dp"
+     app:behavior_hideable="true"
+     app:behavior_skipCollapsed="true"
+     tools:layout="@layout/comic_filter_fragment"
+     android:layout_marginBottom="?actionBarSize"
+     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
