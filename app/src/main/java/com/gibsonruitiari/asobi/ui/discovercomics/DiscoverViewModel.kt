@@ -6,7 +6,6 @@ import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.domain.CoroutineScopeOwner
 import com.gibsonruitiari.asobi.utilities.Store
 import com.gibsonruitiari.asobi.domain.DiscoverComicsUseCase
-import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
