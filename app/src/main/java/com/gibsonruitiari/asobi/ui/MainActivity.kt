@@ -2,36 +2,27 @@ package com.gibsonruitiari.asobi.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.Insets
 import androidx.core.view.*
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigationrail.NavigationRailView
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity(), NavigationHost {
+class MainActivity : AppCompatActivity() {
     companion object{
         private const val NAV_ID_NONE=-1
         const val EXTRA_NAVIGATION_ID = "extra.NAVIGATION_ID"
-        private val TOP_LEVEL_DESTINATIONS = setOf(R.id.navigation_comics_by_genre,
-            R.id.navigation_completed_comics,R.id.navigation_latest_comics,
-            R.id.navigation_popular_comics)
     }
     private lateinit var binding: ActivityMainBinding
     private var currentNavId = NAV_ID_NONE
-    private val mainActivityViewModel:MainActivityViewModel by viewModel()
     private lateinit var navController: NavController
     private lateinit var navHostFragment:NavHostFragment
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,50 +32,37 @@ class MainActivity : AppCompatActivity(), NavigationHost {
         setContentView(binding.root)
         navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment
         navController = navHostFragment.navController
-        hookUpNavControllerToDestinationChangedListener()
+      //  hookUpNavControllerToDestinationChangedListener()
         /* get an instance of navigation bar view, note: chances of both being null at the same time are one in a million*/
         val navigationBarView:NavigationBarView = (binding.navRailView ?: binding.navigation) as NavigationBarView
-        NavigationUI.setupWithNavController(navigationBarView, navController)
-        setUpNavigationBarViews()
+        // top level declarations
+        findViewById<BottomNavigationView>(R.id.navigation).setupWithNavController(navController)
 
+        setUpNavigationBarViews()
+        setSupportActionBar(null)
         if (savedInstanceState==null){
             currentNavId = navController.graph.startDestinationId
             val requestedNavId = intent.getIntExtra(EXTRA_NAVIGATION_ID, currentNavId)
             navigateTo(requestedNavId)
         }
+        findViewById<BottomNavigationView>(R.id.navigation).setOnItemSelectedListener {
+            NavigationUI.onNavDestinationSelected(it,navController)
+        }
+
         applyWindowInsetsOnStatusBarScrim()
         applyWindowInsetsOnRootContainer()
-        // observe navigation events
-        lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
-                mainActivityViewModel.navigationActions.collectLatest {
-                    when(it){
-                        is MainActivityNavigationAction.NavigateDiscoverScreen->{
-                         navController.navigate(R.id.navigate_to_discover_screen)
-                        }
-                        is MainActivityNavigationAction.NavigateToSearchScreen->{
-                            navController.navigate(R.id.navigate_to_search_screen)
-                        }
-                    }
-                }
-            }
-        }
+        hookUpNavControllerToDestinationChangedListener()
+
     }
     private fun setUpNavigationBarViews(){
-        binding.navigation?.let {
-            it.setOnItemReselectedListener {  }
-            it.setOnItemSelectedListener(navigationBarViewClickListener)
-
-        }
         binding.navRailView?.let {
-            it.setOnItemReselectedListener {  }
-            it.setOnItemSelectedListener(navigationBarViewClickListener)
             applyWindowInsetsOnNavigationRailView(it)
         }
 
     }
     private fun hookUpNavControllerToDestinationChangedListener(){
         navController.addOnDestinationChangedListener { _, destination, _ ->
+            println("destination: ${destination.id}")
             currentNavId = destination.id
         }
     }
@@ -125,38 +103,13 @@ class MainActivity : AppCompatActivity(), NavigationHost {
                 systemBars.top,0,systemBars.bottom- bottomPadding)).build()
         }
     }
-    private val navigationBarViewClickListener = NavigationBarView.OnItemSelectedListener {
-        when(it.itemId){
-            R.id.menu_item_library ->{
-                true
-            }
-            R.id.menu_item_home ->{
-                mainActivityViewModel.openDiscoverScreen()
-                true
-            }
-            R.id.menu_item_search ->{
-                mainActivityViewModel.openSearchScreen()
-                true
-            }
-            else-> false
-        }
-    }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         currentNavId = navController.currentDestination?.id ?: NAV_ID_NONE
     }
 
-    override fun onUserInteraction() {
-        super.onUserInteraction()
-        /* current fragment might be null so use as? when casting */
-        val currentFragment=navHostFragment.childFragmentManager.primaryNavigationFragment as? MainNavigationFragment
-        currentFragment?.onUserInteraction()
 
-    }
-    override fun registerToolbarWithNavigation(toolbar: Toolbar) {
-       val appBarConfiguration = AppBarConfiguration(TOP_LEVEL_DESTINATIONS)
-      toolbar.setupWithNavController(navController,appBarConfiguration)
-    }
+
 
 }

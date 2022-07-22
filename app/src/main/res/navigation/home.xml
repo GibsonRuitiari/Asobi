@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/home"
+    app:startDestination="@+id/discoverScreen">
+<fragment android:id="@+id/discoverScreen"
+    android:name="com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment"
+    android:label="@string/discover"
+    tools:layout="@layout/discover_comics_fragment">
+    <action android:id="@+id/to_latest_comics"
+        app:destination="@id/navigation_latest_comics"/>
+    <action android:id="@+id/to_popular_comics"
+        app:destination="@id/navigation_popular_comics"/>
+
+    <action android:id="@+id/to_ongoing_comics"
+        app:destination="@id/navigation_ongoing_comics"/>
+
+    <action android:id="@+id/to_completed_comics"
+        app:destination="@id/navigation_completed_comics"/>
+    <action android:id="@+id/to_comics_by_genre"
+        app:destination="@+id/navigation_comics_by_genre"/>
+</fragment>
+    <fragment
+        android:id="@+id/navigation_popular_comics"
+        android:name="com.gibsonruitiari.asobi.ui.popularcomics.PopularComicsFragment"
+        android:label="@string/popular_comics"
+        />
+    <fragment android:id="@+id/navigation_latest_comics"
+        android:name="com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsFragment"
+        android:label="@string/latest_comics"
+        />
+    <fragment android:id="@+id/navigation_completed_comics"
+        android:label="@string/completed_comics"
+        android:name="com.gibsonruitiari.asobi.ui.completedcomics.CompletedComicsFragment"
+        />
+    <fragment android:name="com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsFragment"
+        android:id="@+id/navigation_ongoing_comics"
+        android:label="@string/ongoing_comics" />
+    <fragment android:id="@+id/navigation_comics_by_genre"
+        android:label="@string/comics_by_genre"
+        android:name="com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreFragment" />
+</navigation>

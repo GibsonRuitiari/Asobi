@@ -18,7 +18,8 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/nav_host_fragment_content_main"
-            android:name="com.gibsonruitiari.asobi.utilities.widgets.InsetsNavHostFragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:defaultNavHost="true"
@@ -33,10 +34,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/navigation"
+    app:labelVisibilityMode="auto"
     app:backgroundTint="@color/color_surface"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    android:layout_gravity="start"
+    android:layout_gravity="bottom"
+    app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
+    style="@style/Widget.MaterialComponents.BottomNavigationView"
     app:menu="@menu/navigation_rail_menu"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

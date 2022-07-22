@@ -42,4 +42,13 @@
     <string name="filter">filter</string>
     <string name="menu_item_library">your library</string>
     <string name="error_image">error image</string>
+    <string name="discover_screen">discover_screen</string>
+    <string name="search_screen">Search comics</string>
+    <string name="latest_screen">latest screen</string>
+    <string name="popular_screen">popular screen</string>
+    <string name="ongoing_comics_screen">ongoing screen</string>
+    <string name="completed_screen">completed screen</string>
+    <string name="by_genre_screen">by genre screen</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="user_library_screen">Your library</string>
 </resources>

@@ -5,10 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
+import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
@@ -32,7 +40,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @Suppress("UNCHECKED_CAST")
-class DiscoverFragment:MainNavigationFragment() {
+class DiscoverFragment:Fragment() {
     private var _binding:DiscoverComicsFragmentBinding?=null
     private val discoverComicsFragmentBinding:DiscoverComicsFragmentBinding get() = _binding!!
     private var BindingViewHolder<ComicItemLayoutDiscoverBinding>.completedComics by viewHolderDelegate<ViewComics>()
@@ -126,6 +134,7 @@ class DiscoverFragment:MainNavigationFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = DiscoverComicsFragmentBinding.inflate(inflater,container,false)
+        (requireActivity() as AppCompatActivity?)?.setSupportActionBar(_binding!!.toolbar)
         return discoverComicsFragmentBinding.root
     }
 
@@ -134,6 +143,10 @@ class DiscoverFragment:MainNavigationFragment() {
             /* Fragment is being shown for the first time/a new instance of this fragment is created hence do apply the insets accordingly  */
             discoverComicsFragmentBinding.coordinatorLayout.postDelayed({ discoverComicsFragmentBinding.coordinatorLayout.requestApplyInsetsWhenAttached() },500)
         }
+        setUpDiscoverFragmentToolbar()
+        setUpDiscoverFragmentsRecyclerViews()
+        setUpOnMoreLabelClickListeners()
+
         launchAndRepeatWithViewLifecycle {
             /* Observe the state from view model  */
             launch {
@@ -176,25 +189,26 @@ class DiscoverFragment:MainNavigationFragment() {
                 discoverViewModel.observeSideEffect().collect {
                     when(it){
                         is DiscoverComicsSideEffect.Error ->{
+                            val errorMessage=if (it.message.startsWith("viewcomics")) getString(R.string.network_error_msg) else it.message
                             discoverComicsFragmentBinding.errorStateLayout.emptyErrorStateTitle.text = getString(
                                 R.string.error_state_title)
-                            discoverComicsFragmentBinding.errorStateLayout.emptyErrorStateSubtitle.text= it.message
-                            discoverComicsFragmentBinding.coordinatorLayout.showSnackBar(it.message)
+                            discoverComicsFragmentBinding.errorStateLayout.emptyErrorStateSubtitle.text= errorMessage
+                            discoverComicsFragmentBinding.coordinatorLayout.showSnackBar(errorMessage)
                             onErrorShowErrorLayout()
                         }
                     }
                 }
             }
         }
-        setUpDiscoverFragmentToolbar()
-        setUpDiscoverFragmentsRecyclerViews()
-        setUpOnMoreLabelClickListeners()
+
     }
+
     /* Start: Set up ui components */
     private fun setUpDiscoverFragmentToolbar(){
         // inflate menu
+
         with(discoverComicsFragmentBinding.toolbar){
-            //inflateMenu(R.menu.discover_frag_menu)
+
             setOnMenuItemClickListener {
                 when(it.itemId){
                     R.id.refresh_item->{

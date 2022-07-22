@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/library"
+    app:startDestination="@+id/libraryScreen">
+    <fragment
+        android:id="@+id/libraryScreen"
+        android:name="com.gibsonruitiari.asobi.ui.userlibrary.UserLibrary"
+        tools:layout="@layout/fragment_user_library"
+        android:label="@string/menu_item_library"/>
+</navigation>
