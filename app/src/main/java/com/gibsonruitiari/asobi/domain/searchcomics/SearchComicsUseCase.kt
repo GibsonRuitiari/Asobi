@@ -27,6 +27,5 @@ private val logger: Logger):FlowUseCase<SearchComicsUseCase.SearchComicsUseCaseP
         searchResult =  it.data?.map { sManga -> sMangaToViewComicMapper(sManga) } ?: emptyList(),
         errorMessage = it.throwable?.parseThrowableErrorMessageIntoUsefulMessage())
     }
-
     data class SearchComicsUseCaseParams(val searchTerm:String)
 }
