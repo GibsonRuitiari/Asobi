@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/navigation_discover">
+    <action android:id="@+id/navigate_to_discover_screen"
+        app:destination="@+id/navigation_discover"/>
   <fragment
       android:id="@+id/navigation_discover"
       android:name="com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment"
@@ -46,7 +48,7 @@
     <fragment android:id="@+id/search_fragment"
         android:label="@string/action_search"
         android:name="com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchFragment">
-        <action android:id="@+id/navigate_to_search_fragment"
+        <action android:id="@+id/navigate_to_search_screen"
             app:destination="@id/search_fragment" />
     </fragment>
 </navigation>

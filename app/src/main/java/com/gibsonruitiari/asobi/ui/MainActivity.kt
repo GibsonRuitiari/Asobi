@@ -5,6 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.Insets
 import androidx.core.view.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -14,6 +17,9 @@ import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigationrail.NavigationRailView
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity(), NavigationHost {
     companion object{
@@ -25,7 +31,7 @@ class MainActivity : AppCompatActivity(), NavigationHost {
     }
     private lateinit var binding: ActivityMainBinding
     private var currentNavId = NAV_ID_NONE
-
+    private val mainActivityViewModel:MainActivityViewModel by viewModel()
     private lateinit var navController: NavController
     private lateinit var navHostFragment:NavHostFragment
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +54,21 @@ class MainActivity : AppCompatActivity(), NavigationHost {
         }
         applyWindowInsetsOnStatusBarScrim()
         applyWindowInsetsOnRootContainer()
+        // observe navigation events
+        lifecycleScope.launch {
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
+                mainActivityViewModel.navigationActions.collectLatest {
+                    when(it){
+                        is MainActivityNavigationAction.NavigateDiscoverScreen->{
+                         navController.navigate(R.id.navigate_to_discover_screen)
+                        }
+                        is MainActivityNavigationAction.NavigateToSearchScreen->{
+                            navController.navigate(R.id.navigate_to_search_screen)
+                        }
+                    }
+                }
+            }
+        }
     }
     private fun setUpNavigationBarViews(){
         binding.navigation?.let {
@@ -107,14 +128,14 @@ class MainActivity : AppCompatActivity(), NavigationHost {
     private val navigationBarViewClickListener = NavigationBarView.OnItemSelectedListener {
         when(it.itemId){
             R.id.menu_item_library ->{
-            //    navController.navigate(R.id.action_FirstFragment_to_SecondFragment)
                 true
             }
             R.id.menu_item_home ->{
-
+                mainActivityViewModel.openDiscoverScreen()
                 true
             }
             R.id.menu_item_search ->{
+                mainActivityViewModel.openSearchScreen()
                 true
             }
             else-> false
