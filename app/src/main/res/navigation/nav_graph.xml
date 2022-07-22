@@ -43,4 +43,10 @@
     <fragment android:id="@+id/navigation_comics_by_genre"
         android:label="@string/comics_by_genre"
         android:name="com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreFragment" />
+    <fragment android:id="@+id/search_fragment"
+        android:label="@string/action_search"
+        android:name="com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchFragment">
+        <action android:id="@+id/navigate_to_search_fragment"
+            app:destination="@id/search_fragment" />
+    </fragment>
 </navigation>
