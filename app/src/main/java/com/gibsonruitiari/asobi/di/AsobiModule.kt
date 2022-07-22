@@ -19,6 +19,8 @@ import com.gibsonruitiari.asobi.data.shared.ongoingcomics.OngoingComicsRepoImpl
 import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsDataSource
 import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepo
 import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepoImpl
+import com.gibsonruitiari.asobi.data.shared.searchcomics.SearchComicsDelegate
+import com.gibsonruitiari.asobi.data.shared.searchcomics.SearchComicsRepo
 import com.gibsonruitiari.asobi.domain.bygenre.PagedComicsByGenreObserver
 import com.gibsonruitiari.asobi.domain.completedcomics.PagedCompletedComicsObserver
 import com.gibsonruitiari.asobi.domain.comicchapters.ComicChaptersObserver
@@ -27,12 +29,14 @@ import com.gibsonruitiari.asobi.domain.DiscoverComicsUseCase
 import com.gibsonruitiari.asobi.domain.latestcomics.PagedLatestComicsObserver
 import com.gibsonruitiari.asobi.domain.ongoingcomics.PagedOngoingComicsObserver
 import com.gibsonruitiari.asobi.domain.popularcomics.PagedPopularComicsObserver
+import com.gibsonruitiari.asobi.domain.searchcomics.SearchComicsUseCase
 import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.ui.comicdetails.ComicsDetailsViewModel
 import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterViewModel
 import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterViewModelImpl
 import com.gibsonruitiari.asobi.ui.comichapters.ComicChaptersViewModel
 import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreViewModel
+import com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchViewModel
 import com.gibsonruitiari.asobi.ui.completedcomics.CompletedComicsViewModel
 import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverViewModel
 import com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsViewModel
@@ -57,6 +61,7 @@ val observersModule = module {
     factory { PagedPopularComicsObserver(get(), get()) }
     factory { ComicChaptersObserver(get()) }
     factory { ComicsDetailsObserver(get()) }
+    factory { SearchComicsUseCase(get(),get()) }
     factory { DiscoverComicsUseCase(get(),get(),get(),get(), get()) }
 }
 
@@ -82,6 +87,7 @@ val viewModelsModule= module {
     viewModel { OngoingComicsViewModel(get()) }
     viewModel { PopularComicsViewModel(get()) }
     viewModel { MainActivityViewModel() }
+    viewModel { ComicsSearchViewModel(get()) }
     factory<ComicFilterViewModel>(named("filtersViewModel")) { ComicFilterViewModelImpl(get(named("applicationScope"))) }
 }
 
@@ -92,4 +98,5 @@ val comicsRepositoryModule= module{
     single<ComicsDetailsRepo> { ComicsDetailsRepoImpl() }
     single<PopularComicsRepo> { PopularComicsRepoImpl() }
     single<ComicsByGenreRepo> { ComicsByGenreRepoImpl() }
+    single<SearchComicsRepo> { SearchComicsDelegate() }
 }
