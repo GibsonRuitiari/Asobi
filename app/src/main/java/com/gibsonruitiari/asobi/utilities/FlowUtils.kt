@@ -1,4 +1,4 @@
-package com.gibsonruitiari.asobi.utilities.utils
+package com.gibsonruitiari.asobi.utilities
 
 import com.gibsonruitiari.asobi.data.network.NetworkResource
 import kotlinx.coroutines.flow.Flow

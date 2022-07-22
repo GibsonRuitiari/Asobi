@@ -16,9 +16,17 @@ import com.gibsonruitiari.asobi.ui.uiModels.UiMeasureSpec
 import com.gibsonruitiari.asobi.utilities.ScreenSize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import kotlin.math.roundToInt
 
-
+fun Throwable.parseThrowableErrorMessageIntoUsefulMessage():String = when(this){
+    is UnknownHostException, is SocketTimeoutException, is ConnectException ->{
+        "Loading of comics failed due to your internet connection;please check your connection and try again"
+    }
+    else->"Loading of comics failed due to the following error ${this.message}. ${System.lineSeparator()} Please try again after sometime"
+}
 /** Convenience for callbacks/listeners whose return value indicates an event was consumed. */
 inline fun consume(f: () -> Unit): Boolean {
     f()

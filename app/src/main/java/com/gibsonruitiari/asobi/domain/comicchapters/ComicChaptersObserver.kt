@@ -1,6 +1,6 @@
 package com.gibsonruitiari.asobi.domain.comicchapters
 
-import com.gibsonruitiari.asobi.utilities.utils.toNetworkResource
+import com.gibsonruitiari.asobi.utilities.toNetworkResource
 import com.gibsonruitiari.asobi.data.network.Status
 import com.gibsonruitiari.asobi.data.shared.comicsbychapter.ComicsChapterRepo
 import com.gibsonruitiari.asobi.domain.FlowUseCase

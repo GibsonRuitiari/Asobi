@@ -1,7 +1,7 @@
 package com.gibsonruitiari.asobi.domain
 
 import com.gibsonruitiari.asobi.data.datamodels.Genres
-import com.gibsonruitiari.asobi.utilities.utils.toNetworkResource
+import com.gibsonruitiari.asobi.utilities.toNetworkResource
 import com.gibsonruitiari.asobi.data.datamodels.SManga
 import com.gibsonruitiari.asobi.data.network.NetworkResource
 import com.gibsonruitiari.asobi.data.network.Status
@@ -11,6 +11,7 @@ import com.gibsonruitiari.asobi.data.shared.latestcomics.LatestComicsRepo
 import com.gibsonruitiari.asobi.data.shared.ongoingcomics.OngoingComicsRepo
 import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepo
 import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverComicsResult
+import com.gibsonruitiari.asobi.utilities.extensions.parseThrowableErrorMessageIntoUsefulMessage
 import com.gibsonruitiari.asobi.utilities.sMangaToViewComicMapper
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.Flow
@@ -54,7 +55,7 @@ class DiscoverComicsUseCase constructor(private val latestComicsRepo: LatestComi
         DiscoverComicsResult.DiscoverComicsData(isLoading = it.status == Status.LOADING,
         comicsData =it.data?.map { sMangaToViewComicMapper(it)
         } ?: emptyList(),
-            errorMessage = it.throwable?.message)
+            errorMessage = it.throwable?.parseThrowableErrorMessageIntoUsefulMessage())
     }
 
 }

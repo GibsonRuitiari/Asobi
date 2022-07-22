@@ -2,7 +2,7 @@ package com.gibsonruitiari.asobi
 
 import app.cash.turbine.test
 import com.gibsonruitiari.asobi.utilities.sMangaToViewComicMapper
-import com.gibsonruitiari.asobi.utilities.utils.toNetworkResource
+import com.gibsonruitiari.asobi.utilities.toNetworkResource
 import com.gibsonruitiari.asobi.data.network.Status
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow

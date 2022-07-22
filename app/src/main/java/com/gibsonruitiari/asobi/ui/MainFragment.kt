@@ -317,12 +317,8 @@ abstract class MainFragment:MainNavigationFragment(){
                 }
                 is LoadState.Loading-> onLoadingShowLoadingState()
                 is LoadState.Error->{
-                    val errorMessage = when(val throwable_ = (it.refresh as LoadState.Error).error){
-                        is UnknownHostException, is SocketTimeoutException, is ConnectException->{
-                            getString(R.string.network_error_msg)
-                        }
-                        else-> "Loading of data failed due: ${throwable_.message} ${System.lineSeparator()}Please try again later"
-                    }
+                    val throwable_ = (it.refresh as LoadState.Error).error
+                    val errorMessage=throwable_.parseThrowableErrorMessageIntoUsefulMessage()
                     mainFragmentFrameLayoutContainer.showSnackBar(errorMessage)
                     setEmptyErrorStateTitleAndSubtitle(getString(R.string.error_state_title),
                         errorMessage)
