@@ -5,13 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.gibsonruitiari.asobi.databinding.FragmentSearchBinding
-import com.gibsonruitiari.asobi.ui.MainNavigationFragment
 import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ComicsSearchFragment:MainNavigationFragment() {
+class ComicsSearchFragment:Fragment() {
     private val comicsSearchViewModel:ComicsSearchViewModel by viewModel()
     private  var comicsSearchFragmentBinding:FragmentSearchBinding?=null
     override fun onCreateView(

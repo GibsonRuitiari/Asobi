@@ -6,35 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
-import androidx.navigation.ui.NavigationUI.setupActionBarWithNavController
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutDiscoverBinding
 import com.gibsonruitiari.asobi.databinding.DiscoverComicsFragmentBinding
-import com.gibsonruitiari.asobi.ui.MainNavigationFragment
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ItemMarginRecyclerViewDecorator
-import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
-import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
-import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
-import com.gibsonruitiari.asobi.utilities.extensions.showSnackBar
-import com.gibsonruitiari.asobi.utilities.extensions.requestApplyInsetsWhenAttached
-import com.gibsonruitiari.asobi.utilities.extensions.horizontalLayoutManager
+import com.gibsonruitiari.asobi.utilities.extensions.*
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -268,19 +255,14 @@ class DiscoverFragment:Fragment() {
     private fun setUpOnMoreLabelClickListeners(){
         with(discoverComicsFragmentBinding){
             completedComicsMoreText.setOnClickListener {
-                findNavController().navigate(R.id.to_completed_comics)
             }
             popularComicsMoreText.setOnClickListener {
-                findNavController().navigate(R.id.to_popular_comics)
             }
             latestComicsMoreText.setOnClickListener {
-                findNavController().navigate(R.id.to_latest_comics)
             }
             ongoingComicsMoreText.setOnClickListener {
-                findNavController().navigate(R.id.to_ongoing_comics)
             }
             comicsByGenreMoreText.setOnClickListener {
-                findNavController().navigate(R.id.to_comics_by_genre)
             }
         }
     }

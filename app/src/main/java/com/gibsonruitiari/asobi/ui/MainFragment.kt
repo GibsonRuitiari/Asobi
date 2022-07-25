@@ -12,15 +12,11 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
 import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -41,9 +37,6 @@ import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import kotlinx.coroutines.launch
-import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 
 @Suppress("UNCHECKED_CAST")
 abstract class MainFragment:Fragment(){
@@ -281,10 +274,7 @@ abstract class MainFragment:Fragment(){
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
         fragmentBinding.toolbar.title = toolbarTitle
-        val navController=findNavController()
-        fragmentBinding.toolbar.setupWithNavController(navController,
-            AppBarConfiguration(navController.graph)
-        )
+
         /*Perform collection of multiple flows here  */
         launchAndRepeatWithViewLifecycle {
             launch {  /* Observe paged data */ observePagedData() }

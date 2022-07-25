@@ -6,27 +6,23 @@
     tools:context=".ui.MainActivity"
     android:id="@+id/root_container"
     xmlns:tools="http://schemas.android.com/tools">
-<FrameLayout
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:id="@+id/content_container"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toEndOf="@id/nav_rail_view">
+
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_fragment_content_main"
-        android:name="com.gibsonruitiari.asobi.utilities.widgets.InsetsNavHostFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/nav_rail_view"
+        android:id="@+id/fragment_container" />
+
     <View
         android:id="@+id/status_bar_scrim"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/status_bar_scrim" />
-</FrameLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/color_surface" />
+
     <com.google.android.material.navigationrail.NavigationRailView
         android:layout_width="wrap_content"
         android:id="@+id/nav_rail_view"

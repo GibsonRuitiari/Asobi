@@ -39,7 +39,7 @@ class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverC
                     discoverComicsUseCase.execute(args = params){
                         onStart {
                             coroutineScope.launch {
-                                emit(oldState.copy(isLoading = false))
+                                emit(oldState.copy(isLoading = true))
                             }
                         }
                         onNext {
