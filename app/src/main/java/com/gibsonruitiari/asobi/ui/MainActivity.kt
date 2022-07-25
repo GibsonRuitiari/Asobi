@@ -1,30 +1,96 @@
 package com.gibsonruitiari.asobi.ui
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.Insets
 import androidx.core.view.*
+import androidx.fragment.app.Fragment
+import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
+import com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchFragment
+import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment
+import com.gibsonruitiari.asobi.ui.userlibrary.UserLibrary
+import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
+import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigationrail.NavigationRailView
+import org.koin.android.ext.android.inject
 
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
+    private lateinit var userLibraryFragment:UserLibrary
+    private lateinit var discoverFragment:DiscoverFragment
+    private lateinit var searchFragment:ComicsSearchFragment
+    private val logger:Logger by inject()
+    private val navigationBarViewFragments = ArrayList<Fragment>(3)
+    private var selectedFragmentIndex =0
     private lateinit var navigationBarView: NavigationBarView
+    companion object{
+        private const val selectedIndexTag ="selected index"
+        private const val discoverFragmentTag ="discover fragment tag"
+        private const val searchFragmentTag ="search fragment tag"
+        private const val userLibraryFragmentTag ="user library fragment tag"
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-     WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val fragmentContainerId = binding.fragmentContainer.id
+        if (savedInstanceState==null){
+            /* first time initialization */
+            discoverFragment = DiscoverFragment()
+            searchFragment = ComicsSearchFragment()
+            userLibraryFragment = UserLibrary()
+            supportFragmentManager.beginTransaction()
+                .add(fragmentContainerId,discoverFragment, discoverFragmentTag)
+                .add(fragmentContainerId,searchFragment, searchFragmentTag)
+                .add(fragmentContainerId,userLibraryFragment, userLibraryFragmentTag)
+                .commitNow()
+            navigationBarViewFragments.add(discoverFragment)
+            navigationBarViewFragments.add(searchFragment)
+            navigationBarViewFragments.add(userLibraryFragment)
+        }else{
+            selectedFragmentIndex = savedInstanceState.getInt(selectedIndexTag,0)
+            discoverFragment = supportFragmentManager.findFragmentByTag(discoverFragmentTag) as DiscoverFragment
+            searchFragment = supportFragmentManager.findFragmentByTag(searchFragmentTag) as ComicsSearchFragment
+            userLibraryFragment = supportFragmentManager.findFragmentByTag(userLibraryFragmentTag) as UserLibrary
+        }
 
         /* get an instance of navigation bar view, note: chances of both being null at the same time are one in a million*/
          navigationBarView = (binding.navRailView ?: binding.navigation) as NavigationBarView
         setUpNavigationBarViews()
         applyWindowInsetsOnStatusBarScrim()
         applyWindowInsetsOnRootContainer()
+        val selectedFragment = navigationBarViewFragments[selectedFragmentIndex]
+        setFragmentToBeShownToTheUser(selectedFragment)
+        /* set up on click listeners for navigation bar view  */
+        navigationBarView.setOnItemSelectedListener {
+            when(it.itemId){
+                R.id.discoverScreen ->{
+                    doActionIfWeAreOnDebug { logger.i("discover screen selected; moving to discover screen") }
+                    setFragmentToBeShownToTheUser(discoverFragment)
+                    true
+                }
+                R.id.searchScreen->{
+                    doActionIfWeAreOnDebug { logger.i("search screen selected; moving to search screen") }
+                    setFragmentToBeShownToTheUser(searchFragment)
+                    true
 
+                }
+                R.id.libraryScreen->{
+                    doActionIfWeAreOnDebug{logger.i("library screen selected;moving to library screen")}
+                    setFragmentToBeShownToTheUser(userLibraryFragment)
+                    true
+                }
+                else->false
+            }
+        }
+        /* prevent items from being reselected so don't implement anything here  */
+        navigationBarView.setOnItemReselectedListener{}
     }
 
 
@@ -32,7 +98,6 @@ class MainActivity : AppCompatActivity() {
         binding.navRailView?.let {
             applyWindowInsetsOnNavigationRailView(it)
         }
-
     }
     private fun applyWindowInsetsOnNavigationRailView(navigationRailView: NavigationRailView){
         ViewCompat.setOnApplyWindowInsetsListener(navigationRailView){view,insets->
@@ -67,10 +132,24 @@ class MainActivity : AppCompatActivity() {
                 systemBars.top,0,systemBars.bottom- bottomPadding)).build()
         }
     }
+    private fun setFragmentToBeShownToTheUser(selectedFragment: Fragment){
+        var fragmentTransaction = supportFragmentManager.beginTransaction()
+        navigationBarViewFragments.forEachIndexed { index, fragment ->
+            if (selectedFragment == fragment){
+                fragmentTransaction = fragmentTransaction.show(fragment)
+                selectedFragmentIndex = index
+                doActionIfWeAreOnDebug { logger.i("current shown fragment is $fragment current index is $selectedFragmentIndex") }
+            }else{
+                fragmentTransaction = fragmentTransaction.hide(fragment)
+            }
+        }
+        fragmentTransaction.commit()
+    }
 
-
-
-
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        outState.putInt(selectedIndexTag,selectedFragmentIndex)
+    }
 
 
 }

@@ -1,6 +1,7 @@
 package com.gibsonruitiari.asobi.utilities.extensions
 
 import android.content.res.Resources
+import android.os.Build
 import android.os.Parcel
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.gibsonruitiari.asobi.BuildConfig
 import com.gibsonruitiari.asobi.ui.MainFragment
 import com.gibsonruitiari.asobi.ui.uiModels.UiMeasureSpec
 import com.gibsonruitiari.asobi.utilities.ScreenSize
+import com.gibsonruitiari.asobi.utilities.logging.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.net.ConnectException
@@ -48,6 +51,9 @@ get() = (this * Resources.getSystem().displayMetrics.density).roundToInt()
 
 fun Fragment.resourcesInstance():Resources = requireActivity().resources
 
+inline fun doActionIfWeAreOnDebug(action:()->Unit){
+    if (BuildConfig.DEBUG){ action() }
+}
 /**
  * Map a slideOffset (in the range `[-1, 1]`) to an alpha value based on the desired range.
  * For example, `slideOffsetToAlpha(0.5, 0.25, 1) = 0.33` because 0.5 is 1/3 of the way between
