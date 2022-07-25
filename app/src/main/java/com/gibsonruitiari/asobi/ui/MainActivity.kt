@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
             if (selectedFragment == fragment){
                 fragmentTransaction = fragmentTransaction.show(fragment)
                 selectedFragmentIndex = index
-                doActionIfWeAreOnDebug { logger.i("current shown fragment is $fragment current index is $selectedFragmentIndex") }
+                doActionIfWeAreOnDebug { logger.i("current shown fragment is ${fragment.tag}") }
             }else{
                 fragmentTransaction = fragmentTransaction.hide(fragment)
             }

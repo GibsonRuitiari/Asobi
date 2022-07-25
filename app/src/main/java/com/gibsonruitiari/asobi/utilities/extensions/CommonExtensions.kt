@@ -35,8 +35,7 @@ inline fun consume(f: () -> Unit): Boolean {
     f()
     return true
 }
-inline fun Fragment.launchAndRepeatWithViewLifecycle(minActiveState
-                                                     :Lifecycle.State=Lifecycle.State.STARTED,
+inline fun Fragment.launchAndRepeatWithViewLifecycle(minActiveState:Lifecycle.State=Lifecycle.State.STARTED,
 crossinline block:suspend CoroutineScope.()->Unit){
     viewLifecycleOwner.lifecycleScope.launch {
         viewLifecycleOwner.lifecycle.repeatOnLifecycle(minActiveState){

@@ -6,22 +6,39 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gibsonruitiari.asobi.R
-
+import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
+import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
+import com.gibsonruitiari.asobi.utilities.logging.Logger
+import org.koin.android.ext.android.inject
 
 
 class UserLibrary : Fragment() {
-    private var isFragmentShown:Boolean=false
+    /* By default fragment start out as not hidden but since we are first showing discover frag our default will be true */
+    private var isFragmentHidden:Boolean=true
+    private val logger:Logger by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState==null){
-            savedInstanceState
+        if (savedInstanceState!=null){
+           isFragmentHidden= savedInstanceState.getBoolean(isFragmentHiddenTag,true)
         }
-//        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-//        }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        isFragmentHidden = hidden
+        doActionIfWeAreOnDebug {  logger.i("is fragment hidden $hidden our variable $isFragmentHidden")}
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(isFragmentHiddenTag,isFragmentHidden)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -29,23 +46,10 @@ class UserLibrary : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_user_library, container, false)
     }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment UserLibrary.
-         */
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            UserLibrary()
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
+    companion object{
+        private const val isFragmentHiddenTag ="isFragmentHidden"
     }
+
+
+
 }
