@@ -16,6 +16,8 @@
     <color name="carolina_blue">#8ab4f8</color> <!-- colorPrimary -->
     <color name="cornflower_blue">#669DF6</color> <!-- colorPrimaryVariant -->
 
+    <color name="matte">#171717</color>
+    <color name="aqua_blue">#00BCD4</color>
 
 
     <!--colorBackground appears behind scrollable content and is used for the default window-->

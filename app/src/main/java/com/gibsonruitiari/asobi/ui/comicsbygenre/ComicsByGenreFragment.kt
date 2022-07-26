@@ -5,14 +5,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import com.gibsonruitiari.asobi.R
-import com.gibsonruitiari.asobi.ui.MainFragment
+import com.gibsonruitiari.asobi.ui.PaginatedFragment
 import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterFragment
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class ComicsByGenreFragment: MainFragment() {
+class ComicsByGenreFragment: PaginatedFragment() {
     private val comicsByGenreViewModel:ComicsByGenreViewModel by viewModel()
     private val backPressHandlerCallback = object: OnBackPressedCallback(false){
         override fun handleOnBackPressed() {

@@ -51,4 +51,6 @@
     <string name="by_genre_screen">by genre screen</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="user_library_screen">Your library</string>
+    <string name="settings_button">settings button</string>
+    <string name="notifications_button">notifications button</string>
 </resources>

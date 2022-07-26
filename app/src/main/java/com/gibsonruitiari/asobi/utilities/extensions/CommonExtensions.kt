@@ -1,7 +1,6 @@
 package com.gibsonruitiari.asobi.utilities.extensions
 
 import android.content.res.Resources
-import android.os.Build
 import android.os.Parcel
 import android.view.LayoutInflater
 import android.view.View
@@ -9,16 +8,17 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.core.os.ParcelCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.gibsonruitiari.asobi.BuildConfig
-import com.gibsonruitiari.asobi.ui.MainFragment
-import com.gibsonruitiari.asobi.ui.uiModels.UiMeasureSpec
-import com.gibsonruitiari.asobi.utilities.ScreenSize
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
+import java.lang.Exception
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -42,6 +42,27 @@ crossinline block:suspend CoroutineScope.()->Unit){
             block()
         }
     }
+}
+fun<E> SendChannel<E>.tryOffer(element:E):Boolean = try{
+    trySend(element).isSuccess
+    true
+}catch (_:Exception){
+    false
+}
+inline  fun FragmentManager.setFragmentToBeShownToTheUser(logger: Logger,
+                                                          selectedFragment: Fragment,
+fragmentsArray:ArrayList<Fragment>, updateCurrentFragmentIndex:(index:Int)->Unit){
+    var fragmentTransaction = beginTransaction()
+    fragmentsArray.forEachIndexed { index, fragment ->
+        if (selectedFragment == fragment){
+            fragmentTransaction = fragmentTransaction.show(fragment)
+            updateCurrentFragmentIndex(index)
+            doActionIfWeAreOnDebug { logger.i("current shown fragment is ${fragment.tag}") }
+        }else{
+            fragmentTransaction = fragmentTransaction.hide(fragment)
+        }
+    }
+    fragmentTransaction.commit()
 }
 val Int.dp:Int
 get() = (this * Resources.getSystem().displayMetrics.density).roundToInt()

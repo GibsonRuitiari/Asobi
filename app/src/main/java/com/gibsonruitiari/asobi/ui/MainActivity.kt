@@ -12,6 +12,7 @@ import com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchFragment
 import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment
 import com.gibsonruitiari.asobi.ui.userlibrary.UserLibrary
 import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
+import com.gibsonruitiari.asobi.utilities.extensions.setFragmentToBeShownToTheUser
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigationrail.NavigationRailView
@@ -22,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var userLibraryFragment:UserLibrary
-    private lateinit var discoverFragment:DiscoverFragment
+    private lateinit var mainFragment:MainFragment
     private lateinit var searchFragment:ComicsSearchFragment
     private val logger:Logger by inject()
     private val navigationBarViewFragments = ArrayList<Fragment>(3)
@@ -42,20 +43,20 @@ class MainActivity : AppCompatActivity() {
         val fragmentContainerId = binding.fragmentContainer.id
         if (savedInstanceState==null){
             /* first time initialization */
-            discoverFragment = DiscoverFragment()
+            mainFragment = MainFragment()
             searchFragment = ComicsSearchFragment()
             userLibraryFragment = UserLibrary()
             supportFragmentManager.beginTransaction()
-                .add(fragmentContainerId,discoverFragment, discoverFragmentTag)
+                .add(fragmentContainerId,mainFragment, discoverFragmentTag)
                 .add(fragmentContainerId,searchFragment, searchFragmentTag)
                 .add(fragmentContainerId,userLibraryFragment, userLibraryFragmentTag)
                 .commitNow()
-            navigationBarViewFragments.add(discoverFragment)
+            navigationBarViewFragments.add(mainFragment)
             navigationBarViewFragments.add(searchFragment)
             navigationBarViewFragments.add(userLibraryFragment)
         }else{
             selectedFragmentIndex = savedInstanceState.getInt(selectedIndexTag,0)
-            discoverFragment = supportFragmentManager.findFragmentByTag(discoverFragmentTag) as DiscoverFragment
+            mainFragment = supportFragmentManager.findFragmentByTag(discoverFragmentTag) as MainFragment
             searchFragment = supportFragmentManager.findFragmentByTag(searchFragmentTag) as ComicsSearchFragment
             userLibraryFragment = supportFragmentManager.findFragmentByTag(userLibraryFragmentTag) as UserLibrary
         }
@@ -66,24 +67,23 @@ class MainActivity : AppCompatActivity() {
         applyWindowInsetsOnStatusBarScrim()
         applyWindowInsetsOnRootContainer()
         val selectedFragment = navigationBarViewFragments[selectedFragmentIndex]
-        setFragmentToBeShownToTheUser(selectedFragment)
+        changeFragment(selectedFragment)
         /* set up on click listeners for navigation bar view  */
         navigationBarView.setOnItemSelectedListener {
             when(it.itemId){
-                R.id.discoverScreen ->{
-                    doActionIfWeAreOnDebug { logger.i("discover screen selected; moving to discover screen") }
-                    setFragmentToBeShownToTheUser(discoverFragment)
+                R.id.mainScreen ->{
+                    doActionIfWeAreOnDebug { logger.i("main fragment screen selected;") }
+                    changeFragment(mainFragment)
                     true
                 }
                 R.id.searchScreen->{
-                    doActionIfWeAreOnDebug { logger.i("search screen selected; moving to search screen") }
-                    setFragmentToBeShownToTheUser(searchFragment)
+                    doActionIfWeAreOnDebug { logger.i("search screen selected;") }
+                    changeFragment(searchFragment)
                     true
-
                 }
                 R.id.libraryScreen->{
-                    doActionIfWeAreOnDebug{logger.i("library screen selected;moving to library screen")}
-                    setFragmentToBeShownToTheUser(userLibraryFragment)
+                    doActionIfWeAreOnDebug{logger.i("library screen selected;")}
+                    changeFragment(userLibraryFragment)
                     true
                 }
                 else->false
@@ -132,19 +132,13 @@ class MainActivity : AppCompatActivity() {
                 systemBars.top,0,systemBars.bottom- bottomPadding)).build()
         }
     }
-    private fun setFragmentToBeShownToTheUser(selectedFragment: Fragment){
-        var fragmentTransaction = supportFragmentManager.beginTransaction()
-        navigationBarViewFragments.forEachIndexed { index, fragment ->
-            if (selectedFragment == fragment){
-                fragmentTransaction = fragmentTransaction.show(fragment)
-                selectedFragmentIndex = index
-                doActionIfWeAreOnDebug { logger.i("current shown fragment is ${fragment.tag}") }
-            }else{
-                fragmentTransaction = fragmentTransaction.hide(fragment)
-            }
+    private fun changeFragment(fragment: Fragment){
+        supportFragmentManager.setFragmentToBeShownToTheUser(logger = logger,
+            fragmentsArray = navigationBarViewFragments, selectedFragment = fragment){
+            selectedFragmentIndex = it
         }
-        fragmentTransaction.commit()
     }
+
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)

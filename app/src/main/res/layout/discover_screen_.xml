@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/matte"
+    android:layout_height="match_parent">
+<com.google.android.material.appbar.AppBarLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true">
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:background="@drawable/discover_screen_gradient"
+        android:layout_height="140dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:divider="?android:dividerHorizontal"
+            android:dividerPadding="@dimen/spacing_normal"
+            android:showDividers="middle"
+            android:orientation="horizontal">
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:textSize="24sp"
+                android:layout_weight="2"
+                android:id="@+id/greetings_text"
+                tools:text="Good afternoon" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end"
+                android:layout_margin="@dimen/margin_small"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/notifications_button"
+                android:scaleType="centerInside"
+                android:src="@drawable/notification_bell"
+                tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck" />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end"
+                android:layout_margin="@dimen/margin_small"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/settings_button"
+                android:scaleType="centerInside"
+                android:src="@drawable/settings_icon"
+                tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck" />
+        </LinearLayout>
+    </androidx.appcompat.widget.Toolbar>
+</com.google.android.material.appbar.AppBarLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fitsSystemWindows="true"
+        android:background="@color/aqua_blue"
+        android:layout_gravity="top"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

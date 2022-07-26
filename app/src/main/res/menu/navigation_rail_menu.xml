@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/discoverScreen"
+        android:id="@+id/mainScreen"
         android:enabled="true"
         android:icon="@drawable/ic_baseline_weekend_24"
         android:title="@string/menu_item_home"/>
