@@ -18,6 +18,9 @@
 
     <style name="TextAppearance.Asobi.Headline4" parent="TextAppearance.MaterialComponents.Headline4">
         <!--Your custom type style here-->
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="TextAppearance.Asobi.Headline5" parent="TextAppearance.MaterialComponents.Headline5">
