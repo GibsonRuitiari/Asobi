@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
 import com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchFragment
-import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment
 import com.gibsonruitiari.asobi.ui.userlibrary.UserLibrary
 import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
 import com.gibsonruitiari.asobi.utilities.extensions.setFragmentToBeShownToTheUser
@@ -67,23 +66,23 @@ class MainActivity : AppCompatActivity() {
         applyWindowInsetsOnStatusBarScrim()
         applyWindowInsetsOnRootContainer()
         val selectedFragment = navigationBarViewFragments[selectedFragmentIndex]
-        changeFragment(selectedFragment)
+        navigateTo(selectedFragment)
         /* set up on click listeners for navigation bar view  */
         navigationBarView.setOnItemSelectedListener {
             when(it.itemId){
                 R.id.mainScreen ->{
                     doActionIfWeAreOnDebug { logger.i("main fragment screen selected;") }
-                    changeFragment(mainFragment)
+                    navigateTo(mainFragment)
                     true
                 }
                 R.id.searchScreen->{
                     doActionIfWeAreOnDebug { logger.i("search screen selected;") }
-                    changeFragment(searchFragment)
+                    navigateTo(searchFragment)
                     true
                 }
                 R.id.libraryScreen->{
                     doActionIfWeAreOnDebug{logger.i("library screen selected;")}
-                    changeFragment(userLibraryFragment)
+                    navigateTo(userLibraryFragment)
                     true
                 }
                 else->false
@@ -132,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                 systemBars.top,0,systemBars.bottom- bottomPadding)).build()
         }
     }
-    private fun changeFragment(fragment: Fragment){
+    private fun navigateTo(fragment: Fragment){
         supportFragmentManager.setFragmentToBeShownToTheUser(logger = logger,
             fragmentsArray = navigationBarViewFragments, selectedFragment = fragment){
             selectedFragmentIndex = it
@@ -145,5 +144,14 @@ class MainActivity : AppCompatActivity() {
         outState.putInt(selectedIndexTag,selectedFragmentIndex)
     }
 
+    override fun onBackPressed() {
+        val currentFragment = navigationBarViewFragments[selectedFragmentIndex]
+        when{
+            currentFragment!=mainFragment->{
+                navigateTo(mainFragment)
+            }
+            else-> super.onBackPressed()
+            }
+    }
 
 }
