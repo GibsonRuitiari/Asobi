@@ -247,9 +247,9 @@ class DiscoverFragment:Fragment() {
 
     /* Start: Utility functions related to DiscoverFragment  */
 
-    val errorTitle:AppCompatTextView
+    private val errorTitle:AppCompatTextView
     get() =(discoverFragmentErrorLayout as ErrorStateLayout).errorTitle
-    val errorSubtitle:AppCompatTextView
+    private val errorSubtitle:AppCompatTextView
     get() =(discoverFragmentErrorLayout as ErrorStateLayout).subtitleError
 
     private fun DiscoverComicsState.isDataEmpty( ):Boolean{
