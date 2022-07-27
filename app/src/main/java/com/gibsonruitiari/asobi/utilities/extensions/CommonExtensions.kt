@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.gibsonruitiari.asobi.BuildConfig
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.launch
@@ -25,7 +26,14 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import kotlin.math.roundToInt
 
-/*  Utility methods for our parent container */
+
+
+fun Job?.cancelIfActive(){
+   this?.let {
+       if (it.isActive) it.cancel()
+   }
+}
+/*  Utility methods for our ConstraintLayout container */
  fun ConstraintSet.setViewLayoutParams(viewId:Int, width:Int, height:Int){
     constrainHeight(viewId, height)
     constrainWidth(viewId, width)
@@ -61,13 +69,12 @@ inline fun consume(f: () -> Unit): Boolean {
     return true
 }
 inline fun Fragment.launchAndRepeatWithViewLifecycle(minActiveState:Lifecycle.State=Lifecycle.State.STARTED,
-crossinline block:suspend CoroutineScope.()->Unit){
-    viewLifecycleOwner.lifecycleScope.launch {
+crossinline block:suspend CoroutineScope.()->Unit):Job = viewLifecycleOwner.lifecycleScope.launch {
         viewLifecycleOwner.lifecycle.repeatOnLifecycle(minActiveState){
             block()
         }
     }
-}
+
 fun<E> SendChannel<E>.tryOffer(element:E):Boolean = try{
     trySend(element).isSuccess
     true

@@ -23,7 +23,7 @@
     <string name="action_search">search comics</string>
     <string name="error_state_title">Shucks! X_x</string>
     <string name="empty_title">Data was empty, try retrying by pulling up the swipe-refresh listener/choose another genre</string>
-    <string name="empty_subtitle">Try retrying or search for something..</string>
+    <string name="empty_subtitle">Our elves failed to find data relating to your action; Try retrying or search for something.</string>
     <string name="cd_retry">retry</string>
     <string name="network_error_msg">Loading of comics failed due to network error; check your internet connection</string>
     <string name="ongoing_comics">Ongoing comics</string>
@@ -53,4 +53,5 @@
     <string name="user_library_screen">Your library</string>
     <string name="settings_button">settings button</string>
     <string name="notifications_button">notifications button</string>
+    <string name="domain_name">viewcomics</string>
 </resources>

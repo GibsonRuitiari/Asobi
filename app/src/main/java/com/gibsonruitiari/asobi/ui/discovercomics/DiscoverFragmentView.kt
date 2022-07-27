@@ -37,6 +37,7 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
     var appBarViewScrim:View
     var loadingLayout:LoadingLayout
     var errorLayout:ConstraintLayout
+    var parentContainer:NestedScrollView
     lateinit var notificationsButton:AppCompatImageButton
     lateinit var settingsButton:AppCompatImageButton
     lateinit var latestComicsRecyclerView: RecyclerView
@@ -47,6 +48,7 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
     lateinit var completedComicsMoreText:AppCompatTextView
 
 
+
     init {
        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
        ViewGroup.LayoutParams.MATCH_PARENT)
@@ -55,14 +57,14 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
         background = resources.getDrawable(R.color.matte,null)
         appBarViewScrim = discoverFragmentStatusBarViewScrim(this.context)
         addView(appBarViewScrim)
-        loadingLayout = discoverFragmentLoadingLayout(this.context) as LoadingLayout
+        loadingLayout = discoverFragmentLoadingLayout(this.context).apply { visibility=View.GONE } as LoadingLayout
         addView(loadingLayout)
         errorLayout = ErrorStateLayout(this.context).apply { visibility=View.GONE }
         addView(errorLayout)
         appBarLayout = discoverFragmentAppBarLayout(this.context).apply { visibility=View.GONE }
         addView(appBarLayout)
-        val nestedScrollView =discoverFragmentNestedScrollView(this.context).apply { visibility=View.GONE }
-        addView(nestedScrollView)
+         parentContainer =discoverFragmentNestedScrollView(this.context).apply { visibility=View.GONE }
+        addView(parentContainer)
     }
     private fun discoverFragmentAppBarLayout(context: Context):AppBarLayout{
         val appBarLayout = AppBarLayout(context)
