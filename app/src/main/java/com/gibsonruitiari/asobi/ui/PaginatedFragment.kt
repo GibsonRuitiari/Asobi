@@ -29,19 +29,27 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.composedPagedAdapter
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
+import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ExtendedFabBehavior
 import com.gibsonruitiari.asobi.utilities.StatusBarScrimBehavior
 import com.gibsonruitiari.asobi.utilities.extensions.*
+import com.gibsonruitiari.asobi.utilities.logging.AsobiLogger
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 @Suppress("UNCHECKED_CAST")
 abstract class PaginatedFragment:Fragment(){
     private var _baseFragmentBinding: BaseFragmentBinding?=null
     private val fragmentBinding get() = _baseFragmentBinding!!
+    private var isFragmentHidden:Boolean=true
+    private var loadingJob:Job?=null
+    private val logger:AsobiLogger by inject()
+
     var pagingListAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
     abstract val toolbarTitle:String
     abstract suspend fun observePagedData()
@@ -62,6 +70,16 @@ abstract class PaginatedFragment:Fragment(){
     private lateinit var mainFragmentErrorEmptyTitle:AppCompatTextView
     /* End of view variables  */
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (savedInstanceState!=null){
+            isFragmentHidden=savedInstanceState.getBoolean(isFragmentHiddenTag,true)
+        }
+    }
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(isFragmentHiddenTag,isFragmentHidden)
+    }
 
     private var BindingViewHolder<ComicItemLayoutBinding>.item by viewHolderDelegate<ViewComics>()
     private fun BindingViewHolder<ComicItemLayoutBinding>.bind(viewComics: ViewComics?){
@@ -275,13 +293,29 @@ abstract class PaginatedFragment:Fragment(){
         setUpSwipeRefreshWidget()
         fragmentBinding.toolbar.title = toolbarTitle
 
-        /*Perform collection of multiple flows here  */
-        launchAndRepeatWithViewLifecycle {
-            launch {  /* Observe paged data */ observePagedData() }
-
-        }
+//        launchAndRepeatWithViewLifecycle {
+//            launch {  /* Observe paged data */ observePagedData() }
+//
+//        }
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        isFragmentHidden=hidden
+        doActionIfWeAreOnDebug { logger.i("is paginated fragment hidden $hidden")}
+        when{
+            !isFragmentHidden->{
+                observeStateFromViewModel()
+            }
+            else->loadingJob.cancelIfActive()
+        }
+    }
+    private fun observeStateFromViewModel(){
+        loadingJob?.cancel()
+        loadingJob=launchAndRepeatWithViewLifecycle {
+            launch {  /* Observe paged data */ observePagedData() }
+        }
+    }
 
     /*Start:Show Correct State based on the data events observed above */
     private fun onDataLoadedSuccessfullyShowData(){
@@ -388,5 +422,9 @@ abstract class PaginatedFragment:Fragment(){
         super.onDestroy()
         _baseFragmentBinding = null
         pagingListAdapter =null
+    }
+
+    companion object{
+        private const val isFragmentHiddenTag ="paginatedFragmentIsHiddenTag"
     }
 }

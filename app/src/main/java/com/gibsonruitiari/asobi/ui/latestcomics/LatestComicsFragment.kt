@@ -20,4 +20,5 @@ class LatestComicsFragment: PaginatedFragment() {
             pagingListAdapter?.submitData(it)
         }
     }
+
 }

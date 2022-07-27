@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutDiscoverBinding
+import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
@@ -34,11 +35,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @Suppress("UNCHECKED_CAST")
 class DiscoverFragment:Fragment() {
     private val discoverViewModel:DiscoverViewModel by viewModel()
+    private val mainViewModel:MainActivityViewModel by sharedViewModel()
     private val logger:AsobiLogger by inject()
     private var isFragmentHidden:Boolean=true
     private var dataLoadingJob:Job?=null
