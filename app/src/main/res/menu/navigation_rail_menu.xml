@@ -3,17 +3,17 @@
     <item
         android:id="@+id/mainScreen"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_weekend_24"
+        android:icon="@drawable/ic_home_filled"
         android:title="@string/menu_item_home"/>
     <item
         android:id="@+id/searchScreen"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_search_24"
+        android:icon="@drawable/ic_search_outline"
         android:title="@string/menu_item_search"/>
     <item
         android:id="@+id/libraryScreen"
         android:enabled="true"
-        android:icon="@drawable/ic_baseline_bookmarks_24"
+        android:icon="@drawable/ic_book_outline"
         android:title="@string/menu_item_library"/>
 
 
