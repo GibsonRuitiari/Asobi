@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
@@ -216,8 +217,20 @@ class DiscoverFragment:Fragment() {
                 adapter = latestComicsAdapter
                 addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
                 setHasFixedSize(true)
+              //  onScrollStateChanged()
 
             }
+            latestComicsRecyclerView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState==RecyclerView.SCROLL_STATE_IDLE){
+                       // recyclerView.getChildLayoutPosition()
+                        (recyclerView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+                     //   recyclerView.layoutManager?.getChildAt()
+
+                    }
+                }
+            })
             with(completedComicsRecyclerview){
                 linearSnapHelper.attachToRecyclerView(this)
                 layoutManager = horizontalLayoutManager()

@@ -44,7 +44,7 @@ fun RecyclerView.scrollToTop() {
         }
     }
 }
-private fun RecyclerView.LayoutManager?.findFirstVisibleItemPosition(): Int {
+fun RecyclerView.LayoutManager?.findFirstVisibleItemPosition(): Int {
     return when (this) {
         is LinearLayoutManager -> findFirstVisibleItemPosition()
         is GridLayoutManager -> findFirstVisibleItemPosition()
