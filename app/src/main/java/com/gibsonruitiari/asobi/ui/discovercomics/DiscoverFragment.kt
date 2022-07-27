@@ -200,7 +200,7 @@ class DiscoverFragment:Fragment() {
         adapter = completedComicsAdapter
         addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
         setHasFixedSize(true)
-        // bottom padding
+        // bottom padding to the last recycler-view
         doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
             val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(bottom = viewPaddingState.bottom+ systemInsets.bottom + resources.getDimension(R.dimen.default_padding).toInt())}
