@@ -10,9 +10,12 @@ import androidx.fragment.app.FragmentContainerView
 import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment
 import com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsFragment
 import com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsFragment
+import com.gibsonruitiari.asobi.utilities.extensions.cancelIfActive
+import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
 import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
 import com.gibsonruitiari.asobi.utilities.extensions.setFragmentToBeShownToTheUser
 import com.gibsonruitiari.asobi.utilities.logging.Logger
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -26,11 +29,14 @@ class MainFragment:Fragment() {
     private lateinit var ongoingComicsFragment:OngoingComicsFragment
     private lateinit var fragmentContainerView: FragmentContainerView
     private var currentFragmentIndex =0
+    private var navigationEventsJob:Job?=null
+    private var isFragmentHidden:Boolean=false
     companion object{
         private const val discoverFragmentTag ="discover fragment"
         private const val latestComicsFragmentTag ="latest comics fragment"
         private const val ongoingComicsFragmentTag ="ongoing comics fragment"
         private const val currentFragmentIndexKey ="current fragment"
+        private const val isFragmentHiddenTag="mainfragmentIsHiddenTag"
     }
     private val onBackPressedCallback = object :OnBackPressedCallback(false){
         override fun handleOnBackPressed() {
@@ -55,6 +61,7 @@ class MainFragment:Fragment() {
             mainScreenFragments.add(latestComicsFragment)
             mainScreenFragments.add(ongoingComicsFragment)
         }else{
+            isFragmentHidden=savedInstanceState.getBoolean(isFragmentHiddenTag,false)
             currentFragmentIndex= savedInstanceState.getInt(currentFragmentIndexKey,0)
             ongoingComicsFragment = childFragmentManager.findFragmentByTag(ongoingComicsFragmentTag) as OngoingComicsFragment
             discoverFragment = childFragmentManager.findFragmentByTag(discoverFragmentTag) as DiscoverFragment
@@ -77,13 +84,33 @@ class MainFragment:Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(currentFragmentIndexKey,currentFragmentIndex)
+        outState.putBoolean(isFragmentHiddenTag,isFragmentHidden)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
+        doActionIfWeAreOnDebug { logger.i("is main fragment showing $hidden") }
+        isFragmentHidden=hidden
         if (hidden){
+            navigationEventsJob.cancelIfActive()
+            /* Important to ensure children[fragments] too handle their states well  */
             discoverFragment.onHiddenChanged(true)
             latestComicsFragment.onHiddenChanged(true)
+            ongoingComicsFragment.onHiddenChanged(true)
+        }else{
+            observeNavigationEventsFromViewModel()
+        }
+    }
+    private fun observeNavigationEventsFromViewModel(){
+        navigationEventsJob?.cancel()
+        navigationEventsJob=launchAndRepeatWithViewLifecycle {
+            mainFragmentViewModel.navigationEvents.collectLatest {
+                when(it){
+                    MainFragmentNavigationAction.NavigateToDiscoverScreen -> navigateTo(discoverFragment)
+                    MainFragmentNavigationAction.NavigateToLatestComicsScreen -> navigateTo(latestComicsFragment)
+                    MainFragmentNavigationAction.NavigateToOngoingComicsScreen -> navigateTo(ongoingComicsFragment)
+                }
+            }
         }
     }
     override fun onCreateView(
@@ -95,16 +122,5 @@ class MainFragment:Fragment() {
         fragmentContainerView=parentContainer.fragmentContainerView
         return parentContainer
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        launchAndRepeatWithViewLifecycle {
-            mainFragmentViewModel.navigationEvents.collectLatest {
-                when(it){
-                    MainFragmentNavigationAction.NavigateToDiscoverScreen -> navigateTo(discoverFragment)
-                    MainFragmentNavigationAction.NavigateToLatestComicsScreen -> navigateTo(latestComicsFragment)
-                    MainFragmentNavigationAction.NavigateToOngoingComicsScreen -> navigateTo(ongoingComicsFragment)
-                }
-            }
-        }
-    }
+
 }

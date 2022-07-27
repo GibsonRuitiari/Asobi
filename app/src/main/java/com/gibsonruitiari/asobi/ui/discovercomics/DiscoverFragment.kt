@@ -246,7 +246,6 @@ class DiscoverFragment:Fragment() {
     /* End: Respond to events by showing the requisite state on the screen to the user */
 
     /* Start: Utility functions related to DiscoverFragment  */
-
     private val errorTitle:AppCompatTextView
     get() =(discoverFragmentErrorLayout as ErrorStateLayout).errorTitle
     private val errorSubtitle:AppCompatTextView
