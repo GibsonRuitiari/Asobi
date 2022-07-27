@@ -121,7 +121,7 @@ class DiscoverFragment:Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = DiscoverComicsFragmentBinding.inflate(inflater,container,false)
-        (requireActivity() as AppCompatActivity?)?.setSupportActionBar(_binding!!.toolbar)
+
         return discoverComicsFragmentBinding.root
     }
 
@@ -303,8 +303,5 @@ class DiscoverFragment:Fragment() {
         }
     }
     /* End: Respond to events by showing the requisite state on the screen to the user */
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
+
 }

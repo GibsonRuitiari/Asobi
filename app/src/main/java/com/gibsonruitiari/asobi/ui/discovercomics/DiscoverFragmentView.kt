@@ -35,7 +35,7 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
 
     var appBarLayout:AppBarLayout
     var appBarViewScrim:View
-    var loadingLayout:FrameLayout
+    var loadingLayout:LoadingLayout
     var errorLayout:ConstraintLayout
     lateinit var notificationsButton:AppCompatImageButton
     lateinit var settingsButton:AppCompatImageButton
@@ -55,7 +55,7 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
         background = resources.getDrawable(R.color.matte,null)
         appBarViewScrim = discoverFragmentStatusBarViewScrim(this.context)
         addView(appBarViewScrim)
-        loadingLayout = discoverFragmentLoadingLayout(this.context)
+        loadingLayout = discoverFragmentLoadingLayout(this.context) as LoadingLayout
         addView(loadingLayout)
         errorLayout = ErrorStateLayout(this.context).apply { visibility=View.GONE }
         addView(errorLayout)
