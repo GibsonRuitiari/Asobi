@@ -19,6 +19,11 @@ import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.utilities.StatusBarScrimBehavior
+import com.gibsonruitiari.asobi.utilities.extensions.applyMargin
+import com.gibsonruitiari.asobi.utilities.extensions.constrainTopToParent
+import com.gibsonruitiari.asobi.utilities.extensions.constrainStartToParent
+import com.gibsonruitiari.asobi.utilities.extensions.constrainEndToParent
+import com.gibsonruitiari.asobi.utilities.extensions.setViewLayoutParams
 import com.gibsonruitiari.asobi.utilities.extensions.dp
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
@@ -276,30 +281,7 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
     ):RecyclerView =  RecyclerView(context).apply {
         id=ViewCompat.generateViewId()
     }
-    /*  Utility methods for our parent container */
-    private fun ConstraintSet.setViewLayoutParams(viewId:Int,width:Int, height:Int){
-        constrainHeight(viewId, height)
-        constrainWidth(viewId, width)
-    }
-    private fun ConstraintSet.applyMargin(viewId: Int,marginStart:Int=0,
-    marginEnd:Int=0,marginBottom:Int=0,marginTop:Int=0){
-        setMargin(viewId,ConstraintSet.START,marginStart)
-        setMargin(viewId,ConstraintSet.END,marginEnd)
-        setMargin(viewId,ConstraintSet.TOP,marginTop)
-        setMargin(viewId,ConstraintSet.BOTTOM,marginBottom)
-    }
-    private infix fun ConstraintSet.constrainStartToParent(viewId: Int){
-        connect(viewId,ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START)
-    }
-    private infix fun ConstraintSet.constrainTopToParent(viewId: Int){
-        connect(viewId,ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP)
-    }
-    private infix fun ConstraintSet.constrainBottomToParent(viewId: Int){
-        connect(viewId,ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM)
-    }
-    private infix fun ConstraintSet.constrainEndToParent(viewId: Int){
-        connect(viewId,ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END)
-    }
+
     private fun discoverScreenGreetingMessage():String{
         val hour by lazy { LocalTime.now().hour }
         return when{

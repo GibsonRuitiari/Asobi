@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.os.ParcelCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -24,6 +25,30 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import kotlin.math.roundToInt
 
+/*  Utility methods for our parent container */
+ fun ConstraintSet.setViewLayoutParams(viewId:Int, width:Int, height:Int){
+    constrainHeight(viewId, height)
+    constrainWidth(viewId, width)
+}
+ fun ConstraintSet.applyMargin(viewId: Int, marginStart:Int=0,
+                                      marginEnd:Int=0, marginBottom:Int=0, marginTop:Int=0){
+    setMargin(viewId, ConstraintSet.START,marginStart)
+    setMargin(viewId, ConstraintSet.END,marginEnd)
+    setMargin(viewId, ConstraintSet.TOP,marginTop)
+    setMargin(viewId, ConstraintSet.BOTTOM,marginBottom)
+}
+ infix fun ConstraintSet.constrainStartToParent(viewId: Int){
+    connect(viewId, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+}
+ infix fun ConstraintSet.constrainTopToParent(viewId: Int){
+    connect(viewId, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+}
+ infix fun ConstraintSet.constrainBottomToParent(viewId: Int){
+    connect(viewId, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+}
+ infix fun ConstraintSet.constrainEndToParent(viewId: Int){
+    connect(viewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+}
 fun Throwable.parseThrowableErrorMessageIntoUsefulMessage():String = when(this){
     is UnknownHostException, is SocketTimeoutException, is ConnectException ->{
         "Loading of comics failed due to your internet connection;please check your connection and try again"
