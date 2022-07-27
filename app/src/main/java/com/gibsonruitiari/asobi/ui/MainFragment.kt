@@ -42,7 +42,7 @@ class MainFragment:Fragment() {
         override fun handleOnBackPressed() {
             val currentFragment=mainScreenFragments[currentFragmentIndex]
             if (currentFragment!=discoverFragment){
-                navigateTo(discoverFragment)
+                mainFragmentViewModel.openDiscoverScreen()
             }else requireActivity().onBackPressed()
         }
     }

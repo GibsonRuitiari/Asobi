@@ -215,9 +215,12 @@ class DiscoverFragment:Fragment() {
     }
     /* Navigate to the specific fragment when more button is clicked */
     private fun onMoreLabelClickListeners(){
-    discoverFragmentPopularComicsMoreLabel.setOnClickListener { doActionIfWeAreOnDebug { discoverFragmentParentContainer.showSnackBar("popular comics label clicked");logger.i("popular comics label clicked") } }
+    discoverFragmentPopularComicsMoreLabel.setOnClickListener {
+        doActionIfWeAreOnDebug { discoverFragmentParentContainer.showSnackBar("popular comics label clicked");logger.i("popular comics label clicked") } }
     discoverFragmentCompletedComicsMoreLabel.setOnClickListener { doActionIfWeAreOnDebug { discoverFragmentParentContainer.showSnackBar("completed comics label clicked");logger.i("completed comics label clicked") } }
-    discoverFragmentLatestComicsMoreLabel.setOnClickListener { doActionIfWeAreOnDebug { discoverFragmentParentContainer.showSnackBar("latest comics label clicked");logger.i("latest comics label clicked") } }
+    discoverFragmentLatestComicsMoreLabel.setOnClickListener {
+        mainViewModel.openLatestComicsScreen()
+        doActionIfWeAreOnDebug { discoverFragmentParentContainer.showSnackBar("latest comics label clicked");logger.i("latest comics label clicked") } }
     }
     /* End: Set up ui components */
 
