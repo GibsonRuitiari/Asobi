@@ -2,8 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/color_surface"
+    android:background="@color/matte"
     android:layout_width="match_parent"
+
     android:layout_height="match_parent">
 
     <ImageView
@@ -18,18 +19,22 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/empty_error_state_title"
         tools:ignore="ContentDescription" />
+
+
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/retry_button"
         android:layout_width="@dimen/retry_button_width_dimen"
         android:layout_height="@dimen/retry_button_height_dimen"
-        android:id="@+id/retry_button"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/empty_error_state_subtitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="@dimen/keyline_7"
-        android:textAllCaps="false"
+        android:backgroundTint="@color/aqua_blue"
         android:text="@string/cd_retry"
-        tools:visibility="visible"/>
+        android:textAllCaps="false"
+        android:textColor="#283593"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/empty_error_state_subtitle"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/empty_error_state_title"
@@ -41,6 +46,7 @@
         android:textAlignment="center"
         android:gravity="center"
         android:textSize="16sp"
+        android:textColor="@android:color/white"
         android:fontFamily="sans-serif-medium"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -58,6 +64,7 @@
         android:textAlignment="center"
         android:gravity="center"
         android:textSize="14sp"
+        android:textColor="@android:color/white"
         android:fontFamily="sans-serif-light"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -2,12 +2,14 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true"
     android:background="@color/matte"
     android:layout_height="match_parent">
 <com.google.android.material.appbar.AppBarLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:visibility="gone"
     android:fitsSystemWindows="true">
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
@@ -59,6 +61,64 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fitsSystemWindows="true"
-        android:background="@color/aqua_blue"
+        android:background="@android:color/transparent"
         android:layout_gravity="top"/>
+    <include layout="@layout/empty_error_state_layout"
+        android:id="@+id/empty_state_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:visibility="gone"
+        tools:ignore="SpeakableTextPresentCheck">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="143dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/latest_comics_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="@string/latest_comics"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"
+                app:layout_constraintBottom_toTopOf="@+id/latest_comics_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Latest Comics" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/latest_comics_more_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:gravity="center"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="@string/more_string"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/latest_comics_recycler_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginStart="@dimen/margin_small"
+                android:layout_marginEnd="@dimen/margin_small"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/latest_comics_label" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
