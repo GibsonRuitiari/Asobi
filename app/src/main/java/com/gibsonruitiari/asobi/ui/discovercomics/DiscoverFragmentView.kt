@@ -25,6 +25,7 @@ import com.gibsonruitiari.asobi.utilities.extensions.constrainStartToParent
 import com.gibsonruitiari.asobi.utilities.extensions.constrainEndToParent
 import com.gibsonruitiari.asobi.utilities.extensions.setViewLayoutParams
 import com.gibsonruitiari.asobi.utilities.extensions.dp
+import com.gibsonruitiari.asobi.utilities.widgets.ErrorStateLayout
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
 import java.time.LocalTime
@@ -34,6 +35,8 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
 
     var appBarLayout:AppBarLayout
     var appBarViewScrim:View
+    var loadingLayout:FrameLayout
+    var errorLayout:ConstraintLayout
     lateinit var notificationsButton:AppCompatImageButton
     lateinit var settingsButton:AppCompatImageButton
     lateinit var latestComicsRecyclerView: RecyclerView
@@ -43,7 +46,7 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
     lateinit var completedComicsRecyclerView: RecyclerView
     lateinit var completedComicsMoreText:AppCompatTextView
 
-    var loadingLayout:FrameLayout
+
     init {
        layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
        ViewGroup.LayoutParams.MATCH_PARENT)
@@ -54,6 +57,8 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
         addView(appBarViewScrim)
         loadingLayout = discoverFragmentLoadingLayout(this.context)
         addView(loadingLayout)
+        errorLayout = ErrorStateLayout(this.context).apply { visibility=View.GONE }
+        addView(errorLayout)
         appBarLayout = discoverFragmentAppBarLayout(this.context).apply { visibility=View.GONE }
         addView(appBarLayout)
         val nestedScrollView =discoverFragmentNestedScrollView(this.context).apply { visibility=View.GONE }
