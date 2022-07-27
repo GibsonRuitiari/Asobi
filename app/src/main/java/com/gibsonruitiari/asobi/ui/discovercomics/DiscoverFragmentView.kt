@@ -38,6 +38,7 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
     var loadingLayout:LoadingLayout
     var errorLayout:ConstraintLayout
     var parentContainer:NestedScrollView
+    lateinit var dataContainerConstraintLayout: ConstraintLayout
     lateinit var notificationsButton:AppCompatImageButton
     lateinit var settingsButton:AppCompatImageButton
     lateinit var latestComicsRecyclerView: RecyclerView
@@ -158,8 +159,8 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
           ViewGroup.LayoutParams.MATCH_PARENT)
           isFillViewport=true
       }
-        val constraintLayout = discoverFragmentConstraintLayout(nestedScrollView.context)
-        nestedScrollView.addView(constraintLayout)
+        dataContainerConstraintLayout = discoverFragmentConstraintLayout(nestedScrollView.context)
+        nestedScrollView.addView(dataContainerConstraintLayout)
         return nestedScrollView
     }
     private fun discoverFragmentConstraintLayout(context: Context):ConstraintLayout{

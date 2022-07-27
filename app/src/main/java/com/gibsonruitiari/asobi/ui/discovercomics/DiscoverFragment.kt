@@ -25,7 +25,14 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ItemMarginRecyclerViewDecorator
-import com.gibsonruitiari.asobi.utilities.extensions.*
+import com.gibsonruitiari.asobi.utilities.extensions.cancelIfActive
+import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
+import com.gibsonruitiari.asobi.utilities.extensions.showSnackBar
+import com.gibsonruitiari.asobi.utilities.extensions.requestApplyInsetsWhenAttached
+import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
+import com.gibsonruitiari.asobi.utilities.extensions.horizontalLayoutManager
+import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
+import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
 import com.gibsonruitiari.asobi.utilities.logging.AsobiLogger
 import com.gibsonruitiari.asobi.utilities.widgets.ErrorStateLayout
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
@@ -50,6 +57,7 @@ class DiscoverFragment:Fragment() {
     private lateinit var discoverFragmentParentContainer:CoordinatorLayout
     private lateinit var discoverFragmentErrorLayout:ConstraintLayout
     private lateinit var discoverFragmentDataContainer:NestedScrollView
+    private lateinit var discoverFragmentConstraintLayoutDataContainer: ConstraintLayout
     private lateinit var discoverFragmentAppbarLayout:AppBarLayout
     private lateinit var discoverFragmentCompletedComicsMoreLabel:AppCompatTextView
     private lateinit var discoverFragmentLatestComicsMoreLabel:AppCompatTextView
@@ -92,6 +100,8 @@ class DiscoverFragment:Fragment() {
         discoverFragmentPopularComicsMoreLabel= discoverFragmentView.popularComicsMoreText
         discoverFragmentLatestComicsMoreLabel=discoverFragmentView.latestComicsMoreText
         discoverFragmentCompletedComicsMoreLabel=discoverFragmentView.completedComicsMoreText
+
+        discoverFragmentConstraintLayoutDataContainer = discoverFragmentView.dataContainerConstraintLayout
 
         settingsButton = discoverFragmentView.settingsButton
         notificationsButton =discoverFragmentView.notificationsButton

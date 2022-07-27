@@ -15,7 +15,11 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.*
+import androidx.core.view.isVisible
+import androidx.core.view.ViewCompat
+import androidx.core.view.doOnNextLayout
+import androidx.core.view.updatePadding
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
@@ -29,11 +33,21 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.composedPagedAdapter
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
-import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ExtendedFabBehavior
 import com.gibsonruitiari.asobi.utilities.StatusBarScrimBehavior
-import com.gibsonruitiari.asobi.utilities.extensions.*
+import com.gibsonruitiari.asobi.utilities.extensions.cancelIfActive
+import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
+import com.gibsonruitiari.asobi.utilities.extensions.showSnackBar
+import com.gibsonruitiari.asobi.utilities.extensions.parseThrowableErrorMessageIntoUsefulMessage
+import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
+import com.gibsonruitiari.asobi.utilities.extensions.setContentToMaxWidth
+import com.gibsonruitiari.asobi.utilities.extensions.scrollToTop
+import com.gibsonruitiari.asobi.utilities.extensions.gridLayoutManager
+import com.gibsonruitiari.asobi.utilities.extensions.applyBottomInsets
+import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
+import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
+import com.gibsonruitiari.asobi.utilities.extensions.resourcesInstance
 import com.gibsonruitiari.asobi.utilities.logging.AsobiLogger
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
@@ -110,11 +124,11 @@ abstract class PaginatedFragment:Fragment(){
         /* Add extended floating button */
         mainFragmentExtendedFabActionButton = ExtendedFloatingActionButton(parentContainer.context).apply {
             id = ViewCompat.generateViewId()
-            text = resourcesInstance().getText(R.string.filter)
-            icon = resourcesInstance().getDrawable(R.drawable.ic_baseline_filter_list_24, null)
-            contentDescription=resourcesInstance().getString(R.string.filter_comics_by_genre)
+            text = resources.getString(R.string.filter)
+            icon = resources.getDrawable(R.drawable.ic_baseline_filter_list_24, null)
+            contentDescription=resources.getString(R.string.filter_comics_by_genre)
             layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            (layoutParams as CoordinatorLayout.LayoutParams).setMargins(resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),resourcesInstance().getDimension(R.dimen.keyline_7).toInt())
+            (layoutParams as CoordinatorLayout.LayoutParams).setMargins(resources.getDimension(R.dimen.keyline_7).toInt(),resources.getDimension(R.dimen.keyline_7).toInt(),resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),resourcesInstance().getDimension(R.dimen.keyline_7).toInt())
             (layoutParams as CoordinatorLayout.LayoutParams).gravity = Gravity.BOTTOM+ Gravity.END
             (layoutParams as CoordinatorLayout.LayoutParams).behavior= ExtendedFabBehavior(parentContainer.context)
             visibility = View.GONE
@@ -141,8 +155,8 @@ abstract class PaginatedFragment:Fragment(){
         val set= ConstraintSet()
         set.clone(mainFragmentConstraintLayoutContainer)
         /* set constraints for swipe refresh layout*/
-        set.constrainWidth(mainFragmentSwipeRefreshLayout.id,resourcesInstance().getDimension(R.dimen.match_constraint_value).toInt())
-        set.constrainHeight(mainFragmentSwipeRefreshLayout.id,resourcesInstance().getDimension(R.dimen.match_constraint_value).toInt()) // spread as far as possible
+        set.constrainWidth(mainFragmentSwipeRefreshLayout.id,resources.getDimension(R.dimen.match_constraint_value).toInt())
+        set.constrainHeight(mainFragmentSwipeRefreshLayout.id,resources.getDimension(R.dimen.match_constraint_value).toInt()) // spread as far as possible
         set.connect(mainFragmentSwipeRefreshLayout.id,
             ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
         set.connect(mainFragmentSwipeRefreshLayout.id,
