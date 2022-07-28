@@ -13,7 +13,6 @@ import com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsFragment
 import com.gibsonruitiari.asobi.utilities.extensions.cancelIfActive
 import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
 import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
-import com.gibsonruitiari.asobi.utilities.extensions.setFragmentToBeShownToTheUser
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
@@ -44,7 +43,10 @@ class MainFragment:Fragment() {
         override fun handleOnBackPressed() {
             val currentFragment=getFragmentFromIndex(currentFragmentIndex)
             if (currentFragment!=discoverFragment){
-                mainFragmentViewModel.openDiscoverScreen()
+                childFragmentManager.beginTransaction()
+                    .hide(currentFragment)
+                    .show(discoverFragment)
+                    .commit()
             }else requireActivity().onBackPressed()
         }
     }

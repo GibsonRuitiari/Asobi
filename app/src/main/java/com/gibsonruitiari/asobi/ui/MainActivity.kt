@@ -2,7 +2,6 @@ package com.gibsonruitiari.asobi.ui
 
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.Insets
 import androidx.core.view.*
@@ -12,7 +11,6 @@ import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
 import com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchFragment
 import com.gibsonruitiari.asobi.ui.userlibrary.UserLibrary
 import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
-import com.gibsonruitiari.asobi.utilities.extensions.setFragmentToBeShownToTheUser
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigationrail.NavigationRailView
@@ -26,14 +24,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mainFragment:MainFragment
     private lateinit var searchFragment:ComicsSearchFragment
     private val logger:Logger by inject()
-    private val navigationBarViewFragments = ArrayList<Fragment>(3)
-    private var selectedFragmentIndex =0
+    private var selectedFragmentIndex = mainFragmentIndex
     private lateinit var navigationBarView: NavigationBarView
     companion object{
         private const val selectedIndexTag ="selected index"
-        private const val discoverFragmentTag ="discover fragment tag"
+        private const val mainFragmentTag ="discover fragment tag"
         private const val searchFragmentTag ="search fragment tag"
         private const val userLibraryFragmentTag ="user library fragment tag"
+        private const val mainFragmentIndex=0
+        private const val searchFragmentIndex=1
+        private const val userLibraryFragmentIndex=2
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,19 +47,22 @@ class MainActivity : AppCompatActivity() {
             searchFragment = ComicsSearchFragment()
             userLibraryFragment = UserLibrary()
             supportFragmentManager.beginTransaction()
-                .add(fragmentContainerId,mainFragment, discoverFragmentTag)
-                .add(fragmentContainerId,searchFragment, searchFragmentTag)
-                .add(fragmentContainerId,userLibraryFragment, userLibraryFragmentTag)
+                .add(fragmentContainerId,mainFragment, mainFragmentTag).show(mainFragment)
+                .add(fragmentContainerId,searchFragment, searchFragmentTag).hide(searchFragment)
+                .add(fragmentContainerId,userLibraryFragment, userLibraryFragmentTag).hide(userLibraryFragment)
                 .commitNow()
-            navigationBarViewFragments.add(mainFragment)
-            navigationBarViewFragments.add(searchFragment)
-            navigationBarViewFragments.add(userLibraryFragment)
         }else{
-            selectedFragmentIndex = savedInstanceState.getInt(selectedIndexTag,0)
-
-            mainFragment = supportFragmentManager.findFragmentByTag(discoverFragmentTag) as MainFragment
+            selectedFragmentIndex = savedInstanceState.getInt(selectedIndexTag, mainFragmentIndex)
+            mainFragment = supportFragmentManager.findFragmentByTag(mainFragmentTag) as MainFragment
             searchFragment = supportFragmentManager.findFragmentByTag(searchFragmentTag) as ComicsSearchFragment
             userLibraryFragment = supportFragmentManager.findFragmentByTag(userLibraryFragmentTag) as UserLibrary
+            val currentFragment = getFragmentFromIndex(selectedFragmentIndex)
+            supportFragmentManager.beginTransaction()
+                .hide(mainFragment)
+                .hide(searchFragment)
+                .hide(userLibraryFragment)
+                .show(currentFragment)
+                .commit()
         }
         /* get an instance of navigation bar view, note: chances of both being null at the same time are one in a million*/
          navigationBarView = (binding.navRailView ?: binding.navigation) as NavigationBarView
@@ -67,24 +70,37 @@ class MainActivity : AppCompatActivity() {
         setUpNavigationBarViews()
         applyWindowInsetsOnStatusBarScrim()
         applyWindowInsetsOnRootContainer()
-        val selectedFragment = navigationBarViewFragments[selectedFragmentIndex]
-        navigateTo(selectedFragment)
+        // val selectedFragment = getFragmentFromIndex(selectedFragmentIndex)
+      //  navigateTo(selectedFragment)
         /* set up on click listeners for navigation bar view  */
         navigationBarView.setOnItemSelectedListener {
+            val currentFragment = getFragmentFromIndex(selectedFragmentIndex)
             when(it.itemId){
                 R.id.mainScreen ->{
                     doActionIfWeAreOnDebug { logger.i("main fragment screen selected;") }
-                    navigateTo(mainFragment)
+                    supportFragmentManager.beginTransaction()
+                        .hide(currentFragment)
+                        .show(mainFragment)
+                        .commit()
+                    selectedFragmentIndex= mainFragmentIndex
                     true
                 }
                 R.id.searchScreen->{
                     doActionIfWeAreOnDebug { logger.i("search screen selected;") }
-                    navigateTo(searchFragment)
+                    supportFragmentManager.beginTransaction()
+                        .hide(currentFragment)
+                        .show(searchFragment)
+                        .commit()
+                    selectedFragmentIndex= searchFragmentIndex
                     true
                 }
                 R.id.libraryScreen->{
                     doActionIfWeAreOnDebug{logger.i("library screen selected;")}
-                    navigateTo(userLibraryFragment)
+                    supportFragmentManager.beginTransaction()
+                        .hide(currentFragment)
+                        .show(userLibraryFragment)
+                        .commit()
+                    selectedFragmentIndex= userLibraryFragmentIndex
                     true
                 }
                 else->false
@@ -132,24 +148,31 @@ class MainActivity : AppCompatActivity() {
                 systemBars.top,0,systemBars.bottom- bottomPadding)).build()
         }
     }
-    private fun navigateTo(fragment: Fragment){
-        supportFragmentManager.setFragmentToBeShownToTheUser(logger = logger,
-            fragmentsArray = navigationBarViewFragments, selectedFragment = fragment){
-            selectedFragmentIndex = it
-        }
+    private fun getFragmentFromIndex(currentIndex:Int):Fragment= when (currentIndex) {
+        mainFragmentIndex -> mainFragment
+        searchFragmentIndex -> searchFragment
+        userLibraryFragmentIndex -> userLibraryFragment
+        else -> throw IllegalStateException("unrecognized index $currentIndex")
     }
 
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
         outState.putInt(selectedIndexTag,selectedFragmentIndex)
+        supportFragmentManager.putFragment(outState, mainFragmentTag,mainFragment)
+        supportFragmentManager.putFragment(outState, searchFragmentTag,searchFragment)
+        supportFragmentManager.putFragment(outState, userLibraryFragmentTag,userLibraryFragment)
     }
 
     override fun onBackPressed() {
-        val currentFragment = navigationBarViewFragments[selectedFragmentIndex]
+        val currentFragment = getFragmentFromIndex(selectedFragmentIndex)
         when{
             currentFragment!=mainFragment->{
-                navigateTo(mainFragment)
+                supportFragmentManager.beginTransaction()
+                    .hide(currentFragment)
+                    .show(searchFragment)
+                    .commit()
+                selectedFragmentIndex= searchFragmentIndex
             }
             else-> super.onBackPressed()
             }
