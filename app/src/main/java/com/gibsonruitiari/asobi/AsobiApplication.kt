@@ -3,6 +3,7 @@ package com.gibsonruitiari.asobi
 import androidx.multidex.MultiDexApplication
 import com.gibsonruitiari.asobi.utilities.logging.AsobiDebugTree
 import com.gibsonruitiari.asobi.di.*
+import com.jakewharton.threetenabp.AndroidThreeTen
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -11,6 +12,7 @@ import timber.log.Timber
 class AsobiApplication :MultiDexApplication(){
     override fun onCreate() {
         super.onCreate()
+        AndroidThreeTen.init(this)
         if (BuildConfig.DEBUG){
             Timber.plant(AsobiDebugTree())
         }

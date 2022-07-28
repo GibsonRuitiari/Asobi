@@ -31,7 +31,7 @@ class UserLibrary : Fragment() {
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         isFragmentHidden = hidden
-        doActionIfWeAreOnDebug {  logger.i("is fragment hidden $hidden our variable $isFragmentHidden")}
+
         doLoadData(isFragmentHidden)
     }
 
@@ -68,7 +68,6 @@ class UserLibrary : Fragment() {
 
     private fun initializeJobIfShown(){
         job?.cancel() // cancel existing job
-        logger.i("starting the job now")
         job=viewLifecycleOwner.lifecycleScope.launch{
             /* Coroutine will be automatically stopped whenever we approach onStop and started whenever we approach onStart()
             * so this saves us from cancelling and starting the job in onStop and onStart respectively  */
@@ -81,9 +80,7 @@ class UserLibrary : Fragment() {
     private fun cancelJobIfItIsActive(){
         job?.let {
             if (it.isActive) {
-                logger.i("killing the job")
                 it.cancel()
-                logger.i("is job active ${it.isActive}")
             }
         }
     }

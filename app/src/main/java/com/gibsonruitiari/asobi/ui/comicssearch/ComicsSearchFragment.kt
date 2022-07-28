@@ -26,18 +26,17 @@ class ComicsSearchFragment:Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        comicsSearchViewModel.searchTerm("Supernaturals")
         launchAndRepeatWithViewLifecycle {
             comicsSearchViewModel.observeState().collectLatest {
-              if (it.isLoading){
-                  println("loading please wait")
-              }else{
-                 if ( it.searchResults.errorMessage!=null){
-                     println("we have an error:${it.searchResults.errorMessage}")
-                 }else{
-                     println("our data ${it.searchResults.searchResult}")
-                 }
-              }
+//              if (it.isLoading){
+//                  println("loading please wait")
+//              }else{
+//                 if ( it.searchResults.errorMessage!=null){
+//                     //println("we have an error:${it.searchResults.errorMessage}")
+//                 }else{
+//                     println("our data ${it.searchResults.searchResult}")
+//                 }
+//              }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.gibsonruitiari.asobi.ui
 
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.Insets
 import androidx.core.view.*
@@ -55,13 +56,14 @@ class MainActivity : AppCompatActivity() {
             navigationBarViewFragments.add(userLibraryFragment)
         }else{
             selectedFragmentIndex = savedInstanceState.getInt(selectedIndexTag,0)
+
             mainFragment = supportFragmentManager.findFragmentByTag(discoverFragmentTag) as MainFragment
             searchFragment = supportFragmentManager.findFragmentByTag(searchFragmentTag) as ComicsSearchFragment
             userLibraryFragment = supportFragmentManager.findFragmentByTag(userLibraryFragmentTag) as UserLibrary
         }
-
         /* get an instance of navigation bar view, note: chances of both being null at the same time are one in a million*/
          navigationBarView = (binding.navRailView ?: binding.navigation) as NavigationBarView
+
         setUpNavigationBarViews()
         applyWindowInsetsOnStatusBarScrim()
         applyWindowInsetsOnRootContainer()
@@ -88,12 +90,11 @@ class MainActivity : AppCompatActivity() {
                 else->false
             }
         }
-        /* prevent items from being reselected so don't implement anything here  */
-        navigationBarView.setOnItemReselectedListener{}
+
     }
 
-
     private fun setUpNavigationBarViews(){
+        navigationBarView.itemIconTintList=null
         binding.navRailView?.let {
             applyWindowInsetsOnNavigationRailView(it)
         }

@@ -1,5 +1,6 @@
 package com.gibsonruitiari.asobi.ui.discovercomics
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
@@ -18,6 +20,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutDiscoverBinding
+import com.gibsonruitiari.asobi.databinding.DiscoverComicsFragmentBinding
 import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
@@ -34,6 +37,7 @@ import com.gibsonruitiari.asobi.utilities.extensions.horizontalLayoutManager
 import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
 import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
 import com.gibsonruitiari.asobi.utilities.logging.AsobiLogger
+import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.widgets.ErrorStateLayout
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
@@ -49,31 +53,21 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class DiscoverFragment:Fragment() {
     private val discoverViewModel:DiscoverViewModel by viewModel()
     private val mainViewModel:MainActivityViewModel by sharedViewModel()
-    private val logger:AsobiLogger by inject()
+    private val logger: Logger by inject()
     private var isFragmentHidden:Boolean=true
     private var dataLoadingJob:Job?=null
-    /* Start of view variables */
-    private lateinit var discoverFragmentLoadingLayout:LoadingLayout
-    private lateinit var discoverFragmentParentContainer:CoordinatorLayout
-    private lateinit var discoverFragmentErrorLayout:ConstraintLayout
-    private lateinit var discoverFragmentDataContainer:NestedScrollView
-    private lateinit var discoverFragmentConstraintLayoutDataContainer: ConstraintLayout
-    private lateinit var discoverFragmentAppbarLayout:AppBarLayout
-    private lateinit var discoverFragmentCompletedComicsMoreLabel:AppCompatTextView
-    private lateinit var discoverFragmentLatestComicsMoreLabel:AppCompatTextView
-    private lateinit var discoverFragmentPopularComicsMoreLabel:AppCompatTextView
-    private lateinit var discoverFragmentCompletedComicsRecyclerView: RecyclerView
-    private lateinit var discoverFragmentLatestComicsRecyclerView: RecyclerView
-    private lateinit var discoverFragmentPopularComicsRecyclerView: RecyclerView
+    private var _discoverFragmentBinding:DiscoverComicsFragmentBinding?=null
+    private val discoverFragmentBinding:DiscoverComicsFragmentBinding
+    get() = _discoverFragmentBinding!!
+    private val discoverFragmentCompletedComicsRecyclerView = discoverFragmentBinding.completedComicsRecyclerview
 
-    private lateinit var notificationsButton:AppCompatImageButton
-    private lateinit var settingsButton:AppCompatImageButton
-    /* End of view variables */
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (savedInstanceState!=null){
-            isFragmentHidden=savedInstanceState.getBoolean(isFragmentHiddenTag,true)
-        }
+
+
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState==null) return
+        isFragmentHidden=savedInstanceState.getBoolean(isFragmentHiddenTag,true)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -86,30 +80,10 @@ class DiscoverFragment:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val discoverFragmentView = DiscoverFragmentView(requireContext())
-        discoverFragmentParentContainer = discoverFragmentView
-        discoverFragmentLoadingLayout= discoverFragmentView.loadingLayout
-        discoverFragmentErrorLayout=discoverFragmentView.errorLayout
-        discoverFragmentDataContainer=discoverFragmentView.parentContainer
-        discoverFragmentAppbarLayout=discoverFragmentView.appBarLayout
-
-        discoverFragmentLatestComicsRecyclerView=discoverFragmentView.latestComicsRecyclerView
-        discoverFragmentPopularComicsRecyclerView=discoverFragmentView.popularComicsRecyclerView
-        discoverFragmentCompletedComicsRecyclerView=discoverFragmentView.completedComicsRecyclerView
-
-        discoverFragmentPopularComicsMoreLabel= discoverFragmentView.popularComicsMoreText
-        discoverFragmentLatestComicsMoreLabel=discoverFragmentView.latestComicsMoreText
-        discoverFragmentCompletedComicsMoreLabel=discoverFragmentView.completedComicsMoreText
-
-        discoverFragmentConstraintLayoutDataContainer = discoverFragmentView.dataContainerConstraintLayout
-
-        settingsButton = discoverFragmentView.settingsButton
-        notificationsButton =discoverFragmentView.notificationsButton
-
-        discoverFragmentView.parentContainer
-
-        return discoverFragmentView
+        _discoverFragmentBinding=DiscoverComicsFragmentBinding.inflate(inflater,container,false)
+        return discoverFragmentBinding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -117,12 +91,11 @@ class DiscoverFragment:Fragment() {
         setUpDiscoverFragmentRecyclerViews()
         setUpDiscoverFragmentToolbarButtonsOnClickListener()
         onMoreLabelClickListeners()
-
     }
 
     private fun applyWindowInsetsToParentContainerWhenFragmentIsAttached(){
         /* Fragment is being shown for the first time/a new instance of this fragment is created hence do apply the insets accordingly  */
-        discoverFragmentParentContainer.postDelayed({discoverFragmentParentContainer.requestApplyInsetsWhenAttached()},500)
+        discoverFragmentBinding.coordinatorLayout.postDelayed({discoverFragmentBinding.coordinatorLayout.requestApplyInsetsWhenAttached()},500)
 
     }
     /* Only load data when the fragment comes into view to avoid wastage of resources  */
@@ -130,28 +103,37 @@ class DiscoverFragment:Fragment() {
         super.onHiddenChanged(hidden)
         isFragmentHidden=hidden
         doActionIfWeAreOnDebug { logger.i("is discover fragment hidden $hidden")}
-        when{
-            !isFragmentHidden->{
-                observeStateFromViewModel()
+        loadData()
+    }
+    private fun loadData(){
+        if (isFragmentHidden){
+            dataLoadingJob?.let {
+                if (it.isActive){
+                    logger.i("killing data loading job in discover fragment")
+                    it.cancel()
+                }
             }
-            else->dataLoadingJob.cancelIfActive()
+        }else{
+            observeStateFromViewModel()
         }
     }
-
     private fun observeStateFromViewModel(){
        dataLoadingJob?.cancel()
-      dataLoadingJob=launchAndRepeatWithViewLifecycle {
+       dataLoadingJob=launchAndRepeatWithViewLifecycle {
+           logger.i("data loading job in discover fragment initialized")
         observeData()
         observeSideEffects()
     }
 }
     private  fun CoroutineScope.observeData(){
         launch {
+            logger.i("observing data in observe data method discover fragment")
             discoverViewModel.observeState().collectLatest {
                 when{
                     it.isLoading->{
                         onDataLoadingShowLoadingLayout()
-                        discoverFragmentParentContainer.showSnackBar(getString(R.string.loading_msg))
+                        logger.i("loading data")
+                        discoverFragmentBinding.coordinatorLayout.showSnackBar(getString(R.string.loading_msg))
                     }
                     else->{
                             when{
@@ -159,9 +141,11 @@ class DiscoverFragment:Fragment() {
                                     errorTitle.text=getString(R.string.error_state_title)
                                     errorSubtitle.text=getString(R.string.empty_subtitle)
                                     onErrorOrEmptyDataShowErrorEmptyLayout()
+                                    logger.i("data is empty")
                                 }
                                 else->{
                                     it.submitDataRecyclerViewAdapterWhenItIsNotEmpty()
+                                    logger.i("data fully loaded")
                                     onDataLoadedSuccessfullyShowDataLayout()
                                 }
                             }
@@ -180,7 +164,7 @@ class DiscoverFragment:Fragment() {
                      val errorMessage=if (it.message.contains(getString(R.string.domain_name),ignoreCase = true)) getString(R.string.network_error_msg) else it.message
                      errorSubtitle.text=errorMessage
                      errorTitle.text= getString(R.string.error_state_title)
-                     discoverFragmentParentContainer.showSnackBar(errorMessage)
+                     discoverFragmentBinding.coordinatorLayout.showSnackBar(errorMessage)
                     onErrorOrEmptyDataShowErrorEmptyLayout()
                  }
              }
@@ -192,12 +176,12 @@ class DiscoverFragment:Fragment() {
      /* Start: Set up ui components */
     /* Navigate to notifications activity/settings activity when the buttons are clicked */
     private fun setUpDiscoverFragmentToolbarButtonsOnClickListener(){
-    notificationsButton.setOnClickListener { doActionIfWeAreOnDebug {discoverFragmentParentContainer.showSnackBar("notifications"); logger.i("notifications button clicked") } }
-    settingsButton.setOnClickListener { doActionIfWeAreOnDebug {discoverFragmentParentContainer.showSnackBar("settings"); logger.i("settings button clicked") } }
+    discoverFragmentBinding.notificationsButton.setOnClickListener { doActionIfWeAreOnDebug {discoverFragmentBinding.coordinatorLayout.showSnackBar("notifications"); logger.i("notifications button clicked") } }
+    discoverFragmentBinding.settingsButton.setOnClickListener { doActionIfWeAreOnDebug {discoverFragmentBinding.coordinatorLayout.showSnackBar("settings"); logger.i("settings button clicked") } }
     }
     private fun setUpDiscoverFragmentRecyclerViews(){
      val linearSnapHelper = LinearSnapHelper()
-        with(discoverFragmentLatestComicsRecyclerView){
+        with(discoverFragmentBinding.latestComicsRecyclerView){
         linearSnapHelper.attachToRecyclerView(this)
         layoutManager = horizontalLayoutManager()
         adapter = completedComicsAdapter
@@ -215,7 +199,7 @@ class DiscoverFragment:Fragment() {
             val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(bottom = viewPaddingState.bottom+ systemInsets.bottom + resources.getDimension(R.dimen.default_padding).toInt())}
         }
-    with(discoverFragmentPopularComicsRecyclerView){
+    with(discoverFragmentBinding.popularComicsRecyclerView){
         linearSnapHelper.attachToRecyclerView(this)
         layoutManager = horizontalLayoutManager()
         adapter = popularComicsAdapter
@@ -225,12 +209,12 @@ class DiscoverFragment:Fragment() {
     }
     /* Navigate to the specific fragment when more button is clicked */
     private fun onMoreLabelClickListeners(){
-    discoverFragmentPopularComicsMoreLabel.setOnClickListener {
-        doActionIfWeAreOnDebug { discoverFragmentParentContainer.showSnackBar("popular comics label clicked");logger.i("popular comics label clicked") } }
-    discoverFragmentCompletedComicsMoreLabel.setOnClickListener { doActionIfWeAreOnDebug { discoverFragmentParentContainer.showSnackBar("completed comics label clicked");logger.i("completed comics label clicked") } }
-    discoverFragmentLatestComicsMoreLabel.setOnClickListener {
+    discoverFragmentBinding.popularComicsMoreText.setOnClickListener {
+        doActionIfWeAreOnDebug {  discoverFragmentBinding.coordinatorLayout.showSnackBar("popular comics label clicked");logger.i("popular comics label clicked") } }
+        discoverFragmentBinding.completedComicsMoreText.setOnClickListener { doActionIfWeAreOnDebug {  discoverFragmentBinding.coordinatorLayout.showSnackBar("completed comics label clicked");logger.i("completed comics label clicked") } }
+        discoverFragmentBinding.latestComicsMoreText.setOnClickListener {
         mainViewModel.openLatestComicsScreen()
-        doActionIfWeAreOnDebug { discoverFragmentParentContainer.showSnackBar("latest comics label clicked");logger.i("latest comics label clicked") } }
+        doActionIfWeAreOnDebug {  discoverFragmentBinding.coordinatorLayout.showSnackBar("latest comics label clicked");logger.i("latest comics label clicked") } }
     }
     /* End: Set up ui components */
 
@@ -238,31 +222,31 @@ class DiscoverFragment:Fragment() {
 
    /* Start: Respond to events by showing the requisite state on the screen to the user */
     private fun onDataLoadingShowLoadingLayout(){
-        discoverFragmentLoadingLayout.apply { visibility=View.VISIBLE }.show()
-       discoverFragmentDataContainer.visibility =View.GONE
-       discoverFragmentAppbarLayout.visibility=View.GONE
-       discoverFragmentErrorLayout.visibility =View.GONE
+        discoverFragmentBinding.contentLoadingLayout.apply { isVisible=true }.show()
+       discoverFragmentBinding.errorStateLayout.root.isVisible=false
+       discoverFragmentBinding.discoverFragmentAppBar.isVisible=false
+       discoverFragmentBinding.discoverFragmentContainer.isVisible=false
     }
     private fun onErrorOrEmptyDataShowErrorEmptyLayout(){
-        discoverFragmentDataContainer.visibility =View.GONE
-        discoverFragmentAppbarLayout.visibility=View.GONE
-        discoverFragmentLoadingLayout.apply { visibility=View.GONE }.hide()
-        discoverFragmentErrorLayout.visibility=View.VISIBLE
+        discoverFragmentBinding.contentLoadingLayout.apply { isVisible=false }.hide()
+        discoverFragmentBinding.errorStateLayout.root.isVisible=true
+        discoverFragmentBinding.discoverFragmentAppBar.isVisible=false
+        discoverFragmentBinding.discoverFragmentContainer.isVisible=false
     }
     private fun onDataLoadedSuccessfullyShowDataLayout(){
-        discoverFragmentAppbarLayout.visibility=View.GONE
-        discoverFragmentLoadingLayout.apply { visibility=View.GONE }.hide()
-        discoverFragmentErrorLayout.visibility=View.GONE
-        discoverFragmentDataContainer.visibility =View.VISIBLE
+        discoverFragmentBinding.contentLoadingLayout.apply { isVisible=false }.hide()
+        discoverFragmentBinding.errorStateLayout.root.isVisible=false
+        discoverFragmentBinding.discoverFragmentAppBar.isVisible=true
+        discoverFragmentBinding.discoverFragmentContainer.isVisible=true
     }
 
     /* End: Respond to events by showing the requisite state on the screen to the user */
 
     /* Start: Utility functions related to DiscoverFragment  */
     private val errorTitle:AppCompatTextView
-    get() =(discoverFragmentErrorLayout as ErrorStateLayout).errorTitle
+    get() =discoverFragmentBinding.errorStateLayout.emptyErrorStateTitle
     private val errorSubtitle:AppCompatTextView
-    get() =(discoverFragmentErrorLayout as ErrorStateLayout).subtitleError
+    get() =discoverFragmentBinding.errorStateLayout.emptyErrorStateSubtitle
 
     private fun DiscoverComicsState.isDataEmpty( ):Boolean{
         val completedComics = comicsData.completedComics.comicsData
@@ -286,6 +270,7 @@ class DiscoverFragment:Fragment() {
         val latestComics = comicsData.latestComics.comicsData
         val ongoingComics = comicsData.ongoingComics.comicsData
         val comicsByGenre = comicsData.comicsByGenre.comicsData
+        logger.i("discover frag data size latest-> ${latestComics.size} ongoing -> ${ongoingComics.size} comics by genre ${comicsByGenre.size}")
         completedComicsAdapter.submitList(completedComics)
         popularComicsAdapter.submitList(popularComics)
         ongoingComicsAdapter.submitList(ongoingComics)
@@ -413,6 +398,10 @@ class DiscoverFragment:Fragment() {
     }
 
     /* End of recycler view's adapters + view-holder initialization */
+    override fun onDestroy() {
+        super.onDestroy()
+        _discoverFragmentBinding=null
+    }
     companion object{
         private const val isFragmentHiddenTag ="discoverIsFragmentHidden"
     }

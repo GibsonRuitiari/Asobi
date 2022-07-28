@@ -19,7 +19,6 @@ class ErrorStateLayout  constructor(context:Context):ConstraintLayout(context) {
     var subtitleError:AppCompatTextView
     var retryButton:MaterialButton
     init {
-        background=resources.getDrawable(R.color.matte,null)
         layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT)
         val constraintSet = ConstraintSet()
@@ -93,8 +92,8 @@ class ErrorStateLayout  constructor(context:Context):ConstraintLayout(context) {
             setBackgroundColor(R.color.aqua_blue)
             text=resources.getString(R.string.cd_retry)
             isAllCaps=false
-            val color=Color.valueOf(40f,43f,147f)
-            setTextColor(color.toArgb())
+            //val color=Color.valueOf(40f,43f,147f)
+            setTextColor(Color.WHITE)
         }
     }
 

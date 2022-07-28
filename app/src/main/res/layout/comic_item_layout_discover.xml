@@ -7,8 +7,8 @@
     xmlns:tools="http://schemas.android.com/tools">
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/comics_image_view"
-        android:layout_width="108dp"
-        android:layout_height="160dp"
+        android:layout_width="120dp"
+        android:layout_height="180dp"
         app:strokeWidth="0dp"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize10Percent"
         tools:src="@drawable/sunstone"

@@ -28,7 +28,7 @@ import com.gibsonruitiari.asobi.utilities.extensions.dp
 import com.gibsonruitiari.asobi.utilities.widgets.ErrorStateLayout
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
-import java.time.LocalTime
+
 
 
 class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(context) {
@@ -37,8 +37,8 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
     var appBarViewScrim:View
     var loadingLayout:LoadingLayout
     var errorLayout:ConstraintLayout
-    var parentContainer:NestedScrollView
-    lateinit var dataContainerConstraintLayout: ConstraintLayout
+   // var parentContainer:NestedScrollView
+     var dataContainerConstraintLayout: ConstraintLayout
     lateinit var notificationsButton:AppCompatImageButton
     lateinit var settingsButton:AppCompatImageButton
     lateinit var latestComicsRecyclerView: RecyclerView
@@ -55,17 +55,18 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
        ViewGroup.LayoutParams.MATCH_PARENT)
         fitsSystemWindows=true
         id = ViewCompat.generateViewId()
-        background = resources.getDrawable(R.color.matte,null)
+       // background = resources.getDrawable(R.color.matte,null)
         appBarViewScrim = discoverFragmentStatusBarViewScrim(this.context)
         addView(appBarViewScrim)
         loadingLayout = discoverFragmentLoadingLayout(this.context).apply { visibility=View.GONE } as LoadingLayout
         addView(loadingLayout)
         errorLayout = ErrorStateLayout(this.context).apply { visibility=View.GONE }
         addView(errorLayout)
-        appBarLayout = discoverFragmentAppBarLayout(this.context).apply { visibility=View.GONE }
+        appBarLayout = discoverFragmentAppBarLayout(this.context)
         addView(appBarLayout)
-         parentContainer =discoverFragmentNestedScrollView(this.context).apply { visibility=View.GONE }
-        addView(parentContainer)
+        dataContainerConstraintLayout = discoverFragmentConstraintLayout(this.context)
+      //   parentContainer =discoverFragmentNestedScrollView(this.context)
+       addView(dataContainerConstraintLayout)
     }
     private fun discoverFragmentAppBarLayout(context: Context):AppBarLayout{
         val appBarLayout = AppBarLayout(context)
@@ -84,8 +85,8 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
     private fun discoverFragmentToolbar(context: Context):Toolbar{
         val toolbar = Toolbar(context).apply {
             id =ViewCompat.generateViewId()
-            elevation=0f
             layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,140.dp)
+            elevation=0f
             background=resources.getDrawable(R.drawable.discover_screen_gradient,null)
         }
        val intermediaryLayout= discoverFragmentToolbarIntermediaryLinearLayout(toolbar.context)
@@ -146,10 +147,9 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
         return View(context).apply {
             id=ViewCompat.generateViewId()
             layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0.dp)
-            background=resources.getDrawable(R.color.transparent, null)
+            background=resources.getDrawable(R.color.color_surface, null)
             (layoutParams  as LayoutParams).behavior = StatusBarScrimBehavior(context)
             fitsSystemWindows=true
-            (layoutParams as LayoutParams).gravity =Gravity.TOP
         }
     }
     private fun discoverFragmentNestedScrollView(context: Context):NestedScrollView{
@@ -159,8 +159,8 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
           ViewGroup.LayoutParams.MATCH_PARENT)
           isFillViewport=true
       }
-        dataContainerConstraintLayout = discoverFragmentConstraintLayout(nestedScrollView.context)
-        nestedScrollView.addView(dataContainerConstraintLayout)
+
+      //  nestedScrollView.addView(dataContainerConstraintLayout)
         return nestedScrollView
     }
     private fun discoverFragmentConstraintLayout(context: Context):ConstraintLayout{
@@ -170,7 +170,7 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
             ViewGroup.LayoutParams.MATCH_PARENT)
             (layoutParams as LayoutParams).setMargins(marginLeft,
             143.dp,marginRight,marginBottom)
-            (layoutParams as LayoutParams).behavior =AppBarLayout.ScrollingViewBehavior()
+         //   (layoutParams as LayoutParams).behavior =AppBarLayout.ScrollingViewBehavior()
         }
 
 
@@ -265,7 +265,6 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
     private fun discoverFragmentLoadingLayout(context: Context):FrameLayout = LoadingLayout(context).apply {
             id=ViewCompat.generateViewId()
         layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
-
         }
 
     private fun discoverFragmentLabelAndSubtitle(context: Context):Pair<AppCompatTextView,AppCompatTextView>{
@@ -291,10 +290,10 @@ class DiscoverFragmentView constructor(context:Context):CoordinatorLayout(contex
     }
 
     private fun discoverScreenGreetingMessage():String{
-        val hour by lazy { LocalTime.now().hour }
+        val hour by lazy { org.threeten.bp.LocalTime.now().hour }
         return when{
             hour<12 -> "Good morning"
-            hour <17 ->"Good evening"
+            hour <17 ->"Good afternoon"
             else->"Good evening"
         }
     }

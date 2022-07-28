@@ -7,37 +7,39 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.FragmentContainerView
 import com.gibsonruitiari.asobi.R
+import com.gibsonruitiari.asobi.utilities.extensions.dp
 
 
 class MainFragmentView constructor(context:Context): ConstraintLayout(context){
-    var fragmentContainerView: FragmentContainerView
+    val containerView:FragmentContainerView
     init {
         id = ViewCompat.generateViewId()
         layoutParams=ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
-        val matterColorBackground=resources.getColor(R.color.matte, null)
-        setBackgroundColor(matterColorBackground)
-         fragmentContainerView = constructFragmentContainerView()
-        addView(fragmentContainerView)
+        //val matterColorBackground=resources.getColor(R.color.matte, null)
+       // setBackgroundColor(matterColorBackground)
+
+        val constraintSet = ConstraintSet()
+
+        constraintSet.clone(this)
+        containerView=setUpFrameLayoutContainer(this.context, constraintSet)
+        constraintSet.applyTo(this)
+
+
+
     }
-    private fun constructFragmentContainerView(): FragmentContainerView {
-        val fragmentContainerView = FragmentContainerView(context).apply {
+    private fun setUpFrameLayoutContainer(context: Context,constraintSet: ConstraintSet):FragmentContainerView{
+        val container=FragmentContainerView(context).apply {
             id = ViewCompat.generateViewId()
         }
-        val constraintSet = ConstraintSet()
-        constraintSet.clone(this)
-        constraintSet.constrainHeight(fragmentContainerView.id,
-            ConstraintSet.MATCH_CONSTRAINT_SPREAD)
-        constraintSet.constrainWidth(fragmentContainerView.id, ConstraintSet.MATCH_CONSTRAINT_SPREAD)
-        constraintSet.connect(fragmentContainerView.id, ConstraintSet.START, ConstraintSet.PARENT_ID,
-            ConstraintSet.START)
-        constraintSet.connect(fragmentContainerView.id, ConstraintSet.END,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START)
-        constraintSet.connect(fragmentContainerView.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-        constraintSet.connect(fragmentContainerView.id, ConstraintSet.BOTTOM,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.BOTTOM)
-        constraintSet.applyTo(this)
-        return  fragmentContainerView
+        addView(container)
+        constraintSet.constrainHeight(container.id,ConstraintSet.MATCH_CONSTRAINT)
+        constraintSet.constrainWidth(container.id, ConstraintSet.MATCH_CONSTRAINT)
+
+        constraintSet.connect(container.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        constraintSet.connect(container.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        constraintSet.connect(container.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+        constraintSet.connect(container.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+        return container
     }
+
 }

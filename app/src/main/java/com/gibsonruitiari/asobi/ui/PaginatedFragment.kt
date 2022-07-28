@@ -49,6 +49,7 @@ import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
 import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
 import com.gibsonruitiari.asobi.utilities.extensions.resourcesInstance
 import com.gibsonruitiari.asobi.utilities.logging.AsobiLogger
+import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -62,7 +63,7 @@ abstract class PaginatedFragment:Fragment(){
     private val fragmentBinding get() = _baseFragmentBinding!!
     private var isFragmentHidden:Boolean=true
     private var loadingJob:Job?=null
-    private val logger:AsobiLogger by inject()
+    private val logger: Logger by inject()
 
     var pagingListAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
     abstract val toolbarTitle:String
@@ -84,11 +85,10 @@ abstract class PaginatedFragment:Fragment(){
     private lateinit var mainFragmentErrorEmptyTitle:AppCompatTextView
     /* End of view variables  */
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (savedInstanceState!=null){
-            isFragmentHidden=savedInstanceState.getBoolean(isFragmentHiddenTag,true)
-        }
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState==null) return
+        isFragmentHidden=savedInstanceState.getBoolean(isFragmentHiddenTag,true)
     }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)

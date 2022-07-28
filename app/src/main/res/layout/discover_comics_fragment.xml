@@ -4,22 +4,68 @@
     android:layout_height="match_parent"
     android:id="@+id/coordinator_layout"
     android:fitsSystemWindows="true"
+    android:background="@color/matte"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:background="@color/white"
+        app:elevation="0dp"
+        android:visibility="gone"
         android:id="@+id/discover_fragment_app_bar">
-        <com.google.android.material.appbar.MaterialToolbar
+        <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
-            app:titleTextColor="@color/black"
+            android:elevation="0dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/discover_screen_gradient"
             app:titleTextAppearance="@style/TextAppearance.Asobi.Headline5"
-            android:layout_height="?actionBarSize"
+            android:layout_height="140dp"
             android:id="@+id/toolbar"
-            app:menu="@menu/discover_frag_menu"
-            app:title="@string/discover"/>
+            tools:targetApi="lollipop">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="?android:dividerHorizontal"
+                android:dividerPadding="@dimen/spacing_normal"
+                android:showDividers="middle"
+                android:orientation="horizontal">
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:textSize="24sp"
+                    android:layout_weight="2"
+                    android:id="@+id/greetings_text"
+                    tools:text="Good afternoon" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="end"
+                    android:layout_margin="@dimen/margin_small"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/notifications_button"
+                    android:scaleType="centerInside"
+                    android:id="@+id/notifications_button"
+                    android:src="@drawable/notification_bell"
+                    tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck" />
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="end"
+                    android:layout_margin="@dimen/margin_small"
+                    android:id="@+id/settings_button"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/settings_button"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/settings_icon"
+                    tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck" />
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
     <View
         android:layout_width="match_parent"
@@ -27,23 +73,19 @@
         android:background="?attr/colorSurface"
         app:layout_behavior=".utilities.StatusBarScrimBehavior"
         android:fitsSystemWindows="true"/>
-    <include layout="@layout/empty_error_state_layout"
-        android:id="@+id/empty_state_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:visibility="gone"
-     />
+
     <com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
         android:id="@+id/content_loading_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:visibility="visible" />
+        android:elevation="1dp"
+        />
     <include
         layout="@layout/empty_error_state_layout"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:visibility="gone"
+        android:elevation="1dp"
         android:id="@+id/error_state_layout"
         android:layout_gravity="center"/>
     <androidx.core.widget.NestedScrollView
@@ -57,7 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            android:layout_marginTop="?actionBarSize"
+            android:layout_marginTop="140dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/latest_comics_label"
@@ -66,7 +108,8 @@
                 android:gravity="center"
                 android:layout_marginStart="@dimen/margin_small"
                 android:text="@string/latest_comics"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"
                 app:layout_constraintBottom_toTopOf="@+id/latest_comics_recycler_view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -78,7 +121,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:gravity="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"
                 android:textAllCaps="false"
                 app:layout_constraintTop_toTopOf="parent"
                 android:text="@string/more_string"
@@ -103,7 +147,8 @@
                 android:text="@string/popular_comics"
                 android:layout_marginTop="20dp"
                 android:layout_marginStart="@dimen/margin_small"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"
                 app:layout_constraintTop_toBottomOf="@id/latest_comics_recycler_view"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:text="Popular Comics" />
@@ -116,8 +161,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 app:layout_constraintTop_toBottomOf="@id/latest_comics_recycler_view"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"                android:textAllCaps="false"
                 android:text="@string/more_string"
                 app:layout_constraintEnd_toEndOf="parent" />
             <androidx.recyclerview.widget.RecyclerView
@@ -135,8 +180,8 @@
                 android:gravity="center"
                 android:layout_marginTop="@dimen/margin_large"
                 android:layout_marginStart="@dimen/margin_small"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:layout_constraintTop_toBottomOf="@id/popular_comics_recycler_view"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"                app:layout_constraintTop_toBottomOf="@id/popular_comics_recycler_view"
                 app:layout_constraintStart_toStartOf="parent"
                 android:text="@string/completed_comics"
                 tools:text="Completed Comics" />
@@ -148,8 +193,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 app:layout_constraintTop_toBottomOf="@id/popular_comics_recycler_view"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"                android:textAllCaps="false"
                 android:text="@string/more_string"
                 app:layout_constraintEnd_toEndOf="parent" />
             <androidx.recyclerview.widget.RecyclerView
@@ -199,8 +244,8 @@
                 android:gravity="center"
                 android:layout_marginTop="@dimen/margin_large"
                 android:layout_marginStart="@dimen/margin_small"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:layout_constraintTop_toBottomOf="@id/ongoing_comics_recycler_view"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"                app:layout_constraintTop_toBottomOf="@id/ongoing_comics_recycler_view"
                 app:layout_constraintStart_toStartOf="parent"
                 android:text="@string/comics_by_genre"
                 tools:text="Comics by genre" />
@@ -212,8 +257,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 app:layout_constraintTop_toBottomOf="@id/ongoing_comics_recycler_view"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"                android:textAllCaps="false"
                 android:text="@string/more_string"
                 app:layout_constraintEnd_toEndOf="parent" />
             <androidx.recyclerview.widget.RecyclerView
