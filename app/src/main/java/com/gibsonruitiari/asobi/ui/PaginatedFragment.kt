@@ -22,7 +22,6 @@ import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.gibsonruitiari.asobi.BuildConfig
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.BaseFragmentBinding
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
@@ -32,9 +31,7 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ExtendedFabBehavior
-import com.gibsonruitiari.asobi.utilities.StatusBarScrimBehavior
 import com.gibsonruitiari.asobi.utilities.extensions.*
-import com.gibsonruitiari.asobi.utilities.logging.AsobiLogger
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
@@ -297,7 +294,6 @@ abstract class PaginatedFragment:Fragment(){
         setUpMainFragmentRecyclerView()
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
-        attachScrollListenerForRecyclerView()
         fragmentBinding.toolbar.title=toolbarTitle
     }
     override fun onHiddenChanged(hidden: Boolean) {
@@ -305,9 +301,11 @@ abstract class PaginatedFragment:Fragment(){
         isFragmentHidden=hidden
         when{
             !isFragmentHidden->{
-                observeStateFromViewModel()
+             observeStateFromViewModel()
+            changeStatusBarToTransparentInFragment(resources.getColor(R.color.latest_comics_bg,null))
             }
             else->{
+                changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
                 loadingJob.cancelIfActive()
                 doActionIfWeAreOnDebug { logger.i("[Cancellation] paginated frag job is active? ${loadingJob?.isActive}") }
             }
@@ -417,16 +415,6 @@ abstract class PaginatedFragment:Fragment(){
             * no of span count for our grid layout */
             layoutManager = gridLayoutManager(spanCount = (screenWidth/156f).toInt())
         }
-    }
-    private fun attachScrollListenerForRecyclerView(){
-        mainFragmentRecyclerView. setOnScrollChangeListener { _, _, scrollY, _, _ ->
-            if (scrollY>0){
-                changeStatusBarToTransparentInFragment(resources.getColor(R.color.latest_comics_bg,null))
-            }else{
-                changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
-            }
-        }
-
     }
     /* End: Setting up Ui Components */
     override fun onDestroy() {
