@@ -120,21 +120,7 @@ fun<E> SendChannel<E>.tryOffer(element:E):Boolean = try{
 }catch (_:Exception){
     false
 }
-inline  fun FragmentManager.setFragmentToBeShownToTheUser(logger: Logger,
-                                                          selectedFragment: Fragment,
-fragmentsArray:ArrayList<Fragment>, updateCurrentFragmentIndex:(index:Int)->Unit){
-    var fragmentTransaction = beginTransaction()
-    fragmentsArray.forEachIndexed { index, fragment ->
-        if (selectedFragment == fragment){
-            fragmentTransaction = fragmentTransaction.show(fragment)
-            updateCurrentFragmentIndex(index)
-            doActionIfWeAreOnDebug { logger.i("current shown fragment is ${fragment.tag}") }
-        }else{
-            fragmentTransaction = fragmentTransaction.hide(fragment)
-        }
-    }
-    fragmentTransaction.commit()
-}
+
 val Int.dp:Int
 get() = (this * Resources.getSystem().displayMetrics.density).roundToInt()
 val Float.dp:Int

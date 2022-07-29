@@ -10,7 +10,6 @@ import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
 import com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchFragment
 import com.gibsonruitiari.asobi.ui.userlibrary.UserLibrary
-import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigationrail.NavigationRailView
@@ -54,7 +53,6 @@ class MainActivity : AppCompatActivity() {
                 .add(fragmentContainerId,userLibraryFragment, userLibraryFragmentTag).hide(userLibraryFragment)
                 .commitNow()
 
-           // mainFragment.onHiddenChanged(false) // trigger the collection of data for the first time
             mainActivityViewModel.setMainFragmentStatus(false)
         }else{
             selectedFragmentIndex = savedInstanceState.getInt(selectedIndexTag, mainFragmentIndex)
@@ -76,14 +74,11 @@ class MainActivity : AppCompatActivity() {
         setUpNavigationBarViews()
         applyWindowInsetsOnStatusBarScrim()
         applyWindowInsetsOnRootContainer()
-        // val selectedFragment = getFragmentFromIndex(selectedFragmentIndex)
-      //  navigateTo(selectedFragment)
         /* set up on click listeners for navigation bar view  */
         navigationBarView.setOnItemSelectedListener {
             val currentFragment = getFragmentFromIndex(selectedFragmentIndex)
             when(it.itemId){
                 R.id.mainScreen ->{
-                    doActionIfWeAreOnDebug { logger.i("main fragment screen selected;") }
                     supportFragmentManager.beginTransaction()
                         .hide(currentFragment)
                         .show(mainFragment)
@@ -93,7 +88,6 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.searchScreen->{
-                    doActionIfWeAreOnDebug { logger.i("search screen selected;") }
                     supportFragmentManager.beginTransaction()
                         .hide(currentFragment)
                         .show(searchFragment)
@@ -103,7 +97,6 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.libraryScreen->{
-                    doActionIfWeAreOnDebug{logger.i("library screen selected;")}
                     supportFragmentManager.beginTransaction()
                         .hide(currentFragment)
                         .show(userLibraryFragment)
