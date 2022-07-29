@@ -54,4 +54,7 @@
     <string name="settings_button">settings button</string>
     <string name="notifications_button">notifications button</string>
     <string name="domain_name">viewcomics</string>
+    <string name="good_morning">"Good morning "</string>
+    <string name="good_afternoon">Good afternoon :-)</string>
+    <string name="good_evening">Good evening :XD</string>
 </resources>

@@ -15,6 +15,7 @@ import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigationrail.NavigationRailView
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity() {
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private val logger:Logger by inject()
     private var selectedFragmentIndex = mainFragmentIndex
     private lateinit var navigationBarView: NavigationBarView
+    private val mainActivityViewModel:MainActivityViewModel by viewModel()
     companion object{
         private const val selectedIndexTag ="selected index"
         private const val mainFragmentTag ="discover fragment tag"
@@ -51,6 +53,9 @@ class MainActivity : AppCompatActivity() {
                 .add(fragmentContainerId,searchFragment, searchFragmentTag).hide(searchFragment)
                 .add(fragmentContainerId,userLibraryFragment, userLibraryFragmentTag).hide(userLibraryFragment)
                 .commitNow()
+
+           // mainFragment.onHiddenChanged(false) // trigger the collection of data for the first time
+            mainActivityViewModel.setMainFragmentStatus(false)
         }else{
             selectedFragmentIndex = savedInstanceState.getInt(selectedIndexTag, mainFragmentIndex)
             mainFragment = supportFragmentManager.findFragmentByTag(mainFragmentTag) as MainFragment
@@ -63,6 +68,7 @@ class MainActivity : AppCompatActivity() {
                 .hide(userLibraryFragment)
                 .show(currentFragment)
                 .commit()
+            mainActivityViewModel.setMainFragmentStatus(currentFragment==mainFragment)
         }
         /* get an instance of navigation bar view, note: chances of both being null at the same time are one in a million*/
          navigationBarView = (binding.navRailView ?: binding.navigation) as NavigationBarView
@@ -83,6 +89,7 @@ class MainActivity : AppCompatActivity() {
                         .show(mainFragment)
                         .commit()
                     selectedFragmentIndex= mainFragmentIndex
+                    mainActivityViewModel.setMainFragmentStatus(false)
                     true
                 }
                 R.id.searchScreen->{
@@ -92,6 +99,7 @@ class MainActivity : AppCompatActivity() {
                         .show(searchFragment)
                         .commit()
                     selectedFragmentIndex= searchFragmentIndex
+                    mainActivityViewModel.setMainFragmentStatus(true)
                     true
                 }
                 R.id.libraryScreen->{
@@ -101,6 +109,7 @@ class MainActivity : AppCompatActivity() {
                         .show(userLibraryFragment)
                         .commit()
                     selectedFragmentIndex= userLibraryFragmentIndex
+                    mainActivityViewModel.setMainFragmentStatus(true)
                     true
                 }
                 else->false
@@ -170,9 +179,10 @@ class MainActivity : AppCompatActivity() {
             currentFragment!=mainFragment->{
                 supportFragmentManager.beginTransaction()
                     .hide(currentFragment)
-                    .show(searchFragment)
+                    .show(mainFragment)
                     .commit()
-                selectedFragmentIndex= searchFragmentIndex
+                selectedFragmentIndex= mainFragmentIndex
+                mainActivityViewModel.setMainFragmentStatus(false)
             }
             else-> super.onBackPressed()
             }

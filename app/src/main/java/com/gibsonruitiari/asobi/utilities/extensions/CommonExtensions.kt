@@ -2,9 +2,12 @@ package com.gibsonruitiari.asobi.utilities.extensions
 
 import android.content.res.Resources
 import android.os.Parcel
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.os.ParcelCompat
@@ -14,11 +17,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.gibsonruitiari.asobi.BuildConfig
+import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.net.ConnectException
@@ -57,6 +63,35 @@ fun Job?.cancelIfActive(){
  infix fun ConstraintSet.constrainEndToParent(viewId: Int){
     connect(viewId, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
 }
+class RetryTrigger{
+    enum class STATE{RETRYING,IDLE}
+    val retryEvent= MutableStateFlow(STATE.RETRYING)
+    fun retry()  {
+        retryEvent.value = STATE.RETRYING
+    }
+}
+@OptIn(FlowPreview::class)
+fun <T> retryFlow(retryTrigger: RetryTrigger, source:()->Flow<T>) = retryTrigger.retryEvent.filter { it==RetryTrigger.STATE.RETRYING }
+        .flatMapConcat { source() }
+        .onEach { retryTrigger.retryEvent.value=RetryTrigger.STATE.IDLE }
+
+internal class SafeClickListener(private var defaultInterval:Int=1000,
+private val onSafeClick:(View)->Unit):View.OnClickListener{
+    private var lastTimeClicked:Long=0
+    override fun onClick(v: View) {
+        if (SystemClock.elapsedRealtime()-lastTimeClicked<defaultInterval){
+            return
+        }
+        lastTimeClicked=SystemClock.elapsedRealtime()
+        onSafeClick(v)
+    }
+}
+fun View.setOnSafeClickListener(onSafeClick: (View) -> Unit){
+    val safeClickListener = SafeClickListener{
+        onSafeClick(it)
+    }
+    setOnClickListener(safeClickListener)
+}
 fun Throwable.parseThrowableErrorMessageIntoUsefulMessage():String = when(this){
     is UnknownHostException, is SocketTimeoutException, is ConnectException ->{
         "Loading of comics failed due to your internet connection;please check your connection and try again"
@@ -74,7 +109,11 @@ crossinline block:suspend CoroutineScope.()->Unit):Job = viewLifecycleOwner.life
             block()
         }
     }
-
+inline fun Fragment.changeStatusBarToTransparentInFragment(@ColorInt color:Int){
+    val window= requireActivity().window
+    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+    window.statusBarColor=color
+}
 fun<E> SendChannel<E>.tryOffer(element:E):Boolean = try{
     trySend(element).isSuccess
     true

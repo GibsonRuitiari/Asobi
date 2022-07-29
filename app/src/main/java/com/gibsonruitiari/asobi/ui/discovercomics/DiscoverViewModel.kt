@@ -6,7 +6,10 @@ import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.domain.CoroutineScopeOwner
 import com.gibsonruitiari.asobi.utilities.Store
 import com.gibsonruitiari.asobi.domain.DiscoverComicsUseCase
+import com.gibsonruitiari.asobi.utilities.extensions.RetryTrigger
+import com.gibsonruitiari.asobi.utilities.extensions.retryFlow
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -18,12 +21,16 @@ class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverC
     // broadcast all the side effects to all subscribers
     // replay=0 so as to broadcast most recent side effect
     private val sideEffect = MutableSharedFlow<DiscoverComicsSideEffect>()
+    private val retryTrigger = RetryTrigger()
     init {
-
         onAction(DiscoverComicsAction.LoadComics)
     }
+    fun retry(){
+        retryTrigger.retry()
+    }
+    override fun observeState(): StateFlow<DiscoverComicsState> = retryFlow(retryTrigger = retryTrigger, source = {state})
+        .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(500), initialValue = DiscoverComicsState.Empty)
 
-    override fun observeState(): StateFlow<DiscoverComicsState> = state
     override fun observeSideEffect(): Flow<DiscoverComicsSideEffect> = sideEffect
     companion object{
         private const val ITEM_SIZE=16

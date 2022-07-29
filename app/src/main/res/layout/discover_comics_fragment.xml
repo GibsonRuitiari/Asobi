@@ -7,70 +7,11 @@
     android:background="@color/matte"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        app:elevation="0dp"
-        android:visibility="gone"
-        android:id="@+id/discover_fragment_app_bar">
-        <androidx.appcompat.widget.Toolbar
-            android:layout_width="match_parent"
-            android:elevation="0dp"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/discover_screen_gradient"
-            app:titleTextAppearance="@style/TextAppearance.Asobi.Headline5"
-            android:layout_height="140dp"
-            android:id="@+id/toolbar"
-            tools:targetApi="lollipop">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:divider="?android:dividerHorizontal"
-                android:dividerPadding="@dimen/spacing_normal"
-                android:showDividers="middle"
-                android:orientation="horizontal">
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    android:textSize="24sp"
-                    android:layout_weight="2"
-                    android:id="@+id/greetings_text"
-                    tools:text="Good afternoon" />
-
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="end"
-                    android:layout_margin="@dimen/margin_small"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/notifications_button"
-                    android:scaleType="centerInside"
-                    android:id="@+id/notifications_button"
-                    android:src="@drawable/notification_bell"
-                    tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck" />
-                <androidx.appcompat.widget.AppCompatImageButton
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="end"
-                    android:layout_margin="@dimen/margin_small"
-                    android:id="@+id/settings_button"
-                    android:layout_weight="1"
-                    android:background="@android:color/transparent"
-                    android:contentDescription="@string/settings_button"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/settings_icon"
-                    tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck" />
-            </LinearLayout>
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="?attr/colorSurface"
+        android:background="@color/transparent"
+        android:layout_gravity="top"
         app:layout_behavior=".utilities.StatusBarScrimBehavior"
         android:fitsSystemWindows="true"/>
 
@@ -78,29 +19,91 @@
         android:id="@+id/content_loading_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="1dp"
-        />
+        tools:visibility="gone"/>
     <include
         layout="@layout/empty_error_state_layout"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:visibility="gone"
-        android:elevation="1dp"
         android:id="@+id/error_state_layout"
         android:layout_gravity="center"/>
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/discover_fragment_container"
         android:visibility="gone"
         tools:visibility="visible"
+        android:id="@+id/discover_fragment_container"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:fillViewport="true">
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            android:layout_marginTop="140dp"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_marginBottom="10dp"
+            android:fitsSystemWindows="true">
+            <com.google.android.material.appbar.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:elevation="0dp"
+                android:id="@+id/discover_fragment_app_bar">
+                <androidx.appcompat.widget.Toolbar
+                    android:layout_width="match_parent"
+                    android:elevation="0dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/discover_screen_gradient_morning"
+                    app:titleTextAppearance="@style/TextAppearance.Asobi.Headline5"
+                    android:layout_height="143dp"
+                    android:id="@+id/toolbar"
+                    tools:targetApi="lollipop">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:divider="?android:dividerHorizontal"
+                        android:dividerPadding="@dimen/spacing_normal"
+                        android:showDividers="middle"
+                        android:orientation="horizontal">
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@android:color/white"
+                            android:textStyle="bold"
+                            android:textSize="24sp"
+                            android:layout_weight="1.5"
+                            android:id="@+id/greetings_text"
+                            tools:text="Good afternoon" />
+
+                        <androidx.appcompat.widget.AppCompatImageButton
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="end"
+                            android:layout_margin="@dimen/margin_small"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:layout_weight="0.5"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="@string/notifications_button"
+                            android:scaleType="centerInside"
+                            android:id="@+id/notifications_button"
+                            android:src="@drawable/notification_bell"
+                            tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck" />
+                        <androidx.appcompat.widget.AppCompatImageButton
+                            android:layout_width="0dp"
+                            android:layout_height="30dp"
+                            android:layout_gravity="end"
+                            android:layout_margin="@dimen/margin_small"
+                            android:id="@+id/settings_button"
+                            android:layout_weight="0.5"
+                            android:background="@android:color/transparent"
+                            android:contentDescription="@string/settings_button"
+                            android:scaleType="centerInside"
+                            android:src="@drawable/settings_icon"
+                            tools:ignore="RedundantDescriptionCheck,TouchTargetSizeCheck" />
+                    </LinearLayout>
+                </androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.AppBarLayout>
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/latest_comics_label"
                 android:layout_width="wrap_content"
@@ -112,7 +115,7 @@
                 android:textAppearance="@style/TextAppearance.Asobi.Label"
                 app:layout_constraintBottom_toTopOf="@+id/latest_comics_recycler_view"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/discover_fragment_app_bar"
                 tools:text="Latest Comics" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -124,7 +127,7 @@
                 android:textColor="@android:color/white"
                 android:textAppearance="@style/TextAppearance.Asobi.Label"
                 android:textAllCaps="false"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/discover_fragment_app_bar"
                 android:text="@string/more_string"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -212,11 +215,12 @@
                 android:gravity="center"
                 android:layout_marginTop="@dimen/margin_large"
                 android:layout_marginStart="@dimen/margin_small"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                app:layout_constraintTop_toBottomOf="@id/completed_comics_recyclerview"
+                android:textColor="@android:color/white"
+                app:layout_constraintTop_toBottomOf="@+id/completed_comics_recyclerview"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"
                 app:layout_constraintStart_toStartOf="parent"
                 android:text="@string/ongoing_comics"
-                tools:text="Ongoing Comics" />
+              />
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/ongoing_comics_more_text"
                 android:layout_width="wrap_content"
@@ -224,8 +228,10 @@
                 android:layout_marginEnd="@dimen/margin_small"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                app:layout_constraintTop_toBottomOf="@id/completed_comics_recyclerview"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                app:layout_constraintTop_toBottomOf="@+id/completed_comics_recyclerview"
+
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"
                 android:textAllCaps="false"
                 android:text="@string/more_string"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -245,6 +251,7 @@
                 android:layout_marginTop="@dimen/margin_large"
                 android:layout_marginStart="@dimen/margin_small"
                 android:textColor="@android:color/white"
+
                 android:textAppearance="@style/TextAppearance.Asobi.Label"                app:layout_constraintTop_toBottomOf="@id/ongoing_comics_recycler_view"
                 app:layout_constraintStart_toStartOf="parent"
                 android:text="@string/comics_by_genre"

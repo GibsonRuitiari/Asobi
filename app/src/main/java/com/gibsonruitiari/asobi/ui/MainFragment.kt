@@ -18,23 +18,27 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.properties.Delegates
 
 class MainFragment:Fragment() {
     private val logger: Logger by inject()
     private val mainFragmentViewModel: MainActivityViewModel by viewModel()
     private lateinit var fragmentContainerView: FragmentContainerView
-    private lateinit var discoverFragment: DiscoverFragment
-    private lateinit var latestComicsFragment:LatestComicsFragment
-    private lateinit var ongoingComicsFragment:OngoingComicsFragment
+    private  var discoverFragment: DiscoverFragment?=null
+    private  var latestComicsFragment:LatestComicsFragment?=null
+    private  var ongoingComicsFragment:OngoingComicsFragment?=null
     private var currentFragmentIndex = discoverFragmentIndex
     private var navigationEventsJob:Job?=null
-    private var isFragmentHidden:Boolean=true
+//   private var isFragmentHidden by Delegates.observable(isHidden){property, oldValue, newValue ->
+//       loadData()
+//   }
+
     companion object{
         private const val discoverFragmentTag ="discover fragment"
         private const val latestComicsFragmentTag ="latest comics fragment"
         private const val ongoingComicsFragmentTag ="ongoing comics fragment"
         private const val currentFragmentIndexKey ="current fragment"
-        private const val isFragmentHiddenTag="isMainFragmentHiddenTag"
+  //      private const val isFragmentHiddenTag="isMainFragmentHiddenTag"
         private const val discoverFragmentIndex=0
         private const val latestComicsFragmentIndex=1
         private const val ongoingComicsFragmentIndex=2
@@ -45,7 +49,7 @@ class MainFragment:Fragment() {
             if (currentFragment!=discoverFragment){
                 childFragmentManager.beginTransaction()
                     .hide(currentFragment)
-                    .show(discoverFragment)
+                    .show(discoverFragment!!)
                     .commit()
             }else requireActivity().onBackPressed()
         }
@@ -55,53 +59,40 @@ class MainFragment:Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(currentFragmentIndexKey,currentFragmentIndex)
-        outState.putBoolean(isFragmentHiddenTag,isFragmentHidden)
-        childFragmentManager.putFragment(outState, discoverFragmentTag,discoverFragment)
-        childFragmentManager.putFragment(outState, latestComicsFragmentTag,latestComicsFragment)
-        childFragmentManager.putFragment(outState, ongoingComicsFragmentTag,ongoingComicsFragment)
+       // outState.putBoolean(isFragmentHiddenTag,isFragmentHidden)
+    childFragmentManager.putFragment(outState, discoverFragmentTag,discoverFragment!!)
+    childFragmentManager.putFragment(outState, latestComicsFragmentTag,latestComicsFragment!!)
+    childFragmentManager.putFragment(outState, ongoingComicsFragmentTag,ongoingComicsFragment!!)
+
     }
 
-    override fun onHiddenChanged(hidden: Boolean) {
-        super.onHiddenChanged(hidden)
-        // if it is hidden==true
-        doActionIfWeAreOnDebug {  logger.i("is main fragment hidden? $hidden")}
-        isFragmentHidden=hidden
-        loadData()
-    }
-    private fun loadData(){
-        if (!isFragmentHidden){
-            // initialize jobs
-            discoverFragment.onHiddenChanged(!isFragmentHidden)
-            observeNavigationEventsFromViewModel()
 
-        }else{
-            navigationEventsJob.cancelIfActive()
-        }
-    }
+
     private fun observeNavigationEventsFromViewModel(){
         navigationEventsJob?.cancel()
         navigationEventsJob=launchAndRepeatWithViewLifecycle {
             mainFragmentViewModel.navigationEvents.collectLatest {
+                doActionIfWeAreOnDebug { logger.i("p0000000]]]------------>collecting navigation events now") }
                 val currentFragment = getFragmentFromIndex(currentFragmentIndex)
                 when(it){
                     MainFragmentNavigationAction.NavigateToDiscoverScreen -> {
                         childFragmentManager.beginTransaction()
                             .hide(currentFragment)
-                            .show(discoverFragment)
+                            .show(discoverFragment!!)
                             .commit()
                         currentFragmentIndex= discoverFragmentIndex
                     }
                     MainFragmentNavigationAction.NavigateToLatestComicsScreen -> {
                         childFragmentManager.beginTransaction()
                             .hide(currentFragment)
-                            .show(latestComicsFragment)
+                            .show(latestComicsFragment!!)
                             .commit()
                         currentFragmentIndex= latestComicsFragmentIndex
                     }
                     MainFragmentNavigationAction.NavigateToOngoingComicsScreen -> {
                         childFragmentManager.beginTransaction()
                             .hide(currentFragment)
-                            .show(ongoingComicsFragment)
+                            .show(ongoingComicsFragment!!)
                             .commit()
                         currentFragmentIndex= ongoingComicsFragmentIndex
                     }
@@ -112,6 +103,11 @@ class MainFragment:Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(onBackPressedCallback)
+        if (savedInstanceState==null){
+            discoverFragment=DiscoverFragment()
+            latestComicsFragment=LatestComicsFragment()
+            ongoingComicsFragment=OngoingComicsFragment()
+        }
     }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -122,13 +118,10 @@ class MainFragment:Fragment() {
         fragmentContainerView = mainFragmentView.containerView
         if (savedInstanceState==null){
             doActionIfWeAreOnDebug {  logger.i("view state is being created for the first time")}
-            discoverFragment=DiscoverFragment()
-            latestComicsFragment=LatestComicsFragment()
-            ongoingComicsFragment=OngoingComicsFragment()
             childFragmentManager.beginTransaction()
-                .add(fragmentContainerView.id,discoverFragment, discoverFragmentTag)
-                .add(fragmentContainerView.id, latestComicsFragment, latestComicsFragmentTag).hide(latestComicsFragment)
-                .add(fragmentContainerView.id, ongoingComicsFragment, ongoingComicsFragmentTag).hide(latestComicsFragment)
+                .add(fragmentContainerView.id, discoverFragment!!, discoverFragmentTag).show(discoverFragment!!)
+                .add(fragmentContainerView.id, latestComicsFragment!!, latestComicsFragmentTag).hide(latestComicsFragment!!)
+                .add(fragmentContainerView.id, ongoingComicsFragment!!, ongoingComicsFragmentTag).hide(ongoingComicsFragment!!)
                 .commit()
            //currentFragmentIndex=0
 
@@ -138,31 +131,47 @@ class MainFragment:Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadData()
+        doActionIfWeAreOnDebug {  logger.i("[MainFragment]is main fragment hidden? $isHidden")}
+        loadData(isHidden)
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        loadData(isHidden)
+    }
+    private fun loadData(isHidden:Boolean){
+        if (!isHidden){
+            // initialize jobs
+            discoverFragment?.onHiddenChanged(isHidden.not())
+            observeNavigationEventsFromViewModel()
+
+        }else{
+            navigationEventsJob.cancelIfActive()
+        }
     }
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         /* If the saved instance is null it means the fragment is being created for the first time so handle the initialization on onCreateView */
-        if (savedInstanceState==null) return
+        if (savedInstanceState==null || discoverFragment==null) return
         doActionIfWeAreOnDebug {  logger.i("view state is being restored")}
-        isFragmentHidden=savedInstanceState.getBoolean(isFragmentHiddenTag)
+       // isFragmentHidden=savedInstanceState.getBoolean(isFragmentHiddenTag, false) // by default this fragment is not hidden since it is the main menu
         currentFragmentIndex= savedInstanceState.getInt(currentFragmentIndexKey)
         ongoingComicsFragment = childFragmentManager.findFragmentByTag(ongoingComicsFragmentTag) as OngoingComicsFragment
         discoverFragment = childFragmentManager.findFragmentByTag(discoverFragmentTag) as DiscoverFragment
         latestComicsFragment = childFragmentManager.findFragmentByTag(latestComicsFragmentTag) as LatestComicsFragment
         val currentFragment = getFragmentFromIndex(currentFragmentIndex)
         childFragmentManager.beginTransaction()
-            .hide(discoverFragment)
-            .hide(latestComicsFragment)
-            .hide(ongoingComicsFragment)
+            .hide(discoverFragment!!)
+            .hide(latestComicsFragment!!)
+            .hide(ongoingComicsFragment!!)
             .show(currentFragment)
             .commit()
         // trigger loading?
     }
     private fun getFragmentFromIndex(currentIndex:Int):Fragment= when (currentIndex) {
-        discoverFragmentIndex -> discoverFragment
-        latestComicsFragmentIndex -> latestComicsFragment
-        ongoingComicsFragmentIndex -> ongoingComicsFragment
+        discoverFragmentIndex -> discoverFragment!!
+        latestComicsFragmentIndex -> latestComicsFragment!!
+        ongoingComicsFragmentIndex -> ongoingComicsFragment!!
         else -> throw IllegalStateException("unrecognized index $currentIndex")
     }
 

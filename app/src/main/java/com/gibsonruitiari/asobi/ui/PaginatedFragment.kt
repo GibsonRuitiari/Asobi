@@ -112,19 +112,20 @@ abstract class PaginatedFragment:Fragment(){
         _baseFragmentBinding = BaseFragmentBinding.inflate(inflater,container,false)
         val colorSchemes=resourcesInstance().getIntArray(R.array.swipe_refresh_colors)
         val parentContainer = fragmentBinding.root
-        val appBarScrimVew = View(parentContainer.context).apply {
-            layoutParams= CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
-            background = requireActivity().resources.getDrawable(R.color.color_surface,null)
-            fitsSystemWindows= true
-            val parentLayoutParams=layoutParams as CoordinatorLayout.LayoutParams
-            parentLayoutParams.behavior= StatusBarScrimBehavior(parentContainer.context)
-        }
-        parentContainer.addView(appBarScrimVew)
+//        val appBarScrimVew = View(parentContainer.context).apply {
+//            layoutParams= CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
+//            background = requireActivity().resources.getDrawable(R.color.color_surface,null)
+//            fitsSystemWindows= true
+//            val parentLayoutParams=layoutParams as CoordinatorLayout.LayoutParams
+//            parentLayoutParams.behavior= StatusBarScrimBehavior(parentContainer.context)
+//        }
+        //parentContainer.addView(appBarScrimVew)
 
         /* Add extended floating button */
         mainFragmentExtendedFabActionButton = ExtendedFloatingActionButton(parentContainer.context).apply {
             id = ViewCompat.generateViewId()
             text = resources.getString(R.string.filter)
+
             icon = resources.getDrawable(R.drawable.ic_baseline_filter_list_24, null)
             contentDescription=resources.getString(R.string.filter_comics_by_genre)
             layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -306,11 +307,6 @@ abstract class PaginatedFragment:Fragment(){
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
         fragmentBinding.toolbar.title = toolbarTitle
-
-//        launchAndRepeatWithViewLifecycle {
-//            launch {  /* Observe paged data */ observePagedData() }
-//
-//        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {

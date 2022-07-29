@@ -7,7 +7,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.FragmentContainerView
 import com.gibsonruitiari.asobi.R
-import com.gibsonruitiari.asobi.utilities.extensions.dp
 
 
 class MainFragmentView constructor(context:Context): ConstraintLayout(context){
@@ -15,17 +14,12 @@ class MainFragmentView constructor(context:Context): ConstraintLayout(context){
     init {
         id = ViewCompat.generateViewId()
         layoutParams=ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
-        //val matterColorBackground=resources.getColor(R.color.matte, null)
-       // setBackgroundColor(matterColorBackground)
-
+        val matterColorBackground=resources.getColor(R.color.matte, null)
+        setBackgroundColor(matterColorBackground)
         val constraintSet = ConstraintSet()
-
         constraintSet.clone(this)
         containerView=setUpFrameLayoutContainer(this.context, constraintSet)
         constraintSet.applyTo(this)
-
-
-
     }
     private fun setUpFrameLayoutContainer(context: Context,constraintSet: ConstraintSet):FragmentContainerView{
         val container=FragmentContainerView(context).apply {

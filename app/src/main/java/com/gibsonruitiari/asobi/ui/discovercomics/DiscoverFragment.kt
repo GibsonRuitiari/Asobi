@@ -1,79 +1,48 @@
 package com.gibsonruitiari.asobi.ui.discovercomics
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearSnapHelper
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutDiscoverBinding
 import com.gibsonruitiari.asobi.databinding.DiscoverComicsFragmentBinding
-import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ItemMarginRecyclerViewDecorator
-import com.gibsonruitiari.asobi.utilities.extensions.cancelIfActive
-import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
-import com.gibsonruitiari.asobi.utilities.extensions.showSnackBar
-import com.gibsonruitiari.asobi.utilities.extensions.requestApplyInsetsWhenAttached
-import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
-import com.gibsonruitiari.asobi.utilities.extensions.horizontalLayoutManager
-import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
-import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
-import com.gibsonruitiari.asobi.utilities.logging.AsobiLogger
+import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.Logger
-import com.gibsonruitiari.asobi.utilities.widgets.ErrorStateLayout
-import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
-import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @Suppress("UNCHECKED_CAST")
 class DiscoverFragment:Fragment() {
     private val discoverViewModel:DiscoverViewModel by viewModel()
-    private val mainViewModel:MainActivityViewModel by sharedViewModel()
     private val logger: Logger by inject()
-    private var isFragmentHidden:Boolean=true
     private var dataLoadingJob:Job?=null
-    private var _discoverFragmentBinding:DiscoverComicsFragmentBinding?=null
+
+    private lateinit var _discoverFragmentBinding:DiscoverComicsFragmentBinding
     private val discoverFragmentBinding:DiscoverComicsFragmentBinding
-    get() = _discoverFragmentBinding!!
-    private val discoverFragmentCompletedComicsRecyclerView = discoverFragmentBinding.completedComicsRecyclerview
+    get() = _discoverFragmentBinding
 
 
 
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        if (savedInstanceState==null) return
-        isFragmentHidden=savedInstanceState.getBoolean(isFragmentHiddenTag,true)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(isFragmentHiddenTag,isFragmentHidden)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,124 +57,96 @@ class DiscoverFragment:Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         if (savedInstanceState==null) applyWindowInsetsToParentContainerWhenFragmentIsAttached()
-        setUpDiscoverFragmentRecyclerViews()
-        setUpDiscoverFragmentToolbarButtonsOnClickListener()
+        updateParentContainerPadding()
+        setUpDiscoverFragmentToolbar()
         onMoreLabelClickListeners()
+        setUpDiscoverFragmentRecyclerViews()
+        dynamicallyChangeStatusBarColorOnScroll()
+        /* Load data once Fragment's view is created based on whether the fragment is hidden or not.
+         This is needed since hide()&show() do not change the fragment's view lifecycle, without this,
+         the first time the fragment is shown nothing will be shown */
+         loadData(isHidden)
     }
 
-    private fun applyWindowInsetsToParentContainerWhenFragmentIsAttached(){
-        /* Fragment is being shown for the first time/a new instance of this fragment is created hence do apply the insets accordingly  */
-        discoverFragmentBinding.coordinatorLayout.postDelayed({discoverFragmentBinding.coordinatorLayout.requestApplyInsetsWhenAttached()},500)
 
-    }
-    /* Only load data when the fragment comes into view to avoid wastage of resources  */
+    /* required for sanity check :-)  */
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        isFragmentHidden=hidden
-        doActionIfWeAreOnDebug { logger.i("is discover fragment hidden $hidden")}
-        loadData()
+        loadData(hidden)
     }
-    private fun loadData(){
-        if (isFragmentHidden){
-            dataLoadingJob?.let {
-                if (it.isActive){
-                    logger.i("killing data loading job in discover fragment")
-                    it.cancel()
-                }
-            }
-        }else{
-            observeStateFromViewModel()
-        }
-    }
-    private fun observeStateFromViewModel(){
-       dataLoadingJob?.cancel()
-       dataLoadingJob=launchAndRepeatWithViewLifecycle {
-           logger.i("data loading job in discover fragment initialized")
-        observeData()
-        observeSideEffects()
-    }
-}
-    private  fun CoroutineScope.observeData(){
-        launch {
-            logger.i("observing data in observe data method discover fragment")
-            discoverViewModel.observeState().collectLatest {
-                when{
-                    it.isLoading->{
-                        onDataLoadingShowLoadingLayout()
-                        logger.i("loading data")
-                        discoverFragmentBinding.coordinatorLayout.showSnackBar(getString(R.string.loading_msg))
-                    }
-                    else->{
-                            when{
-                                it.isDataEmpty() ->{
-                                    errorTitle.text=getString(R.string.error_state_title)
-                                    errorSubtitle.text=getString(R.string.empty_subtitle)
-                                    onErrorOrEmptyDataShowErrorEmptyLayout()
-                                    logger.i("data is empty")
-                                }
-                                else->{
-                                    it.submitDataRecyclerViewAdapterWhenItIsNotEmpty()
-                                    logger.i("data fully loaded")
-                                    onDataLoadedSuccessfullyShowDataLayout()
-                                }
-                            }
-                        }
-                    }
-            }
-        }
-    }
-    private  fun CoroutineScope.observeSideEffects(){
-        launch{
-         discoverViewModel.observeSideEffect().collectLatest {
-             when(it){
-                 is DiscoverComicsSideEffect.Error->{
-
-                    // val retryButton =(discoverFragmentErrorLayout as ErrorStateLayout).retryButton
-                     val errorMessage=if (it.message.contains(getString(R.string.domain_name),ignoreCase = true)) getString(R.string.network_error_msg) else it.message
-                     errorSubtitle.text=errorMessage
-                     errorTitle.text= getString(R.string.error_state_title)
-                     discoverFragmentBinding.coordinatorLayout.showSnackBar(errorMessage)
-                    onErrorOrEmptyDataShowErrorEmptyLayout()
-                 }
-             }
-         }
-        }
-    }
-
 
      /* Start: Set up ui components */
     /* Navigate to notifications activity/settings activity when the buttons are clicked */
-    private fun setUpDiscoverFragmentToolbarButtonsOnClickListener(){
+    private fun setUpDiscoverFragmentToolbar(){
+   discoverFragmentBinding.greetingsText.text=discoverScreenGreetingMessage()
     discoverFragmentBinding.notificationsButton.setOnClickListener { doActionIfWeAreOnDebug {discoverFragmentBinding.coordinatorLayout.showSnackBar("notifications"); logger.i("notifications button clicked") } }
     discoverFragmentBinding.settingsButton.setOnClickListener { doActionIfWeAreOnDebug {discoverFragmentBinding.coordinatorLayout.showSnackBar("settings"); logger.i("settings button clicked") } }
     }
+    private fun setUpRetryButtonClickListener(){
+        with(discoverFragmentBinding.errorStateLayout.retryButton){
+            isVisible=true
+            setOnSafeClickListener { discoverViewModel.retry() }
+        }
+    }
     private fun setUpDiscoverFragmentRecyclerViews(){
      val linearSnapHelper = LinearSnapHelper()
+        setUpComicsByGenreRecyclerView(linearSnapHelper)
+        setUpCompletedComicsRecyclerView(linearSnapHelper)
+        setUpPopularComicsRecyclerView(linearSnapHelper)
+        setUpOngoingComicsRecyclerView(linearSnapHelper)
+        setUpLatestComicsRecyclerView(linearSnapHelper)
+
+    }
+    private fun setUpLatestComicsRecyclerView(linearSnapHelper: LinearSnapHelper){
         with(discoverFragmentBinding.latestComicsRecyclerView){
-        linearSnapHelper.attachToRecyclerView(this)
-        layoutManager = horizontalLayoutManager()
-        adapter = completedComicsAdapter
-        addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
-        setHasFixedSize(true)
-    }
-    with(discoverFragmentCompletedComicsRecyclerView){
-        linearSnapHelper.attachToRecyclerView(this)
-        layoutManager = horizontalLayoutManager()
-        adapter = completedComicsAdapter
-        addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
-        setHasFixedSize(true)
-        // bottom padding to the last recycler-view
-        doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
-            val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.updatePadding(bottom = viewPaddingState.bottom+ systemInsets.bottom + resources.getDimension(R.dimen.default_padding).toInt())}
+            linearSnapHelper.attachToRecyclerView(this)
+            setHasFixedSize(true)
+            adapter = latestComicsAdapter
+            layoutManager = horizontalLayoutManager()
+            addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
         }
-    with(discoverFragmentBinding.popularComicsRecyclerView){
-        linearSnapHelper.attachToRecyclerView(this)
-        layoutManager = horizontalLayoutManager()
-        adapter = popularComicsAdapter
-        addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
-        setHasFixedSize(true)
     }
+    private fun setUpOngoingComicsRecyclerView(linearSnapHelper: LinearSnapHelper){
+        with(discoverFragmentBinding.ongoingComicsRecyclerView){
+            linearSnapHelper.attachToRecyclerView(this)
+            setHasFixedSize(true)
+            adapter=ongoingComicsAdapter
+            layoutManager=horizontalLayoutManager()
+            addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
+        }
+    }
+    private fun setUpComicsByGenreRecyclerView(linearSnapHelper: LinearSnapHelper){
+        with(discoverFragmentBinding.comicsByGenreRecyclerView){
+            linearSnapHelper.attachToRecyclerView(this)
+            setHasFixedSize(true)
+            adapter=comicsByGenreAdapter
+            layoutManager=horizontalLayoutManager()
+            addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
+            // bottom padding to the last recycler-view
+            doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+                val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars())
+                view.updatePadding(bottom = viewPaddingState.bottom+ systemInsets.bottom + 20.dp)}
+        }
+    }
+    private fun setUpCompletedComicsRecyclerView(linearSnapHelper: LinearSnapHelper){
+        with(discoverFragmentBinding.completedComicsRecyclerview){
+            linearSnapHelper.attachToRecyclerView(this)
+            setHasFixedSize(true)
+            adapter = completedComicsAdapter
+            layoutManager = horizontalLayoutManager()
+            addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
+
+        }
+    }
+    private fun setUpPopularComicsRecyclerView(linearSnapHelper: LinearSnapHelper){
+        with(discoverFragmentBinding.popularComicsRecyclerView){
+            linearSnapHelper.attachToRecyclerView(this)
+            setHasFixedSize(true)
+            adapter = popularComicsAdapter
+            layoutManager = horizontalLayoutManager()
+            addItemDecoration(ItemMarginRecyclerViewDecorator(resources.getDimension(R.dimen.default_padding).toInt()))
+
+        }
     }
     /* Navigate to the specific fragment when more button is clicked */
     private fun onMoreLabelClickListeners(){
@@ -213,7 +154,6 @@ class DiscoverFragment:Fragment() {
         doActionIfWeAreOnDebug {  discoverFragmentBinding.coordinatorLayout.showSnackBar("popular comics label clicked");logger.i("popular comics label clicked") } }
         discoverFragmentBinding.completedComicsMoreText.setOnClickListener { doActionIfWeAreOnDebug {  discoverFragmentBinding.coordinatorLayout.showSnackBar("completed comics label clicked");logger.i("completed comics label clicked") } }
         discoverFragmentBinding.latestComicsMoreText.setOnClickListener {
-        mainViewModel.openLatestComicsScreen()
         doActionIfWeAreOnDebug {  discoverFragmentBinding.coordinatorLayout.showSnackBar("latest comics label clicked");logger.i("latest comics label clicked") } }
     }
     /* End: Set up ui components */
@@ -222,25 +162,24 @@ class DiscoverFragment:Fragment() {
 
    /* Start: Respond to events by showing the requisite state on the screen to the user */
     private fun onDataLoadingShowLoadingLayout(){
-        discoverFragmentBinding.contentLoadingLayout.apply { isVisible=true }.show()
+       discoverFragmentBinding.contentLoadingLayout.apply { isVisible=true }.show()
        discoverFragmentBinding.errorStateLayout.root.isVisible=false
-       discoverFragmentBinding.discoverFragmentAppBar.isVisible=false
        discoverFragmentBinding.discoverFragmentContainer.isVisible=false
     }
     private fun onErrorOrEmptyDataShowErrorEmptyLayout(){
         discoverFragmentBinding.contentLoadingLayout.apply { isVisible=false }.hide()
         discoverFragmentBinding.errorStateLayout.root.isVisible=true
-        discoverFragmentBinding.discoverFragmentAppBar.isVisible=false
         discoverFragmentBinding.discoverFragmentContainer.isVisible=false
     }
     private fun onDataLoadedSuccessfullyShowDataLayout(){
         discoverFragmentBinding.contentLoadingLayout.apply { isVisible=false }.hide()
         discoverFragmentBinding.errorStateLayout.root.isVisible=false
-        discoverFragmentBinding.discoverFragmentAppBar.isVisible=true
         discoverFragmentBinding.discoverFragmentContainer.isVisible=true
     }
 
     /* End: Respond to events by showing the requisite state on the screen to the user */
+
+
 
     /* Start: Utility functions related to DiscoverFragment  */
     private val errorTitle:AppCompatTextView
@@ -248,6 +187,96 @@ class DiscoverFragment:Fragment() {
     private val errorSubtitle:AppCompatTextView
     get() =discoverFragmentBinding.errorStateLayout.emptyErrorStateSubtitle
 
+    private fun loadData(hidden: Boolean){
+        if (hidden){
+            dataLoadingJob?.cancelIfActive()
+        }else{
+            observeStateFromViewModel()
+        }
+    }
+    /**
+     * Helps to us to cancel and restart the job whenever the fragment's visibility state changes
+     * Albeit, the view model outlives the fragment's lifecycle so in most cases,
+     * the same instance of state flow is used everytime we restart/initialize the job
+     * The purpose of calling [discoverViewModel.retry()] is to fetch new data whenever the fragment's
+     * visibility changes, however we are using state-flow that caches the most recent value,
+     * and if the value hasn't changed, the state-flow will return the same data instance
+     * Also we don't have to cancel and initialize the job in onStart and onStop since flow.withLifecycle handles
+     * that for us automatically.
+     * */
+    private fun observeStateFromViewModel() {
+        dataLoadingJob?.cancel()
+        discoverViewModel.retry()
+        dataLoadingJob = launchAndRepeatWithViewLifecycle {
+            observeData()
+            observeSideEffects()
+        }
+    }
+    private  fun CoroutineScope.observeData(){
+        launch {
+            discoverViewModel.observeState()
+                .collectLatest {
+                    when{
+                        it.isLoading->{
+                            onDataLoadingShowLoadingLayout()
+                        }
+                        else->{
+                            when{
+                                !it.isDataEmpty() ->{
+                                    it.submitDataRecyclerViewAdapterWhenItIsNotEmpty()
+                                    onDataLoadedSuccessfullyShowDataLayout()
+                                }
+                                else->{
+                                    errorTitle.text=getString(R.string.error_state_title)
+                                    errorSubtitle.text=getString(R.string.empty_subtitle)
+                                    onErrorOrEmptyDataShowErrorEmptyLayout()
+                                }
+                            }
+                        }
+                    }
+                }
+        }
+    }
+    private  fun CoroutineScope.observeSideEffects(){
+        launch{
+            discoverViewModel.observeSideEffect().collectLatest {
+                when(it){
+                    is DiscoverComicsSideEffect.Error->{
+                        val errorMessage=if (it.message.contains(getString(R.string.domain_name),ignoreCase = true)) getString(R.string.network_error_msg) else it.message
+                        errorSubtitle.text=errorMessage
+                        errorTitle.text= getString(R.string.error_state_title)
+                        onErrorOrEmptyDataShowErrorEmptyLayout()
+                        setUpRetryButtonClickListener()
+                    }
+                }
+            }
+        }
+    }
+    private fun dynamicallyChangeStatusBarColorOnScroll(){
+        discoverFragmentBinding.discoverFragmentContainer.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
+            if (scrollY>0){
+                changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
+            }else{
+                changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
+            }
+        })
+    }
+    private fun applyWindowInsetsToParentContainerWhenFragmentIsAttached(){
+        /* Fragment is being shown for the first time/a new instance of this fragment is created hence do apply the insets accordingly  */
+        discoverFragmentBinding.coordinatorLayout.postDelayed({discoverFragmentBinding.coordinatorLayout.requestApplyInsetsWhenAttached()},500)
+    }
+    private fun updateParentContainerPadding() {
+        with(discoverFragmentBinding.coordinatorLayout) {
+            doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+                val systemInsets = windowInsetsCompat.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type
+                        .ime()
+                )
+                // pad the coordinator layout to ensure it stays above the nav bar
+                view.updatePadding(bottom = viewPaddingState.bottom + systemInsets.bottom + 25.dp)
+            }
+        }
+    }
     private fun DiscoverComicsState.isDataEmpty( ):Boolean{
         val completedComics = comicsData.completedComics.comicsData
         val popularComics = comicsData.popularComics.comicsData
@@ -277,6 +306,24 @@ class DiscoverFragment:Fragment() {
         latestComicsAdapter.submitList(latestComics)
         comicsByGenreAdapter.submitList(comicsByGenre)
     }
+    private fun discoverScreenGreetingMessage():String{
+        val hour by lazy { org.threeten.bp.LocalTime.now().hour }
+        return when{
+            hour<12 -> {
+                discoverFragmentBinding.toolbar.background= resources.getDrawable(R.drawable.discover_screen_gradient_morning,null)
+                getString(R.string.good_morning)
+            }
+            hour <17 ->{
+                discoverFragmentBinding.toolbar.background= resources.getDrawable(R.drawable.discover_screen_gradient_afternoon,null)
+                getString(R.string.good_afternoon)
+            }
+            else->{
+                discoverFragmentBinding.toolbar.background= resources.getDrawable(R.drawable.discover_screen_gradient_evening,null)
+                getString(R.string.good_evening)
+            }
+        }
+    }
+
 
     /* End: Utility functions related to DiscoverFragment  */
 
@@ -295,6 +342,7 @@ class DiscoverFragment:Fragment() {
     private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindCompletedComics(viewComics: ViewComics){
         this.completedComics = viewComics
         with(binding){
+
             comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
         }
     }
@@ -317,9 +365,7 @@ class DiscoverFragment:Fragment() {
         }
     }
 
-    private val comicsByGenreAdapter:ListAdapter<ViewComics,BindingViewHolder<ComicItemLayoutDiscoverBinding>>
-        get() {
-            return listAdapterOf(initialItems = emptyList(),
+    private val comicsByGenreAdapter = listAdapterOf(initialItems = emptyList(),
                 viewHolderCreator = {parent: ViewGroup, _: Int ->
                     parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
                         itemView.setOnClickListener {  Toast.makeText(requireContext(), "${comicsByGenre.comicLink} clicked", Toast.LENGTH_SHORT).show() }
@@ -327,11 +373,9 @@ class DiscoverFragment:Fragment() {
                 }, viewHolderBinder = {holder:BindingViewHolder<ComicItemLayoutDiscoverBinding>, item:ViewComics,_->
                     holder.bindComicsByGenre(item)
                 })
-        }
 
-    private val latestComicsAdapter:ListAdapter<ViewComics,BindingViewHolder<ComicItemLayoutDiscoverBinding>>
-        get() {
-            return listAdapterOf(initialItems = emptyList(),
+
+    private val latestComicsAdapter = listAdapterOf(initialItems = emptyList(),
                 viewHolderCreator = { parent: ViewGroup, _: Int ->
                     parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
                         itemView.setOnClickListener {
@@ -346,10 +390,8 @@ class DiscoverFragment:Fragment() {
                 viewHolderBinder = { holder: BindingViewHolder<ComicItemLayoutDiscoverBinding>, item: ViewComics, _ ->
                     holder.bindLatestComics(item)
                 })
-        }
-    private val popularComicsAdapter :ListAdapter<ViewComics,BindingViewHolder<ComicItemLayoutDiscoverBinding>>
-    get() {
-        return listAdapterOf(initialItems = emptyList(),
+
+    private val popularComicsAdapter = listAdapterOf(initialItems = emptyList(),
             viewHolderCreator = { parent: ViewGroup, _: Int ->
                 parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
                     itemView.setOnClickListener {
@@ -363,10 +405,8 @@ class DiscoverFragment:Fragment() {
             }, viewHolderBinder = { holder: RecyclerView.ViewHolder, item: ViewComics, _: Int ->
                 (holder as BindingViewHolder<ComicItemLayoutDiscoverBinding>).bindPopularComics(item)
             })
-    }
-    private val completedComicsAdapter:ListAdapter<ViewComics,BindingViewHolder<ComicItemLayoutDiscoverBinding>>
-    get() {
-        return listAdapterOf(initialItems = emptyList(),
+
+    private val completedComicsAdapter = listAdapterOf(initialItems = emptyList(),
             viewHolderCreator = { parent, _ ->
                 parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
                     itemView.setOnClickListener {
@@ -382,10 +422,8 @@ class DiscoverFragment:Fragment() {
                     item
                 )
             })
-    }
-    private val ongoingComicsAdapter:ListAdapter<ViewComics,BindingViewHolder<ComicItemLayoutDiscoverBinding>>
-    get() {
-        return listAdapterOf(initialItems = emptyList(),
+
+    private val ongoingComicsAdapter = listAdapterOf(initialItems = emptyList(),
             viewHolderCreator = {parent, _ ->
                 parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
                     itemView.setOnClickListener {
@@ -395,14 +433,8 @@ class DiscoverFragment:Fragment() {
             }, viewHolderBinder = {holder:RecyclerView.ViewHolder,item:ViewComics,_->
                 (holder as BindingViewHolder<ComicItemLayoutDiscoverBinding>).bindOngoingComics(item)
             })
-    }
+
 
     /* End of recycler view's adapters + view-holder initialization */
-    override fun onDestroy() {
-        super.onDestroy()
-        _discoverFragmentBinding=null
-    }
-    companion object{
-        private const val isFragmentHiddenTag ="discoverIsFragmentHidden"
-    }
+
 }
