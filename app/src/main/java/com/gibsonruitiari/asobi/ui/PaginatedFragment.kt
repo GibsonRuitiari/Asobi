@@ -302,13 +302,18 @@ abstract class PaginatedFragment:Fragment(){
         when{
             !isFragmentHidden->{
              observeStateFromViewModel()
-            changeStatusBarToTransparentInFragment(resources.getColor(R.color.latest_comics_bg,null))
             }
             else->{
-                changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
                 loadingJob.cancelIfActive()
-                doActionIfWeAreOnDebug { logger.i("[Cancellation] paginated frag job is active? ${loadingJob?.isActive}") }
             }
+        }
+        changeStatusBarColorOnHiddenChanged(isFragmentHidden)
+    }
+    private fun changeStatusBarColorOnHiddenChanged(hidden:Boolean){
+        if(!hidden){
+            changeStatusBarToTransparentInFragment(resources.getColor(R.color.latest_comics_bg,null))
+        }else{
+            changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
         }
     }
     private fun observeStateFromViewModel(){
