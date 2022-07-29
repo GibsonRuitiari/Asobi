@@ -10,6 +10,7 @@ import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
 import com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchFragment
 import com.gibsonruitiari.asobi.ui.userlibrary.UserLibrary
+import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.google.android.material.navigation.NavigationBarView
 import com.google.android.material.navigationrail.NavigationRailView
@@ -154,7 +155,10 @@ class MainActivity : AppCompatActivity() {
         mainFragmentIndex -> mainFragment
         searchFragmentIndex -> searchFragment
         userLibraryFragmentIndex -> userLibraryFragment
-        else -> throw IllegalStateException("unrecognized index $currentIndex")
+        else -> {
+            doActionIfWeAreOnDebug { logger.e("we have been given an unknown index $currentIndex") }
+            throw IllegalStateException("unrecognized index $currentIndex")
+        }
     }
 
 
