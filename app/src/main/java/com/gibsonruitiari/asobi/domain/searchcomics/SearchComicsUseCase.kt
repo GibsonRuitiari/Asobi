@@ -6,6 +6,7 @@ import com.gibsonruitiari.asobi.data.network.Status
 import com.gibsonruitiari.asobi.data.shared.searchcomics.SearchComicsRepo
 import com.gibsonruitiari.asobi.domain.FlowUseCase
 import com.gibsonruitiari.asobi.ui.comicssearch.SearchComicsResult
+import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
 import com.gibsonruitiari.asobi.utilities.extensions.parseThrowableErrorMessageIntoUsefulMessage
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.sMangaToViewComicMapper
@@ -17,7 +18,7 @@ class SearchComicsUseCase constructor(private val searchComicsRepo: SearchComics
 private val logger: Logger):FlowUseCase<SearchComicsUseCase.SearchComicsUseCaseParams,
         SearchComicsResult>() {
     override fun run(params: SearchComicsUseCaseParams): Flow<SearchComicsResult> {
-        logger.i("search param is ${params.searchTerm}")
+        doActionIfWeAreOnDebug { logger.i("search function is called") }
         return searchComicsRepo.searchForComicWhenGivenASearchTerm(params.searchTerm)
             .toNetworkResource()
             .toSearchComicsResultData()

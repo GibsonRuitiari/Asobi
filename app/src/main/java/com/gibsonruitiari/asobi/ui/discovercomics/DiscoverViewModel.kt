@@ -1,5 +1,6 @@
 package com.gibsonruitiari.asobi.ui.discovercomics
 
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gibsonruitiari.asobi.data.datamodels.Genres
@@ -21,25 +22,23 @@ class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverC
     // broadcast all the side effects to all subscribers
     // replay=0 so as to broadcast most recent side effect
     private val sideEffect = MutableSharedFlow<DiscoverComicsSideEffect>()
-    private val retryTrigger = RetryTrigger()
+
     init {
         onAction(DiscoverComicsAction.LoadComics)
     }
     fun retry(){
-        retryTrigger.retry()
+        onAction(DiscoverComicsAction.LoadComics)
     }
-    override fun observeState(): StateFlow<DiscoverComicsState> = retryFlow(retryTrigger = retryTrigger, source = {state})
-        .stateIn(viewModelScope, started = SharingStarted.WhileSubscribed(500), initialValue = DiscoverComicsState.Empty)
+    override fun observeState(): StateFlow<DiscoverComicsState> = state
 
     override fun observeSideEffect(): Flow<DiscoverComicsSideEffect> = sideEffect
     companion object{
-        private const val ITEM_SIZE=16
         private const val ITEM_PAGE=1
     }
 
     override fun onAction(action: DiscoverComicsAction) {
         val oldState = state.value
-        val params= DiscoverComicsUseCase.DiscoverComicsParams(ITEM_SIZE, ITEM_PAGE, genre = Genres.DC_COMICS)
+        val params= DiscoverComicsUseCase.DiscoverComicsParams(ITEM_PAGE, genre = Genres.DC_COMICS)
         when(action){
             is DiscoverComicsAction.LoadComics->{
                 with(state){

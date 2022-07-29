@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutDiscoverBinding
 import com.gibsonruitiari.asobi.databinding.DiscoverComicsFragmentBinding
+import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
@@ -29,6 +30,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @Suppress("UNCHECKED_CAST")
@@ -36,13 +38,10 @@ class DiscoverFragment:Fragment() {
     private val discoverViewModel:DiscoverViewModel by viewModel()
     private val logger: Logger by inject()
     private var dataLoadingJob:Job?=null
-
+    private val mainActivityViewModel:MainActivityViewModel by sharedViewModel()
     private lateinit var _discoverFragmentBinding:DiscoverComicsFragmentBinding
     private val discoverFragmentBinding:DiscoverComicsFragmentBinding
     get() = _discoverFragmentBinding
-
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -85,7 +84,10 @@ class DiscoverFragment:Fragment() {
     private fun setUpRetryButtonClickListener(){
         with(discoverFragmentBinding.errorStateLayout.retryButton){
             isVisible=true
-            setOnSafeClickListener { discoverViewModel.retry() }
+            setOnSafeClickListener {
+                discoverFragmentBinding.coordinatorLayout.showSnackBar(getString(R.string.loading_msg))
+                discoverViewModel.retry()
+            }
         }
     }
     private fun setUpDiscoverFragmentRecyclerViews(){
@@ -154,7 +156,9 @@ class DiscoverFragment:Fragment() {
         doActionIfWeAreOnDebug {  discoverFragmentBinding.coordinatorLayout.showSnackBar("popular comics label clicked");logger.i("popular comics label clicked") } }
         discoverFragmentBinding.completedComicsMoreText.setOnClickListener { doActionIfWeAreOnDebug {  discoverFragmentBinding.coordinatorLayout.showSnackBar("completed comics label clicked");logger.i("completed comics label clicked") } }
         discoverFragmentBinding.latestComicsMoreText.setOnClickListener {
-        doActionIfWeAreOnDebug {  discoverFragmentBinding.coordinatorLayout.showSnackBar("latest comics label clicked");logger.i("latest comics label clicked") } }
+            doActionIfWeAreOnDebug { logger.i("latest comics more text clicked") }
+            mainActivityViewModel.openLatestComicsScreen()
+        }
     }
     /* End: Set up ui components */
 
@@ -299,7 +303,6 @@ class DiscoverFragment:Fragment() {
         val latestComics = comicsData.latestComics.comicsData
         val ongoingComics = comicsData.ongoingComics.comicsData
         val comicsByGenre = comicsData.comicsByGenre.comicsData
-        logger.i("discover frag data size latest-> ${latestComics.size} ongoing -> ${ongoingComics.size} comics by genre ${comicsByGenre.size}")
         completedComicsAdapter.submitList(completedComics)
         popularComicsAdapter.submitList(popularComics)
         ongoingComicsAdapter.submitList(ongoingComics)

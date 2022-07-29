@@ -10,16 +10,13 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.isVisible
-import androidx.core.view.ViewCompat
-import androidx.core.view.doOnNextLayout
-import androidx.core.view.updatePadding
-import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
@@ -36,18 +33,7 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ExtendedFabBehavior
 import com.gibsonruitiari.asobi.utilities.StatusBarScrimBehavior
-import com.gibsonruitiari.asobi.utilities.extensions.cancelIfActive
-import com.gibsonruitiari.asobi.utilities.extensions.launchAndRepeatWithViewLifecycle
-import com.gibsonruitiari.asobi.utilities.extensions.showSnackBar
-import com.gibsonruitiari.asobi.utilities.extensions.parseThrowableErrorMessageIntoUsefulMessage
-import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
-import com.gibsonruitiari.asobi.utilities.extensions.setContentToMaxWidth
-import com.gibsonruitiari.asobi.utilities.extensions.scrollToTop
-import com.gibsonruitiari.asobi.utilities.extensions.gridLayoutManager
-import com.gibsonruitiari.asobi.utilities.extensions.applyBottomInsets
-import com.gibsonruitiari.asobi.utilities.extensions.doOnApplyWindowInsets
-import com.gibsonruitiari.asobi.utilities.extensions.loadPhotoUrl
-import com.gibsonruitiari.asobi.utilities.extensions.resourcesInstance
+import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.AsobiLogger
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
@@ -56,6 +42,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 @Suppress("UNCHECKED_CAST")
 abstract class PaginatedFragment:Fragment(){
@@ -64,6 +51,7 @@ abstract class PaginatedFragment:Fragment(){
     private var isFragmentHidden:Boolean=true
     private var loadingJob:Job?=null
     private val logger: Logger by inject()
+    private val mainActivityViewModel:MainActivityViewModel by sharedViewModel()
 
     var pagingListAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
     abstract val toolbarTitle:String
@@ -104,6 +92,16 @@ abstract class PaginatedFragment:Fragment(){
             }
         }
     }
+    private val onBackPressedCallback=object :OnBackPressedCallback(false){
+        override fun handleOnBackPressed() {
+            doActionIfWeAreOnDebug { logger.i("From Paginated fragment going back to discover screen") }
+            mainActivityViewModel.openDiscoverScreen()
+        }
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requireActivity().onBackPressedDispatcher.addCallback(onBackPressedCallback)
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -112,14 +110,6 @@ abstract class PaginatedFragment:Fragment(){
         _baseFragmentBinding = BaseFragmentBinding.inflate(inflater,container,false)
         val colorSchemes=resourcesInstance().getIntArray(R.array.swipe_refresh_colors)
         val parentContainer = fragmentBinding.root
-//        val appBarScrimVew = View(parentContainer.context).apply {
-//            layoutParams= CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0)
-//            background = requireActivity().resources.getDrawable(R.color.color_surface,null)
-//            fitsSystemWindows= true
-//            val parentLayoutParams=layoutParams as CoordinatorLayout.LayoutParams
-//            parentLayoutParams.behavior= StatusBarScrimBehavior(parentContainer.context)
-//        }
-        //parentContainer.addView(appBarScrimVew)
 
         /* Add extended floating button */
         mainFragmentExtendedFabActionButton = ExtendedFloatingActionButton(parentContainer.context).apply {
@@ -143,6 +133,7 @@ abstract class PaginatedFragment:Fragment(){
             id = ViewCompat.generateViewId()
             layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
             (layoutParams as CoordinatorLayout.LayoutParams).behavior = AppBarLayout.ScrollingViewBehavior()
+        //    (layoutParams as CoordinatorLayout.LayoutParams).setMargins(marginLeft,marginTop+10.dp,marginRight,marginBottom)
         }
         parentContainer.addView(mainFragmentConstraintLayoutContainer)
 
@@ -306,18 +297,20 @@ abstract class PaginatedFragment:Fragment(){
         setUpMainFragmentRecyclerView()
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
-        fragmentBinding.toolbar.title = toolbarTitle
+        attachScrollListenerForRecyclerView()
+        fragmentBinding.toolbar.title=toolbarTitle
     }
-
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         isFragmentHidden=hidden
-        doActionIfWeAreOnDebug { logger.i("is paginated fragment hidden $hidden")}
         when{
             !isFragmentHidden->{
                 observeStateFromViewModel()
             }
-            else->loadingJob.cancelIfActive()
+            else->{
+                loadingJob.cancelIfActive()
+                doActionIfWeAreOnDebug { logger.i("[Cancellation] paginated frag job is active? ${loadingJob?.isActive}") }
+            }
         }
     }
     private fun observeStateFromViewModel(){
@@ -325,6 +318,7 @@ abstract class PaginatedFragment:Fragment(){
         loadingJob=launchAndRepeatWithViewLifecycle {
             launch {  /* Observe paged data */ observePagedData() }
         }
+        doActionIfWeAreOnDebug { logger.i("[Initialization] paginated frag job is active? ${loadingJob?.isActive}") }
     }
 
     /*Start:Show Correct State based on the data events observed above */
@@ -402,15 +396,12 @@ abstract class PaginatedFragment:Fragment(){
             val height = if (ct!=0){
                 ct +height
             }else 0
-            setSlingshotDistance(128+height)
-            setProgressViewEndTarget(false, height+128)
+            setSlingshotDistance(height)
+            setProgressViewEndTarget(false, height)
         }
     }
     private fun setUpMainFragmentRecyclerView(){
         val screenWidth= resourcesInstance().displayMetrics.run {
-            if (BuildConfig.DEBUG){
-                println("widthpixels: $widthPixels density $density")
-            }
             widthPixels/density }
         with(mainFragmentRecyclerView){
             doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
@@ -426,6 +417,16 @@ abstract class PaginatedFragment:Fragment(){
             * no of span count for our grid layout */
             layoutManager = gridLayoutManager(spanCount = (screenWidth/156f).toInt())
         }
+    }
+    private fun attachScrollListenerForRecyclerView(){
+        mainFragmentRecyclerView. setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            if (scrollY>0){
+                changeStatusBarToTransparentInFragment(resources.getColor(R.color.latest_comics_bg,null))
+            }else{
+                changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
+            }
+        }
+
     }
     /* End: Setting up Ui Components */
     override fun onDestroy() {

@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.FragmentContainerView
 import com.gibsonruitiari.asobi.R
@@ -24,6 +25,8 @@ class MainFragmentView constructor(context:Context): ConstraintLayout(context){
     private fun setUpFrameLayoutContainer(context: Context,constraintSet: ConstraintSet):FragmentContainerView{
         val container=FragmentContainerView(context).apply {
             id = ViewCompat.generateViewId()
+            val matterColorBackground=resources.getColor(R.color.matte, null)
+            setBackgroundColor(matterColorBackground)
         }
         addView(container)
         constraintSet.constrainHeight(container.id,ConstraintSet.MATCH_CONSTRAINT)

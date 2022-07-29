@@ -54,7 +54,6 @@ class MainActivity : AppCompatActivity() {
                 .add(fragmentContainerId,userLibraryFragment, userLibraryFragmentTag).hide(userLibraryFragment)
                 .commitNow()
 
-            mainActivityViewModel.setMainFragmentStatus(false)
         }else{
             selectedFragmentIndex = savedInstanceState.getInt(selectedIndexTag, mainFragmentIndex)
             mainFragment = supportFragmentManager.findFragmentByTag(mainFragmentTag) as MainFragment
@@ -67,7 +66,6 @@ class MainActivity : AppCompatActivity() {
                 .hide(userLibraryFragment)
                 .show(currentFragment)
                 .commit()
-            mainActivityViewModel.setMainFragmentStatus(currentFragment==mainFragment)
         }
         /* get an instance of navigation bar view, note: chances of both being null at the same time are one in a million*/
          navigationBarView = (binding.navRailView ?: binding.navigation) as NavigationBarView
@@ -75,6 +73,26 @@ class MainActivity : AppCompatActivity() {
         setUpNavigationBarViews()
         applyWindowInsetsOnStatusBarScrim()
         applyWindowInsetsOnRootContainer()
+        setUpClickListenerForNavigationBarView()
+        navigationBarView.setOnItemReselectedListener {
+            when(it.itemId){
+                R.id.mainScreen->{
+                  // signal to main screen to show discover fragment when main screen is re-selected
+                  mainActivityViewModel.openDiscoverScreen()
+                  doActionIfWeAreOnDebug { logger.i("main screen is reselected move to discover frag") }
+                }
+            }
+        }
+    }
+
+    private fun setUpNavigationBarViews(){
+        navigationBarView.itemIconTintList=null
+        binding.navRailView?.let {
+            applyWindowInsetsOnNavigationRailView(it)
+        }
+    }
+
+    private fun setUpClickListenerForNavigationBarView(){
         /* set up on click listeners for navigation bar view  */
         navigationBarView.setOnItemSelectedListener {
             val currentFragment = getFragmentFromIndex(selectedFragmentIndex)
@@ -85,7 +103,6 @@ class MainActivity : AppCompatActivity() {
                         .show(mainFragment)
                         .commit()
                     selectedFragmentIndex= mainFragmentIndex
-                    mainActivityViewModel.setMainFragmentStatus(false)
                     true
                 }
                 R.id.searchScreen->{
@@ -94,7 +111,6 @@ class MainActivity : AppCompatActivity() {
                         .show(searchFragment)
                         .commit()
                     selectedFragmentIndex= searchFragmentIndex
-                    mainActivityViewModel.setMainFragmentStatus(true)
                     true
                 }
                 R.id.libraryScreen->{
@@ -103,19 +119,10 @@ class MainActivity : AppCompatActivity() {
                         .show(userLibraryFragment)
                         .commit()
                     selectedFragmentIndex= userLibraryFragmentIndex
-                    mainActivityViewModel.setMainFragmentStatus(true)
                     true
                 }
                 else->false
             }
-        }
-
-    }
-
-    private fun setUpNavigationBarViews(){
-        navigationBarView.itemIconTintList=null
-        binding.navRailView?.let {
-            applyWindowInsetsOnNavigationRailView(it)
         }
     }
     private fun applyWindowInsetsOnNavigationRailView(navigationRailView: NavigationRailView){
@@ -161,7 +168,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
         outState.putInt(selectedIndexTag,selectedFragmentIndex)
@@ -172,17 +178,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val currentFragment = getFragmentFromIndex(selectedFragmentIndex)
-        when{
-            currentFragment!=mainFragment->{
+        when {
+            currentFragment != mainFragment -> {
                 supportFragmentManager.beginTransaction()
                     .hide(currentFragment)
                     .show(mainFragment)
                     .commit()
-                selectedFragmentIndex= mainFragmentIndex
-                mainActivityViewModel.setMainFragmentStatus(false)
+                selectedFragmentIndex = mainFragmentIndex
+                navigationBarView.selectedItemId=R.id.mainScreen
             }
-            else-> super.onBackPressed()
-            }
+            else -> super.onBackPressed()
+        }
     }
 
 }
