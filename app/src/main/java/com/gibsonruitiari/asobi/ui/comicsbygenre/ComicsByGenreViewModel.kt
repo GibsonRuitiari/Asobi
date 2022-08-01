@@ -8,7 +8,6 @@ import androidx.paging.cachedIn
 import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.domain.bygenre.PagedComicsByGenreObserver
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
-import com.gibsonruitiari.asobi.utilities.logging.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -19,22 +18,18 @@ class ComicsByGenreViewModel constructor(private val pagedComicsByGenreObserver:
         .flowObservable
         .cachedIn(viewModelScope)
 
-    private val currentGenre = MutableStateFlow<Genres?>(null) // initially null
+    private val currentGenre = MutableStateFlow<Genres>(Genres.DC_COMICS) // initially null
     fun setGenre(genre: Genres){
-        println("current set value: ${genre.genreName}")
         currentGenre.value=genre
     }
     init {
         viewModelScope.launch {
-           currentGenre.collectLatest {
-               it?.let { genre->
-                   println("observed genre in view model[comics by genre view model]--> $genre")
-                   pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(genre, pagingConfig))
-               }
+           currentGenre.collectLatest {genre->
+               println("observed genre in view model[comics by genre view model]--> $genre")
+               pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(genre, pagingConfig))
            }
         }
     }
-
     companion object{
         val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10, initialLoadSize = 30,
             enablePlaceholders = false)
