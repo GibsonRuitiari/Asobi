@@ -1,6 +1,7 @@
 package com.gibsonruitiari.asobi.ui.latestcomics
 
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.widget.Toast
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.ui.PaginatedFragment
@@ -16,6 +17,8 @@ class LatestComicsFragment: PaginatedFragment() {
     private val latestComicsViewModel: LatestComicsViewModel by viewModel()
     override val toolbarTitle: String
         get() = getString(R.string.latest_comics)
+    override val fragmentGradient: Drawable
+        get() = resources.getDrawable(R.drawable.latest_screen_gradient,null)
     override val fragmentColor: Int
         get() = Color.parseColor("#FF7403")
     override suspend fun observePagedData() {

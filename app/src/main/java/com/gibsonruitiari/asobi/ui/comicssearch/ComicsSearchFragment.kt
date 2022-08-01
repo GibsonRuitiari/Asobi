@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.databinding.FragmentSearchBinding
 import com.gibsonruitiari.asobi.databinding.GenreComicItemBinding
@@ -20,13 +21,16 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreViewModel
 import com.gibsonruitiari.asobi.ui.uiModels.UiGenreModel
 import com.gibsonruitiari.asobi.utilities.extensions.*
+import com.gibsonruitiari.asobi.utilities.logging.Logger
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ComicsSearchFragment:Fragment() {
     private val comicsSearchViewModel: ComicsSearchViewModel by viewModel()
     private val comicsByGenreViewModel:ComicsByGenreViewModel by viewModel()
+    private val logger:Logger by inject()
     private var comicsSearchFragmentBinding: FragmentSearchBinding? = null
     private val fragmentBinding
     get() = comicsSearchFragmentBinding!!
@@ -90,6 +94,17 @@ class ComicsSearchFragment:Fragment() {
             /*By default the medium density is 160f so we minus 4 just increase to accommodate smaller screens and come up with a proper
             * no of span count for our grid layout */
             this.layoutManager = this.gridLayoutManager(spanCount = (screenWidth/156f).toInt())
+            addOnScrollListener(object :RecyclerView.OnScrollListener(){
+
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    if (dy>0){
+                        doActionIfWeAreOnDebug { logger.i("number of y pixels consumed $dy") }
+                    }else{
+                        doActionIfWeAreOnDebug { logger.i("we are at the start dy pixels=$dy") }
+                    }
+                }
+            })
         }
 }
     override fun onDestroy() {

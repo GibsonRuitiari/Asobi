@@ -1,6 +1,7 @@
 package com.gibsonruitiari.asobi.ui.completedcomics
 
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.widget.Toast
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.ui.PaginatedFragment
@@ -18,6 +19,9 @@ class CompletedComicsFragment: PaginatedFragment() {
            pagingListAdapter?.submitData(it)
        }
     }
+
+    override val fragmentGradient: Drawable
+        get() = resources.getDrawable(R.drawable.completed_comics_screen_gradient,null)
 
     override val fragmentColor: Int
         get() = Color.parseColor("#CB3C18")

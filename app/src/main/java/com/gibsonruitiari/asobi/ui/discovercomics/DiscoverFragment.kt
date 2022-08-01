@@ -171,7 +171,6 @@ class DiscoverFragment:Fragment() {
     }
     /* Navigate to the specific fragment when more button is clicked */
     private fun onMoreLabelClickListeners(){
-
         with(discoverFragmentBinding){
             latestComicsMoreText.setOnClickListener {
                 doActionIfWeAreOnDebug { logger.i("latest comics more text clicked") }
@@ -193,6 +192,7 @@ class DiscoverFragment:Fragment() {
             }
             dcMoreText.setOnClickListener {
                 genreViewModel.setGenre(Genres.DC_COMICS)
+                doActionIfWeAreOnDebug { logger.i("dc clicked") }
                 mainActivityViewModel.openComicsByGenreScreen()
             }
 

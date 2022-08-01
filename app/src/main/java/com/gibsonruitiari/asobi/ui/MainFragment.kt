@@ -20,6 +20,7 @@ import com.gibsonruitiari.asobi.utilities.extensions.cancelIfActive
 import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -64,6 +65,7 @@ class MainFragment:Fragment() {
                 // current fragment is discover fragment
                 println("current frag ${currentFragment.tag}")
                 isEnabled=false
+                //requireActivity().finish()
                 requireActivity().onBackPressed()
             }
         }
@@ -135,7 +137,8 @@ class MainFragment:Fragment() {
         navigationEventsJob?.cancel()
         navigationEventsJob=viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                mainFragmentViewModel.navigationEvents.collect{
+                mainFragmentViewModel.navigationEvents.collectLatest{
+                    doActionIfWeAreOnDebug { logger.i("collecting navigation events inside main fragment") }
                     when(it){
                         MainFragmentNavigationAction.NavigateToDiscoverScreen -> {
                         childFragmentManager.beginTransaction()

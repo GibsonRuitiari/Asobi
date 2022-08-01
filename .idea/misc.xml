@@ -12,6 +12,8 @@
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/bottom_nav_gradient.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/chip_dot.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/chip_icon.xml" value="0.1" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/comics_by_genre_screen_gradient.xml" value="0.1" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/completed_comics_screen_gradient.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/discover_screen_gradient.xml" value="0.21" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/discover_screen_gradient_afternoon.xml" value="0.1405" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/discover_screen_gradient_evening.xml" value="0.1405" />
@@ -40,6 +42,8 @@
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/library_nav_view_selector.xml" value="0.145" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/nav_view_selector.xml" value="0.2345" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/notification_bell.xml" value="0.2365" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/ongoing_comics_screen_gradient.xml" value="0.1" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/popular_comics_screen_gradient.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/search_nav_view_selector.xml" value="0.2365" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/settings_icon.xml" value="0.232" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/toolbar_bg.xml" value="0.2165" />

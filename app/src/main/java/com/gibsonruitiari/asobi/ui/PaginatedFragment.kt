@@ -2,6 +2,7 @@ package com.gibsonruitiari.asobi.ui
 
 import android.animation.LayoutTransition
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -53,6 +54,7 @@ abstract class PaginatedFragment:Fragment(){
     var pagingListAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
     abstract val toolbarTitle:String
     abstract val fragmentColor:Int
+    abstract val fragmentGradient:Drawable
     abstract suspend fun observePagedData()
     abstract fun onComicClicked(comicItem: ViewComics)
 
@@ -279,7 +281,7 @@ abstract class PaginatedFragment:Fragment(){
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
         fragmentBinding.toolbar.title=toolbarTitle
-        fragmentBinding.backgroundImg.setBackgroundColor(fragmentColor)
+        fragmentBinding.backgroundImg.background=fragmentGradient
     }
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
