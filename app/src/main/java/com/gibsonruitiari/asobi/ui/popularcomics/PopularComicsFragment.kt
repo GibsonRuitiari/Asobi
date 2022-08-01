@@ -1,5 +1,6 @@
 package com.gibsonruitiari.asobi.ui.popularcomics
 
+import android.graphics.Color
 import android.widget.Toast
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.ui.PaginatedFragment
@@ -14,6 +15,8 @@ class PopularComicsFragment: PaginatedFragment() {
     private val popularComicsViewModel: PopularComicsViewModel by viewModel()
     override val toolbarTitle: String
         get() = getString(R.string.popular_comics)
+    override val fragmentColor: Int
+        get() = Color.parseColor("#F9E07F")
 
     override suspend fun observePagedData() {
        popularComicsViewModel.pagedList.collectLatest {

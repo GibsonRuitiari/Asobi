@@ -1,5 +1,6 @@
 package com.gibsonruitiari.asobi.ui.completedcomics
 
+import android.graphics.Color
 import android.widget.Toast
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.ui.PaginatedFragment
@@ -17,6 +18,9 @@ class CompletedComicsFragment: PaginatedFragment() {
            pagingListAdapter?.submitData(it)
        }
     }
+
+    override val fragmentColor: Int
+        get() = Color.parseColor("#FE676E")
     override val toolbarTitle: String
         get() = getString(R.string.completed_comics)
 

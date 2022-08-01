@@ -52,6 +52,7 @@ abstract class PaginatedFragment:Fragment(){
 
     var pagingListAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
     abstract val toolbarTitle:String
+    abstract val fragmentColor:Int
     abstract suspend fun observePagedData()
     abstract fun onComicClicked(comicItem: ViewComics)
 
@@ -311,7 +312,7 @@ abstract class PaginatedFragment:Fragment(){
     }
     private fun changeStatusBarColorOnHiddenChanged(hidden:Boolean){
         if(!hidden){
-            changeStatusBarToTransparentInFragment(resources.getColor(R.color.latest_comics_bg,null))
+            changeStatusBarToTransparentInFragment(fragmentColor)
         }else{
             changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
         }

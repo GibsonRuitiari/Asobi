@@ -1,5 +1,6 @@
 package com.gibsonruitiari.asobi.ui.comicsbygenre
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -10,7 +11,6 @@ import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterFragment
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class ComicsByGenreFragment: PaginatedFragment() {
     private val comicsByGenreViewModel:ComicsByGenreViewModel by viewModel()
@@ -36,7 +36,8 @@ class ComicsByGenreFragment: PaginatedFragment() {
     }
     override val toolbarTitle: String
         get() = getString(R.string.comics_by_genre)
-
+    override val fragmentColor: Int
+        get() = Color.parseColor("#FFBD71")
     override suspend fun observePagedData() {
         comicsByGenreViewModel.comicsList.collectLatest {
             pagingListAdapter?.submitData(it)
