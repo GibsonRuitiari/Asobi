@@ -60,8 +60,6 @@ abstract class PaginatedFragment:Fragment(){
     /* Start of view variables  */
     private lateinit var mainFragmentSwipeRefreshLayout: SwipeRefreshLayout
     private lateinit var mainFragmentRecyclerView:RecyclerView
-    private lateinit var mainFragmentExtendedFabActionButton:ExtendedFloatingActionButton
-    val filterFabButton:ExtendedFloatingActionButton get() = mainFragmentExtendedFabActionButton
     private lateinit var mainFragmentConstraintLayoutContainer:ConstraintLayout
     private lateinit var mainFragmentFrameLayoutContainer:FrameLayout
     private lateinit var loadingLayout: LoadingLayout
@@ -109,21 +107,7 @@ abstract class PaginatedFragment:Fragment(){
         val colorSchemes=resourcesInstance().getIntArray(R.array.swipe_refresh_colors)
         val parentContainer = fragmentBinding.root
 
-        /* Add extended floating button */
-        mainFragmentExtendedFabActionButton = ExtendedFloatingActionButton(parentContainer.context).apply {
-            id = ViewCompat.generateViewId()
-            text = resources.getString(R.string.filter)
 
-            icon = resources.getDrawable(R.drawable.ic_baseline_filter_list_24, null)
-            contentDescription=resources.getString(R.string.filter_comics_by_genre)
-            layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            (layoutParams as CoordinatorLayout.LayoutParams).setMargins(resources.getDimension(R.dimen.keyline_7).toInt(),resources.getDimension(R.dimen.keyline_7).toInt(),resourcesInstance().getDimension(R.dimen.keyline_7).toInt(),resourcesInstance().getDimension(R.dimen.keyline_7).toInt())
-            (layoutParams as CoordinatorLayout.LayoutParams).gravity = Gravity.BOTTOM+ Gravity.END
-            (layoutParams as CoordinatorLayout.LayoutParams).behavior= ExtendedFabBehavior(parentContainer.context)
-            visibility = View.GONE
-        }
-
-        parentContainer.addView(mainFragmentExtendedFabActionButton)
 
         /* Add  constraint layout  container*/
 
@@ -291,7 +275,6 @@ abstract class PaginatedFragment:Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         pagingListAdapter = setUpRecyclerViewAdapter()
-        mainFragmentExtendedFabActionButton.applyBottomInsets()
         setUpMainFragmentRecyclerView()
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
