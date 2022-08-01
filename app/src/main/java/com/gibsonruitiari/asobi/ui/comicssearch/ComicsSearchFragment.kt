@@ -12,10 +12,12 @@ import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
+import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.databinding.FragmentSearchBinding
 import com.gibsonruitiari.asobi.databinding.GenreComicItemBinding
 import com.gibsonruitiari.asobi.ui.comicsadapters.*
+import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreViewModel
 import com.gibsonruitiari.asobi.ui.uiModels.UiGenreModel
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.extensions.*
@@ -25,6 +27,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ComicsSearchFragment:Fragment() {
     private val comicsSearchViewModel: ComicsSearchViewModel by viewModel()
+    private val comicsByGenreViewModel:ComicsByGenreViewModel by viewModel()
     private var comicsSearchFragmentBinding: FragmentSearchBinding? = null
     private val fragmentBinding: FragmentSearchBinding = comicsSearchFragmentBinding!!
     private var loadingJob:Job?=null
@@ -111,10 +114,14 @@ class ComicsSearchFragment:Fragment() {
     private val genresAdapter = listAdapterOf(initialItems = emptyList(), viewHolderCreator = { parent: ViewGroup, _: Int ->
         parent.viewHolderFrom(GenreComicItemBinding::inflate).apply {
             itemView.setOnClickListener {
+                comicsByGenreViewModel.setGenre(genres.filterToGenre())
+                // open genre : switch fragments maybe? haha
                 doActionIfWeAreOnDebug { fragmentBinding.root.showSnackBar("${genres.genreName} clicked") }
             }
         }
     }, viewHolderBinder = {holder: BindingViewHolder<GenreComicItemBinding>, item: UiGenreModel, _: Int ->
         holder.bindComicGenres(item)
     })
+    private fun UiGenreModel.filterToGenre():Genres = Genres.values().first { it.genreName ==genreName}
+
 }

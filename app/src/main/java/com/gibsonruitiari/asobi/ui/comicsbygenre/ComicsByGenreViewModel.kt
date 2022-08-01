@@ -18,17 +18,18 @@ class ComicsByGenreViewModel constructor(private val pagedComicsByGenreObserver:
     val comicsList: Flow<PagingData<ViewComics>> = pagedComicsByGenreObserver
         .flowObservable
         .cachedIn(viewModelScope)
-    private val genre_ = MutableStateFlow(Genres.DC_COMICS)
+    private val currentGenre = MutableStateFlow<Genres?>(null) // initially null
     fun setGenre(genre: Genres){
-        genre_.value=genre
+        currentGenre.value=genre
     }
     init {
         viewModelScope.launch {
-           genre_.collectLatest {
-               pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(it, pagingConfig))
+           currentGenre.collectLatest {
+               it?.let { genre->
+                   pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(genre, pagingConfig))
+               }
            }
         }
-
     }
 
     companion object{

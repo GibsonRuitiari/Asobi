@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
+import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutDiscoverBinding
 import com.gibsonruitiari.asobi.databinding.DiscoverComicsFragmentBinding
 import com.gibsonruitiari.asobi.ui.MainActivityViewModel
@@ -21,6 +22,7 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
+import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreViewModel
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ItemMarginRecyclerViewDecorator
 import com.gibsonruitiari.asobi.utilities.extensions.*
@@ -39,6 +41,7 @@ class DiscoverFragment:Fragment() {
     private val logger: Logger by inject()
     private var dataLoadingJob:Job?=null
     private val mainActivityViewModel:MainActivityViewModel by sharedViewModel()
+    private val genreViewModel:ComicsByGenreViewModel by sharedViewModel()
     private lateinit var _discoverFragmentBinding:DiscoverComicsFragmentBinding
     private val discoverFragmentBinding:DiscoverComicsFragmentBinding
     get() = _discoverFragmentBinding
@@ -184,9 +187,12 @@ class DiscoverFragment:Fragment() {
                 mainActivityViewModel.openCompletedComicsScreen()
             }
             marvelMoreText.setOnClickListener {
+                // update genre
+                genreViewModel.setGenre(Genres.MARVEL)
                 mainActivityViewModel.openComicsByGenreScreen()
             }
             dcMoreText.setOnClickListener {
+                genreViewModel.setGenre(Genres.DC_COMICS)
                 mainActivityViewModel.openComicsByGenreScreen()
             }
 
