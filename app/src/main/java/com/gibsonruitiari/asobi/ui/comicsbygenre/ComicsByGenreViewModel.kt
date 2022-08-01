@@ -7,7 +7,6 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.domain.bygenre.PagedComicsByGenreObserver
-import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterViewModel
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

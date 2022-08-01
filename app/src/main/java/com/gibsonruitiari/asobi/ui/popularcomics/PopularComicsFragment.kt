@@ -16,7 +16,7 @@ class PopularComicsFragment: PaginatedFragment() {
     override val toolbarTitle: String
         get() = getString(R.string.popular_comics)
     override val fragmentColor: Int
-        get() = Color.parseColor("#F9E07F")
+        get() = Color.parseColor("#FFA402")
 
     override suspend fun observePagedData() {
        popularComicsViewModel.pagedList.collectLatest {

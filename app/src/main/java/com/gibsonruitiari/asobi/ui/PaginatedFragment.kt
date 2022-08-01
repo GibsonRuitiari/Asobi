@@ -279,6 +279,7 @@ abstract class PaginatedFragment:Fragment(){
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
         fragmentBinding.toolbar.title=toolbarTitle
+        fragmentBinding.backgroundImg.setBackgroundColor(fragmentColor)
     }
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)

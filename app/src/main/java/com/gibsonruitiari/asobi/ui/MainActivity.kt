@@ -188,7 +188,7 @@ class MainActivity : AppCompatActivity() {
                 navigationBarView.selectedItemId=R.id.mainScreen
             }
             else ->{
-                finish()
+
                 super.onBackPressed()
             }
         }

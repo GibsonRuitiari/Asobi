@@ -28,7 +28,8 @@ class ComicsSearchFragment:Fragment() {
     private val comicsSearchViewModel: ComicsSearchViewModel by viewModel()
     private val comicsByGenreViewModel:ComicsByGenreViewModel by viewModel()
     private var comicsSearchFragmentBinding: FragmentSearchBinding? = null
-    private val fragmentBinding: FragmentSearchBinding = comicsSearchFragmentBinding!!
+    private val fragmentBinding
+    get() = comicsSearchFragmentBinding!!
     private var loadingJob:Job?=null
 
     override fun onCreateView(
@@ -78,7 +79,7 @@ class ComicsSearchFragment:Fragment() {
             this.doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
                 val systemInsets = windowInsetsCompat.getInsets(
                     WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
-                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom)
+                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom+20.dp)
             }
             this.doOnNextLayout {
                 setContentToMaxWidth(this)
@@ -106,7 +107,7 @@ class ComicsSearchFragment:Fragment() {
     private fun BindingViewHolder<GenreComicItemBinding>.bindComicGenres(comicGenres:UiGenreModel) {
         this.genres = comicGenres
         with(binding){
-            genreName.text=comicGenres.genreName
+            genreName.text= comicGenres.genreName
             genreCard.setCardBackgroundColor(comicGenres.genreColor)
         }
     }

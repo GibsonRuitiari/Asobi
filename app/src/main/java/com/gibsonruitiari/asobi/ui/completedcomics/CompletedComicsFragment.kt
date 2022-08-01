@@ -20,7 +20,7 @@ class CompletedComicsFragment: PaginatedFragment() {
     }
 
     override val fragmentColor: Int
-        get() = Color.parseColor("#FE676E")
+        get() = Color.parseColor("#CB3C18")
     override val toolbarTitle: String
         get() = getString(R.string.completed_comics)
 
