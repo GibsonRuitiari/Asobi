@@ -2,8 +2,11 @@ package com.gibsonruitiari.asobi.ui.comicssearch
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.domain.CoroutineScopeOwner
 import com.gibsonruitiari.asobi.domain.searchcomics.SearchComicsUseCase
+import com.gibsonruitiari.asobi.ui.uiModels.UiGenreModel
+import com.gibsonruitiari.asobi.ui.uiModels.toUiGenreModel
 import com.gibsonruitiari.asobi.utilities.Store
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
@@ -11,15 +14,12 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class ComicsSearchViewModel constructor(private val
-searchComicsUseCase: SearchComicsUseCase):ViewModel(),CoroutineScopeOwner,
-Store<SearchComicsState,SearchComicsAction,SearchComicsSideEffect>{
+searchComicsUseCase: SearchComicsUseCase):ViewModel(),CoroutineScopeOwner,Store<SearchComicsState,SearchComicsAction,SearchComicsSideEffect>{
     private val _searchResult = MutableStateFlow(SearchComicsState.empty)
     private val sideEffect = MutableSharedFlow<SearchComicsSideEffect>()
     private val searchQuery = MutableStateFlow("")
-
-    init {
-        onAction(SearchComicsAction.ExecuteSearch)
-    }
+    val genres:StateFlow<List<UiGenreModel>> = flowOf(Genres.values().map { it.toUiGenreModel() }).stateIn(viewModelScope,
+    started = SharingStarted.WhileSubscribed(500), initialValue = emptyList())
     override val coroutineScope: CoroutineScope
         get() = viewModelScope
 
@@ -60,10 +60,12 @@ Store<SearchComicsState,SearchComicsAction,SearchComicsSideEffect>{
                 }
             }
         }
-
     }
     fun searchTerm(query:String){
-        searchQuery.value = query
+        if (query.isNotBlank()){
+            onAction(SearchComicsAction.ExecuteSearch)
+            searchQuery.value = query
+        }
     }
     fun clearSearchResult(){
         searchQuery.value =""

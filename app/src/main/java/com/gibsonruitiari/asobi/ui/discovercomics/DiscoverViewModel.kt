@@ -38,7 +38,7 @@ class DiscoverViewModel constructor(private val discoverComicsUseCase: DiscoverC
 
     override fun onAction(action: DiscoverComicsAction) {
         val oldState = state.value
-        val params= DiscoverComicsUseCase.DiscoverComicsParams(ITEM_PAGE, genre = Genres.DC_COMICS)
+        val params= DiscoverComicsUseCase.DiscoverComicsParams(ITEM_PAGE)
         when(action){
             is DiscoverComicsAction.LoadComics->{
                 with(state){

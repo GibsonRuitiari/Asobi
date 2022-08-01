@@ -10,9 +10,12 @@ import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreFragment
+import com.gibsonruitiari.asobi.ui.completedcomics.CompletedComicsFragment
 import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment
 import com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsFragment
 import com.gibsonruitiari.asobi.ui.ongoingcomics.OngoingComicsFragment
+import com.gibsonruitiari.asobi.ui.popularcomics.PopularComicsFragment
 import com.gibsonruitiari.asobi.utilities.extensions.cancelIfActive
 import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
 import com.gibsonruitiari.asobi.utilities.logging.Logger
@@ -28,6 +31,9 @@ class MainFragment:Fragment() {
     private  var discoverFragment: DiscoverFragment?=null
     private  var latestComicsFragment:LatestComicsFragment?=null
     private  var ongoingComicsFragment:OngoingComicsFragment?=null
+    private  var genreComicsFragment:ComicsByGenreFragment?=null
+    private  var popularComicsFragment:PopularComicsFragment?=null
+    private  var completedComicsFragment:CompletedComicsFragment?=null
     private var currentFragmentIndex = discoverFragmentIndex
     private var navigationEventsJob:Job?=null
 
@@ -35,10 +41,16 @@ class MainFragment:Fragment() {
         private const val discoverFragmentTag ="discover fragment"
         private const val latestComicsFragmentTag ="latest comics fragment"
         private const val ongoingComicsFragmentTag ="ongoing comics fragment"
+        private const val popularComicsFragmentTag ="popular comics fragment"
+        private const val completedComicsFragmentTag ="completed comics fragment"
+        private const val comicsByGenreFragmentTag ="genre comics fragment"
         private const val currentFragmentIndexKey ="current fragment"
         private const val discoverFragmentIndex=0
         private const val latestComicsFragmentIndex=1
         private const val ongoingComicsFragmentIndex=2
+        private const val genreComicsFragmentIndex=3
+        private const val popularComicsFragmentIndex=4
+        private const val completedComicsFragmentIndex=5
     }
     private val onBackPressedCallback = object :OnBackPressedCallback(true){
         override fun handleOnBackPressed() {
@@ -61,9 +73,12 @@ class MainFragment:Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(currentFragmentIndexKey,currentFragmentIndex)
-    childFragmentManager.putFragment(outState, discoverFragmentTag,discoverFragment!!)
-    childFragmentManager.putFragment(outState, latestComicsFragmentTag,latestComicsFragment!!)
-    childFragmentManager.putFragment(outState, ongoingComicsFragmentTag,ongoingComicsFragment!!)
+        childFragmentManager.putFragment(outState, discoverFragmentTag,discoverFragment!!)
+        childFragmentManager.putFragment(outState, latestComicsFragmentTag,latestComicsFragment!!)
+        childFragmentManager.putFragment(outState, ongoingComicsFragmentTag,ongoingComicsFragment!!)
+        childFragmentManager.putFragment(outState, popularComicsFragmentTag,popularComicsFragment!!)
+        childFragmentManager.putFragment(outState, completedComicsFragmentTag,completedComicsFragment!!)
+        childFragmentManager.putFragment(outState, comicsByGenreFragmentTag,genreComicsFragment!!)
 
     }
 
@@ -74,6 +89,9 @@ class MainFragment:Fragment() {
             discoverFragment=DiscoverFragment()
             latestComicsFragment=LatestComicsFragment()
             ongoingComicsFragment=OngoingComicsFragment()
+            popularComicsFragment= PopularComicsFragment()
+            genreComicsFragment= ComicsByGenreFragment()
+            completedComicsFragment=CompletedComicsFragment()
         }
     }
     override fun onCreateView(
@@ -88,6 +106,9 @@ class MainFragment:Fragment() {
                 .add(fragmentContainerView.id, discoverFragment!!, discoverFragmentTag).show(discoverFragment!!)
                 .add(fragmentContainerView.id, latestComicsFragment!!, latestComicsFragmentTag).hide(latestComicsFragment!!)
                 .add(fragmentContainerView.id, ongoingComicsFragment!!, ongoingComicsFragmentTag).hide(ongoingComicsFragment!!)
+                .add(fragmentContainerView.id, popularComicsFragment!!, popularComicsFragmentTag).hide(popularComicsFragment!!)
+                .add(fragmentContainerView.id, completedComicsFragment!!, completedComicsFragmentTag).hide(completedComicsFragment!!)
+                .add(fragmentContainerView.id, genreComicsFragment!!, comicsByGenreFragmentTag).hide(genreComicsFragment!!)
                 .commit()
         }
        return mainFragmentView
@@ -114,7 +135,6 @@ class MainFragment:Fragment() {
         navigationEventsJob?.cancel()
         navigationEventsJob=viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
-                doActionIfWeAreOnDebug { logger.i("p0000000]]]------------>collecting navigation events now") }
                 mainFragmentViewModel.navigationEvents.collect{
                     when(it){
                         MainFragmentNavigationAction.NavigateToDiscoverScreen -> {
@@ -156,11 +176,17 @@ class MainFragment:Fragment() {
         ongoingComicsFragment = childFragmentManager.findFragmentByTag(ongoingComicsFragmentTag) as OngoingComicsFragment
         discoverFragment = childFragmentManager.findFragmentByTag(discoverFragmentTag) as DiscoverFragment
         latestComicsFragment = childFragmentManager.findFragmentByTag(latestComicsFragmentTag) as LatestComicsFragment
+        popularComicsFragment = childFragmentManager.findFragmentByTag(popularComicsFragmentTag) as PopularComicsFragment
+        genreComicsFragment = childFragmentManager.findFragmentByTag(comicsByGenreFragmentTag) as ComicsByGenreFragment
+        completedComicsFragment = childFragmentManager.findFragmentByTag(completedComicsFragmentTag) as CompletedComicsFragment
         val currentFragment = getFragmentFromIndex(currentFragmentIndex)
         childFragmentManager.beginTransaction()
             .hide(discoverFragment!!)
             .hide(latestComicsFragment!!)
             .hide(ongoingComicsFragment!!)
+            .hide(genreComicsFragment!!)
+            .hide(completedComicsFragment!!)
+            .hide(popularComicsFragment!!)
             .show(currentFragment)
             .commit()
     }
@@ -168,6 +194,9 @@ class MainFragment:Fragment() {
         discoverFragmentIndex -> discoverFragment!!
         latestComicsFragmentIndex -> latestComicsFragment!!
         ongoingComicsFragmentIndex -> ongoingComicsFragment!!
+        completedComicsFragmentIndex->completedComicsFragment!!
+        genreComicsFragmentIndex->genreComicsFragment!!
+        popularComicsFragmentIndex->popularComicsFragment!!
         else -> {
             doActionIfWeAreOnDebug { logger.e("an unrecognized index was used $currentIndex") }
             throw IllegalStateException("unrecognized index $currentIndex")

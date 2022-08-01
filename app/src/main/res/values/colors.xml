@@ -2,8 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
-    <!--Light Color Theme-->
+    <color name="battleship_grey">#848482</color>
+    <color name="davy_grey">#555555</color>
 
     <!--colorPrimary colors map to components and elements, such as app bars and buttons. -->
     <!--colorSecondary colors are most often used as accents on components, such as FABs and -->
@@ -18,6 +18,10 @@
 
     <color name="matte">#171717</color>
     <color name="aqua_blue">#00BCD4</color>
+    <!--Genre colors-->
+
+
+
 
 
     <!--colorBackground appears behind scrollable content and is used for the default window-->

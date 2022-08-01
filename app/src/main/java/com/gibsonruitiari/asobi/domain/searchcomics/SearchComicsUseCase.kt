@@ -25,7 +25,7 @@ private val logger: Logger):FlowUseCase<SearchComicsUseCase.SearchComicsUseCaseP
     }
     private fun Flow<NetworkResource<List<SManga>>>.toSearchComicsResultData()= map {
         SearchComicsResult(isLoading = it.status == Status.LOADING,
-        searchResult =  it.data?.map { sManga -> sMangaToViewComicMapper(sManga) } ?: emptyList(),
+        searchResults =  it.data?.map { sManga -> sMangaToViewComicMapper(sManga) } ?: emptyList(),
         errorMessage = it.throwable?.parseThrowableErrorMessageIntoUsefulMessage())
     }
     data class SearchComicsUseCaseParams(val searchTerm:String)

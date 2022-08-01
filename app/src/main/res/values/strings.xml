@@ -57,4 +57,12 @@
     <string name="good_morning">"Good morning "</string>
     <string name="good_afternoon">Good afternoon :-)</string>
     <string name="good_evening">Good evening :XD</string>
+    <string name="search_label">Search</string>
+    <string name="search_comics_hint">Search comics,or series</string>
+    <string name="search_explanation">Read what you love</string>
+    <string name="search_explanation_subtitle">Search for comics issues, series and much more.</string>
+    <string name="search_query">search query</string>
+    <string name="browse_all">Browse all</string>
+    <string name="marvel">Marvel</string>
+    <string name="dc_comics">Dc</string>
 </resources>

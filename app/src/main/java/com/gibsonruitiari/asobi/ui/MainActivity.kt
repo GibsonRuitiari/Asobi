@@ -187,7 +187,10 @@ class MainActivity : AppCompatActivity() {
                 selectedFragmentIndex = mainFragmentIndex
                 navigationBarView.selectedItemId=R.id.mainScreen
             }
-            else -> super.onBackPressed()
+            else ->{
+                finish()
+                super.onBackPressed()
+            }
         }
     }
 

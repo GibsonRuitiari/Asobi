@@ -229,7 +229,6 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 app:layout_constraintTop_toBottomOf="@+id/completed_comics_recyclerview"
-
                 android:textColor="@android:color/white"
                 android:textAppearance="@style/TextAppearance.Asobi.Label"
                 android:textAllCaps="false"
@@ -254,10 +253,10 @@
 
                 android:textAppearance="@style/TextAppearance.Asobi.Label"                app:layout_constraintTop_toBottomOf="@id/ongoing_comics_recycler_view"
                 app:layout_constraintStart_toStartOf="parent"
-                android:text="@string/comics_by_genre"
-                tools:text="Comics by genre" />
+                android:text="@string/marvel"
+                />
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/comics_by_genre_more_text"
+                android:id="@+id/marvel_more_text"
                 android:layout_width="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="@dimen/margin_small"
@@ -276,6 +275,41 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="@dimen/margin_normal"
                 app:layout_constraintTop_toBottomOf="@id/comics_by_genre_label"/>
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/dc_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/comics_by_genre_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginStart="@dimen/margin_small"
+                android:text="@string/dc_comics"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/dc_more_text"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="@dimen/margin_small"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/comics_by_genre_recycler_view"
+                android:textColor="@android:color/white"
+                android:textAppearance="@style/TextAppearance.Asobi.Label"                android:textAllCaps="false"
+                android:text="@string/more_string"
+                app:layout_constraintEnd_toEndOf="parent" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/dc_recycler_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/margin_normal"
+                app:layout_constraintTop_toBottomOf="@id/dc_label"/>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

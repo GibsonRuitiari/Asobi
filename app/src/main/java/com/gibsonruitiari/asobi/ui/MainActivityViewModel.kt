@@ -21,10 +21,22 @@ class MainActivityViewModel:ViewModel() {
     fun openOngoingComicsScreen(){
         mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToOngoingComicsScreen)
     }
+    fun openCompletedComicsScreen(){
+        mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToCompletedComicsScreen)
+    }
+    fun openComicsByGenreScreen(){
+        mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToComicsByGenreScreen)
+    }
+    fun openPopularComicsScreen(){
+        mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToPopularComicsScreen)
+    }
 
 }
 sealed class MainFragmentNavigationAction{
     object NavigateToDiscoverScreen:MainFragmentNavigationAction()
     object NavigateToLatestComicsScreen:MainFragmentNavigationAction()
     object NavigateToOngoingComicsScreen:MainFragmentNavigationAction()
+    object NavigateToPopularComicsScreen:MainFragmentNavigationAction()
+    object NavigateToComicsByGenreScreen:MainFragmentNavigationAction()
+    object NavigateToCompletedComicsScreen:MainFragmentNavigationAction()
 }

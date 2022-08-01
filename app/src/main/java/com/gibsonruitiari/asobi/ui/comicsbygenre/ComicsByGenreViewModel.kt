@@ -10,26 +10,27 @@ import com.gibsonruitiari.asobi.domain.bygenre.PagedComicsByGenreObserver
 import com.gibsonruitiari.asobi.ui.comicfilter.ComicFilterViewModel
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class ComicsByGenreViewModel constructor(private val pagedComicsByGenreObserver: PagedComicsByGenreObserver,filterViewModel: ComicFilterViewModel):ViewModel(),
-ComicFilterViewModel by filterViewModel{
+class ComicsByGenreViewModel constructor(private val pagedComicsByGenreObserver: PagedComicsByGenreObserver):ViewModel(){
     val comicsList: Flow<PagingData<ViewComics>> = pagedComicsByGenreObserver
         .flowObservable
         .cachedIn(viewModelScope)
+    private val genre_ = MutableStateFlow(Genres.DC_COMICS)
+    fun setGenre(genre: Genres){
+        genre_.value=genre
+    }
     init {
         viewModelScope.launch {
-            selectedFilterChip.collectLatest {
-                /* Re execute this method whenever the genre changes  */
-                fetchComicsByGenreWhenGivenAGenre(it.genres)
-            }
+           genre_.collectLatest {
+               pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(it, pagingConfig))
+           }
         }
-       // pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(genre =filterViewModel.selectedFilterChip.value.genres, pagingConfig = pagingConfig))
+
     }
-    private fun fetchComicsByGenreWhenGivenAGenre(genre:Genres){
-        pagedComicsByGenreObserver(PagedComicsByGenreObserver.PagedComicsByGenreParams(genre, pagingConfig))
-    }
+
     companion object{
         val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10, initialLoadSize = 30,
             enablePlaceholders = false)
