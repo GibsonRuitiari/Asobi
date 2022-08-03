@@ -20,12 +20,13 @@ class CompletedComicsFragment: PaginatedFragment() {
        }
     }
 
-    override val fragmentGradient: Drawable
-        get() = resources.getDrawable(R.drawable.completed_comics_screen_gradient,null)
+    override suspend fun asynchronouslyInitializeFragmentViews() {
+        fragmentToolbar.title=getString(R.string.completed_comics)
+        backgroundImg.background = resources.getDrawable(R.drawable.completed_comics_screen_gradient,null)
+    }
 
-    override val fragmentColor: Int
-        get() = Color.parseColor("#CB3C18")
-    override val toolbarTitle: String
-        get() = getString(R.string.completed_comics)
+    override fun getFragmentColor(): Int = Color.parseColor("#CB3C18")
+
+
 
 }

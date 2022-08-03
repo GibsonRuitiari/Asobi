@@ -15,12 +15,12 @@ class LatestComicsFragment: PaginatedFragment() {
         Toast.makeText(requireContext(),"${comicItem.comicLink} clicked", Toast.LENGTH_SHORT).show()
     }
     private val latestComicsViewModel: LatestComicsViewModel by viewModel()
-    override val toolbarTitle: String
-        get() = getString(R.string.latest_comics)
-    override val fragmentGradient: Drawable
-        get() = resources.getDrawable(R.drawable.latest_screen_gradient,null)
-    override val fragmentColor: Int
-        get() = Color.parseColor("#FF7403")
+
+    override suspend fun asynchronouslyInitializeFragmentViews() {
+        fragmentToolbar.title = getString(R.string.latest_comics)
+        backgroundImg.background=resources.getDrawable(R.drawable.latest_screen_gradient,null)
+    }
+    override fun getFragmentColor(): Int = Color.parseColor("#FF7403")
     override suspend fun observePagedData() {
         latestComicsViewModel.pagedList.collectLatest {
             pagingListAdapter?.submitData(it)

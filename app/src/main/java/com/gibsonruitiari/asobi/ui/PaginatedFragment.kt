@@ -3,7 +3,6 @@ package com.gibsonruitiari.asobi.ui
 import android.animation.LayoutTransition
 import android.graphics.Color
 import android.graphics.Typeface
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -32,12 +31,10 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.composedPagedAdapter
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
-import com.gibsonruitiari.asobi.utilities.ExtendedFabBehavior
 import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -53,9 +50,11 @@ abstract class PaginatedFragment:Fragment(){
     private val mainActivityViewModel:MainActivityViewModel by sharedViewModel()
 
     var pagingListAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
-    abstract val toolbarTitle:String
-    abstract val fragmentColor:Int
-    abstract val fragmentGradient:Drawable
+    // abstract val toolbarTitle:String
+    val backgroundImg get() = fragmentBinding.backgroundImg
+    val fragmentToolbar get() =  fragmentBinding.toolbar
+    abstract suspend fun asynchronouslyInitializeFragmentViews()
+    abstract fun getFragmentColor():Int
     abstract suspend fun observePagedData()
     abstract fun onComicClicked(comicItem: ViewComics)
 
@@ -283,8 +282,8 @@ abstract class PaginatedFragment:Fragment(){
         setUpMainFragmentRecyclerView()
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
-        fragmentBinding.toolbar.title=toolbarTitle
-        fragmentBinding.backgroundImg.background=fragmentGradient
+      //  fragmentBinding.toolbar.title=toolbarTitle
+
     }
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
@@ -301,7 +300,7 @@ abstract class PaginatedFragment:Fragment(){
     }
     private fun changeStatusBarColorOnHiddenChanged(hidden:Boolean){
         if(!hidden){
-            changeStatusBarToTransparentInFragment(fragmentColor)
+            changeStatusBarToTransparentInFragment(getFragmentColor())
         }else{
             changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
         }
@@ -310,7 +309,7 @@ abstract class PaginatedFragment:Fragment(){
         loadingJob?.cancel()
         loadingJob=launchAndRepeatWithViewLifecycle {
             launch {  /* Observe paged data */ observePagedData() }
-
+            launch { asynchronouslyInitializeFragmentViews() }
         }
     }
 
@@ -319,7 +318,6 @@ abstract class PaginatedFragment:Fragment(){
         mainFragmentRecyclerView.isVisible = true
         fragmentBinding.baseFragAppbar.isVisible=true
         mainFragmentErrorEmptyLayoutContainer.isVisible = false
-        changeStatusBarColorOnHiddenChanged(false) // to ensure status bar changes to correct color
         loadingLayout.hide()
     }
 
@@ -327,14 +325,12 @@ abstract class PaginatedFragment:Fragment(){
         mainFragmentRecyclerView.isVisible=false
         fragmentBinding.baseFragAppbar.isVisible=false
         mainFragmentErrorEmptyLayoutContainer.isVisible=true
-        changeStatusBarColorOnHiddenChanged(true) // to ensure status bar is black
         loadingLayout.hide()
     }
     private fun onLoadingShowLoadingState(){
         mainFragmentRecyclerView.isVisible=false
         fragmentBinding.baseFragAppbar.isVisible=false
         mainFragmentErrorEmptyLayoutContainer.isVisible=false
-        changeStatusBarColorOnHiddenChanged(true) // to ensure status bar is black
         loadingLayout.show()
     }
 
@@ -405,8 +401,7 @@ abstract class PaginatedFragment:Fragment(){
         with(mainFragmentRecyclerView){
             doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
                 val systemInsets = windowInsetsCompat.getInsets(
-                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type
-                        .ime())
+                    WindowInsetsCompat.Type.systemBars())
                 view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom)
             }
             setHasFixedSize(true)
