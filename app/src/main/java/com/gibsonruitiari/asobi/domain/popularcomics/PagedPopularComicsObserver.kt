@@ -6,7 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepo
-import com.gibsonruitiari.asobi.domain.interactor.PaginatedEntriesUseCase
+import com.gibsonruitiari.asobi.domain.PaginatedEntriesUseCase
 import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsDataSource
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.sMangaToViewComicMapper

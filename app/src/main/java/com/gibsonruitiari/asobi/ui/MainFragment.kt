@@ -138,7 +138,6 @@ class MainFragment:Fragment() {
         navigationEventsJob=viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 mainFragmentViewModel.navigationEvents.collectLatest{
-                    doActionIfWeAreOnDebug { logger.i("collecting navigation events inside main fragment") }
                     when(it){
                         MainFragmentNavigationAction.NavigateToDiscoverScreen -> {
                         childFragmentManager.beginTransaction()
@@ -146,7 +145,6 @@ class MainFragment:Fragment() {
                             .show(discoverFragment!!)
                             .commit()
                         currentFragmentIndex= discoverFragmentIndex
-                        doActionIfWeAreOnDebug { logger.i("current fragment index is $currentFragment is discover frag hidden? ${discoverFragment!!.isHidden}") }
                     }
                     MainFragmentNavigationAction.NavigateToLatestComicsScreen -> {
                         childFragmentManager.beginTransaction()

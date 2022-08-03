@@ -1,15 +1,20 @@
 package com.gibsonruitiari.asobi.ui.comicssearch
 
 
+import android.animation.ObjectAnimator
+import android.animation.TimeInterpolator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.DecelerateInterpolator
+import androidx.core.animation.doOnEnd
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnNextLayout
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.data.datamodels.Genres
 import com.gibsonruitiari.asobi.databinding.FragmentSearchBinding
@@ -98,10 +103,37 @@ class ComicsSearchFragment:Fragment() {
 
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
+                    val array =IntArray(2)
+                    val searchButtonPosition=IntArray(2)
+                    fragmentBinding.searchLabel.getLocationInWindow(array)
+                    fragmentBinding.searchButton.getLocationInWindow(searchButtonPosition)
                     if (dy>0){
-                        doActionIfWeAreOnDebug { logger.i("number of y pixels consumed $dy") }
-                    }else{
-                        doActionIfWeAreOnDebug { logger.i("we are at the start dy pixels=$dy") }
+                        val valueAnimator=ObjectAnimator.ofFloat(fragmentBinding.searchLabel,"alpha",1f,0.8f,0.6f,0.4f,0.2f,0f)
+                        valueAnimator.duration=200L
+                        valueAnimator.interpolator=DecelerateInterpolator()
+                        valueAnimator.start()
+                        valueAnimator.doOnEnd {
+                            fragmentBinding.searchLabel.visibility=View.GONE
+                            ObjectAnimator.ofInt(fragmentBinding.searchButton,"translationY",searchButtonPosition[1],array[1]).apply {
+                                duration=200L
+                            }.doOnEnd {
+                                fragmentBinding.searchButton.y=array[1].toFloat()
+                            }
+                        }
+                        doActionIfWeAreOnDebug { logger.i("scrolled downwards number of y pixels consumed $dy") }
+                    }else if (dy<0){
+                        val valueAnimator=ObjectAnimator.ofFloat(fragmentBinding.searchLabel,"alpha",0f,0.2f,0.4f,0.6f,0.8f,1f)
+                        valueAnimator.duration=200L
+                        valueAnimator.interpolator=DecelerateInterpolator()
+                        valueAnimator.start()
+                        valueAnimator.doOnEnd {
+                            fragmentBinding.searchLabel.visibility=View.VISIBLE
+                            ObjectAnimator.ofInt(fragmentBinding.searchButton,"translationY",array[1],searchButtonPosition[1]).apply {
+                                duration=200L
+                            }.doOnEnd {
+                                fragmentBinding.searchButton.y=searchButtonPosition[1].toFloat()
+                            }
+                        }
                     }
                 }
             })
@@ -129,7 +161,7 @@ class ComicsSearchFragment:Fragment() {
     private val genresAdapter = listAdapterOf(initialItems = emptyList(), viewHolderCreator = { parent: ViewGroup, _: Int ->
         parent.viewHolderFrom(GenreComicItemBinding::inflate).apply {
             itemView.setOnClickListener {
-                comicsByGenreViewModel.setGenre(genres.filterToGenre())
+               // comicsByGenreViewModel.setGenre(genres.filterToGenre())
                 // open genre : switch fragments maybe? haha
                 doActionIfWeAreOnDebug { fragmentBinding.root.showSnackBar("${genres.genreName} clicked") }
             }

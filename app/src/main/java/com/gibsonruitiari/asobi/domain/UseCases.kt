@@ -1,5 +1,5 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
-package com.gibsonruitiari.asobi.domain.interactor
+package com.gibsonruitiari.asobi.domain
 
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
@@ -11,8 +11,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 
 
-abstract class PaginatedEntriesUseCase<Input :PaginatedEntriesUseCase.PaginatedParams<Output>,Output:Any>:SubjectInteractor<Input,
-        PagingData<Output>>() {
+abstract class PaginatedEntriesUseCase<Input : PaginatedEntriesUseCase.PaginatedParams<Output>,Output:Any>:
+    SubjectInteractor<Input,
+            PagingData<Output>>() {
     interface PaginatedParams<Output:Any>{
         val pagingConfig:PagingConfig
     }

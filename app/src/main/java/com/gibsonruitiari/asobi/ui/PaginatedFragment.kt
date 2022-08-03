@@ -1,6 +1,7 @@
 package com.gibsonruitiari.asobi.ui
 
 import android.animation.LayoutTransition
+import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -184,7 +185,7 @@ abstract class PaginatedFragment:Fragment(){
             layoutParams= FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT)
             (layoutParams as FrameLayout.LayoutParams).gravity = Gravity.CENTER
-            background = resourcesInstance().getDrawable(R.color.color_surface,null)
+            background = resourcesInstance().getDrawable(R.color.matte,null)
             visibility = View.GONE
         }
 
@@ -207,6 +208,7 @@ abstract class PaginatedFragment:Fragment(){
             id = ViewCompat.generateViewId()
             gravity= Gravity.CENTER
             textSize = 16f
+            setTextColor(Color.WHITE)
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             typeface = Typeface.SANS_SERIF
 
@@ -217,6 +219,7 @@ abstract class PaginatedFragment:Fragment(){
             id = ViewCompat.generateViewId()
             gravity= Gravity.CENTER
             textSize = 14f
+            setTextColor(Color.WHITE)
             textAlignment = View.TEXT_ALIGNMENT_CENTER
             text="Try searching for something"
         }
@@ -307,25 +310,31 @@ abstract class PaginatedFragment:Fragment(){
         loadingJob?.cancel()
         loadingJob=launchAndRepeatWithViewLifecycle {
             launch {  /* Observe paged data */ observePagedData() }
+
         }
-        doActionIfWeAreOnDebug { logger.i("[Initialization] paginated frag job is active? ${loadingJob?.isActive}") }
     }
 
     /*Start:Show Correct State based on the data events observed above */
     private fun onDataLoadedSuccessfullyShowData(){
         mainFragmentRecyclerView.isVisible = true
+        fragmentBinding.baseFragAppbar.isVisible=true
         mainFragmentErrorEmptyLayoutContainer.isVisible = false
+        changeStatusBarColorOnHiddenChanged(false) // to ensure status bar changes to correct color
         loadingLayout.hide()
     }
 
     private fun onErrorOrEmptyDataShowErrorOrEmptyState(){
         mainFragmentRecyclerView.isVisible=false
+        fragmentBinding.baseFragAppbar.isVisible=false
         mainFragmentErrorEmptyLayoutContainer.isVisible=true
+        changeStatusBarColorOnHiddenChanged(true) // to ensure status bar is black
         loadingLayout.hide()
     }
     private fun onLoadingShowLoadingState(){
         mainFragmentRecyclerView.isVisible=false
+        fragmentBinding.baseFragAppbar.isVisible=false
         mainFragmentErrorEmptyLayoutContainer.isVisible=false
+        changeStatusBarColorOnHiddenChanged(true) // to ensure status bar is black
         loadingLayout.show()
     }
 

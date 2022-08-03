@@ -31,6 +31,8 @@ import com.gibsonruitiari.asobi.domain.searchcomics.SearchComicsUseCase
 import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.ui.comicdetails.ComicsDetailsViewModel
 import com.gibsonruitiari.asobi.ui.comichapters.ComicChaptersViewModel
+import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicFilterViewModel
+import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicFilterViewModelDelegate
 import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreViewModel
 import com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchViewModel
 import com.gibsonruitiari.asobi.ui.completedcomics.CompletedComicsViewModel
@@ -77,8 +79,7 @@ val scopeModule = module {
 }
 val viewModelsModule= module {
     viewModel { ComicChaptersViewModel(get()) } // get() loads the dependencies eagerly as opposed to lazy loading -:(
-  //  viewModel { ComicsByGenreViewModel(get(),get(named("filtersViewModel"))) }
-    viewModel { ComicsByGenreViewModel(get()) }
+    viewModel { ComicsByGenreViewModel(get(),get(named("filtersViewModel"))) }
     viewModel { ComicsDetailsViewModel(get()) }
     viewModel { CompletedComicsViewModel(get()) }
     viewModel{ DiscoverViewModel(get()) }
@@ -87,6 +88,8 @@ val viewModelsModule= module {
     viewModel { PopularComicsViewModel(get()) }
     viewModel { MainActivityViewModel() }
     viewModel { ComicsSearchViewModel(get()) }
+    factory<ComicFilterViewModel>(named("filtersViewModel")) { ComicFilterViewModelDelegate() }
+
 }
 
 val comicsRepositoryModule= module{

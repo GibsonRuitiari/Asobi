@@ -22,6 +22,7 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
+import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicFilterViewModel
 import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreViewModel
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.ItemMarginRecyclerViewDecorator
@@ -41,7 +42,9 @@ class DiscoverFragment:Fragment() {
     private val logger: Logger by inject()
     private var dataLoadingJob:Job?=null
     private val mainActivityViewModel:MainActivityViewModel by sharedViewModel()
-    private val genreViewModel:ComicsByGenreViewModel by sharedViewModel()
+    private val  comicsByGenreViewModel: ComicsByGenreViewModel by viewModel(owner = { requireParentFragment() })
+    private val comicFilterViewModel: ComicFilterViewModel
+    get() = comicsByGenreViewModel
     private lateinit var _discoverFragmentBinding:DiscoverComicsFragmentBinding
     private val discoverFragmentBinding:DiscoverComicsFragmentBinding
     get() = _discoverFragmentBinding
@@ -187,19 +190,20 @@ class DiscoverFragment:Fragment() {
             }
             marvelMoreText.setOnClickListener {
                 // update genre
-                genreViewModel.setGenre(Genres.MARVEL)
+
+                comicFilterViewModel.setGenre(Genres.MARVEL)
+                // comicsByGenreViewModel.loadData()
                 mainActivityViewModel.openComicsByGenreScreen()
             }
             dcMoreText.setOnClickListener {
-                genreViewModel.setGenre(Genres.DC_COMICS)
-                doActionIfWeAreOnDebug { logger.i("dc clicked") }
+                comicFilterViewModel.setGenre(Genres.DC_COMICS)
+               // comicsByGenreViewModel.loadData()
                 mainActivityViewModel.openComicsByGenreScreen()
             }
 
         }
     }
     /* End: Set up ui components */
-
 
 
    /* Start: Respond to events by showing the requisite state on the screen to the user */
