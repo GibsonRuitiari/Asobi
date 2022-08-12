@@ -1,16 +1,23 @@
 package com.gibsonruitiari.asobi.utilities.extensions
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.content.res.Resources
+import android.graphics.Path
 import android.os.Parcel
 import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.animation.Interpolator
+import android.view.animation.LinearInterpolator
 import androidx.annotation.ColorInt
 import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.animation.doOnEnd
 import androidx.core.os.ParcelCompat
+import androidx.core.view.animation.PathInterpolatorCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
@@ -33,6 +40,12 @@ import java.net.UnknownHostException
 import kotlin.math.roundToInt
 
 
+
+fun createPathInterpolator(controlArray:FloatArray): Interpolator {
+    require(controlArray.size==4){"control array size must be greater than 5"}
+    return PathInterpolatorCompat.create(controlArray[0],controlArray[1],controlArray[2],controlArray[3])
+}
+fun createPathInterpolator(interpolatorPath: Path): Interpolator = PathInterpolatorCompat.create(interpolatorPath)
 
 fun Job?.cancelIfActive(){
    this?.let {

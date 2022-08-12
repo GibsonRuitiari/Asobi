@@ -1,12 +1,21 @@
 package com.gibsonruitiari.asobi.utilities.extensions
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.view.View
+import android.view.animation.AnimationUtils
+import android.view.animation.Interpolator
+import android.view.animation.LayoutAnimationController
+import android.view.animation.LinearInterpolator
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.doOnEnd
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.RecyclerView
+import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.ui.uiModels.UiMeasureSpec
 import com.google.android.material.snackbar.Snackbar
 
@@ -21,6 +30,17 @@ fun View.showSnackBar(
         .show()
 }
 
+fun View.fade(target:Float,transitionDuration:Long=250,transitionDelay: Long=0, animationInterpolator: Interpolator = LinearInterpolator()): Animator {
+    return  ObjectAnimator.ofFloat(this,"alpha",target).apply {
+        duration = transitionDuration
+        startDelay = transitionDelay
+        interpolator = animationInterpolator
+        doOnEnd { visibility =if(target==0f) View.GONE else View.VISIBLE  }
+    }
+}
+fun RecyclerView.animate(animation:LayoutAnimationController){
+    layoutAnimation= animation
+}
 fun View.showSnackBar(
     @StringRes textId: Int,
     duration: Int = Snackbar.LENGTH_SHORT,

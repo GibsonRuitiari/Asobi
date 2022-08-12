@@ -10,6 +10,7 @@
    <androidx.constraintlayout.widget.ConstraintLayout
        android:layout_width="match_parent"
        android:layout_height="match_parent"
+       app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
        android:fitsSystemWindows="true">
        <androidx.appcompat.widget.AppCompatTextView
            android:layout_width="wrap_content"
@@ -66,5 +67,4 @@
            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
            app:spanCount="2"/>
    </androidx.constraintlayout.widget.ConstraintLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

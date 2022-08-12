@@ -72,4 +72,9 @@ searchComicsUseCase: SearchComicsUseCase):ViewModel(),CoroutineScopeOwner,Store<
         _searchResult.value=SearchComicsState.empty
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        searchQuery.value=""
+    }
+
 }

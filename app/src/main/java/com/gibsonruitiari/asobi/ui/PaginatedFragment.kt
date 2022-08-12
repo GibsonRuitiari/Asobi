@@ -169,8 +169,7 @@ abstract class PaginatedFragment:Fragment(){
             layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT)
             val animation= AnimationUtils.loadLayoutAnimation(this.context, R.anim.layout_animation_scale_in)
-            layoutAnimation= animation
-
+            animate(animation)
             visibility = View.GONE
         }
         mainFragmentFrameLayoutContainer.addView(mainFragmentRecyclerView)
