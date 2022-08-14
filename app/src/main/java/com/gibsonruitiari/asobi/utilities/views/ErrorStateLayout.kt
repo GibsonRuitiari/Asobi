@@ -1,4 +1,4 @@
-package com.gibsonruitiari.asobi.utilities.widgets
+package com.gibsonruitiari.asobi.utilities.views
 
 import android.content.Context
 import android.graphics.Color

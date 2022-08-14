@@ -19,6 +19,7 @@ import com.gibsonruitiari.asobi.ui.popularcomics.PopularComicsFragment
 import com.gibsonruitiari.asobi.utilities.extensions.cancelIfActive
 import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
 import com.gibsonruitiari.asobi.utilities.logging.Logger
+import com.gibsonruitiari.asobi.utilities.views.ContainerView
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -101,8 +102,8 @@ class MainFragment:Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val mainFragmentView =MainFragmentView(requireContext())
-        fragmentContainerView = mainFragmentView.containerView
+        val mainFragmentView =ContainerView(requireContext())
+        fragmentContainerView = mainFragmentView.fragmentContainerView
         if (savedInstanceState==null){
             childFragmentManager.beginTransaction()
                 .add(fragmentContainerView.id, discoverFragment!!, discoverFragmentTag).show(discoverFragment!!)

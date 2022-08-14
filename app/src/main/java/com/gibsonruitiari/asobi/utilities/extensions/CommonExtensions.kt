@@ -127,12 +127,7 @@ inline fun Fragment.changeStatusBarToTransparentInFragment(@ColorInt color:Int){
     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     window.statusBarColor=color
 }
-fun<E> SendChannel<E>.tryOffer(element:E):Boolean = try{
-    trySend(element).isSuccess
-    true
-}catch (_:Exception){
-    false
-}
+
 
 val Int.dp:Int
 get() = (this * Resources.getSystem().displayMetrics.density).roundToInt()

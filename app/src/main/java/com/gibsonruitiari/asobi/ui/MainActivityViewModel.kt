@@ -1,17 +1,23 @@
 package com.gibsonruitiari.asobi.ui
 
 import androidx.lifecycle.ViewModel
-import com.gibsonruitiari.asobi.utilities.extensions.tryOffer
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
 import kotlinx.coroutines.flow.*
 
 class MainActivityViewModel:ViewModel() {
   private val mainFragmentNavigationEvents = Channel<MainFragmentNavigationAction>(CONFLATED)
-
+    private val _comicsSearchScreenNavigationEvents=Channel<SearchScreenNavigationAction>(CONFLATED)
     // only one observer should receive the updates
    val navigationEvents:Flow<MainFragmentNavigationAction> = mainFragmentNavigationEvents.receiveAsFlow()
+    val comicsSearchScreenNavigationEvents =_comicsSearchScreenNavigationEvents.receiveAsFlow()
 
+    fun openComicsGenreScreenFromSearchScreen(){
+        _comicsSearchScreenNavigationEvents.trySend(SearchScreenNavigationAction.NavigateToComicsGenreScreen)
+    }
+    fun openComicsByGenreScreenFromSearchScreen(){
+        _comicsSearchScreenNavigationEvents.trySend(SearchScreenNavigationAction.NavigateToComicsByGenreFragmentScreen)
+    }
     fun openDiscoverScreen(){
         mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToDiscoverScreen)
     }
@@ -31,6 +37,10 @@ class MainActivityViewModel:ViewModel() {
         mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToPopularComicsScreen)
     }
 
+}
+sealed class SearchScreenNavigationAction{
+    object NavigateToComicsGenreScreen:SearchScreenNavigationAction()
+    object NavigateToComicsByGenreFragmentScreen:SearchScreenNavigationAction()
 }
 sealed class MainFragmentNavigationAction{
     object NavigateToDiscoverScreen:MainFragmentNavigationAction()
