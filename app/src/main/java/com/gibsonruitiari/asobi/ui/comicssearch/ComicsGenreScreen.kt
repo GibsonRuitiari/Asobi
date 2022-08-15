@@ -93,7 +93,7 @@ class ComicsGenreScreen:Fragment() {
             ConstraintSet.WRAP_CONTENT,ConstraintSet.WRAP_CONTENT)
             constraintSet constrainTopToParent appcompatTextView.id
             constraintSet constrainStartToParent appcompatTextView.id
-            constraintSet.applyMargin(appcompatTextView.id,24.dp,24.dp,24.dp,234.dp)
+            constraintSet.applyMargin(appcompatTextView.id,24.dp,24.dp,24.dp,24.dp)
             return appcompatTextView
         }
         private fun comicsGenreScreenSearchButton(context: Context,
@@ -105,20 +105,19 @@ class ComicsGenreScreen:Fragment() {
                 setTextColor(context.resources.getColor(R.color.davy_grey,null))
                 textSize = 18f // will be automatically converted to 18sp
                 contentDescription=context.resources.getString(R.string.search_comics_hint)
-                iconTint= ColorStateList.valueOf(Color.BLACK)
+                iconTint= defaultColorStateList
                 text=context.resources.getString(R.string.search_comics_hint)
                 isAllCaps=false
                 iconSize=30.dp
+                setTextColor(defaultColorStateList)
                 setBackgroundColor(Color.WHITE)
                 icon=context.resources.getDrawable(R.drawable.ic_baseline_search_24,null)
             }
-            constraintSet.setViewLayoutParams(searchButton.id,
-            width = ConstraintSet.MATCH_CONSTRAINT,height=65.dp)
-            constraintSet.applyMargin(searchButton.id,marginTop=16.dp,
-            marginStart = 16.dp, marginEnd = 16.dp)
+            constraintSet.setViewLayoutParams(searchButton.id, width = ConstraintSet.MATCH_CONSTRAINT,height=65.dp)
+            constraintSet.applyMargin(searchButton.id,marginTop=16.dp, marginStart = 16.dp, marginEnd = 16.dp)
             constraintSet constrainEndToParent searchButton.id
-            constraintSet.connect(searchButton.id,ConstraintSet.TOP,searchLabelId,
-            ConstraintSet.BOTTOM)
+            constraintSet constrainStartToParent searchButton.id
+            constraintSet.connect(searchButton.id,ConstraintSet.TOP,searchLabelId,ConstraintSet.BOTTOM)
             return searchButton
         }
         private fun comicsGenreLabel(context: Context,constraintSet: ConstraintSet,
@@ -273,6 +272,10 @@ class ComicsGenreScreen:Fragment() {
 
     companion object{
         private val easeOutInterpolatorArray= floatArrayOf(0f,0f, 0.58f,1f)
+        // states need to be a 2d array
+        val colorStates = intArrayOf(Color.GRAY,Color.BLACK) // pressed, -pressed
+        val states = arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf(-android.R.attr.state_pressed))
+        val defaultColorStateList = ColorStateList(states, colorStates)
         fun filterUiGenreModelToGenre(uiGenreModel: UiGenreModel):Genres? = Genres.values().firstOrNull { val originalName=uiGenreModel.genreName.replace(it.emoji ?: "","");it.genreName.contentEquals(originalName) }
 
     }

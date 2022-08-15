@@ -12,7 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.ui.SearchScreenNavigationAction
-import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreFragment
+import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreScreen
 import com.gibsonruitiari.asobi.utilities.extensions.cancelIfActive
 import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
 import com.gibsonruitiari.asobi.utilities.logging.Logger
@@ -33,7 +33,7 @@ class ComicsSearchScreen:Fragment() {
     private val mainFragmentViewModel:MainActivityViewModel by sharedViewModel()
     private lateinit var fragmentContainerView:FragmentContainerView
     private var comicsGenreScreen:ComicsGenreScreen?=null
-    private var comicsByGenreFragment:ComicsByGenreFragment?=null
+    private var comicsByGenreScreen:ComicsByGenreScreen?=null
     private var currentFragmentIndex= comicsGenreScreenIndex
     private var navigationEventsJob:Job?=null
     companion object{
@@ -61,7 +61,7 @@ class ComicsSearchScreen:Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(onBackPressedCallback)
         if (savedInstanceState==null){
             comicsGenreScreen = ComicsGenreScreen()
-            comicsByGenreFragment= ComicsByGenreFragment()
+            comicsByGenreScreen= ComicsByGenreScreen()
         }
     }
     override fun onCreateView(
@@ -74,7 +74,7 @@ class ComicsSearchScreen:Fragment() {
         if (savedInstanceState==null){
             childFragmentManager.beginTransaction()
                 .add(fragmentContainerView.id,comicsGenreScreen!!, comicsGenreScreenTag).show(comicsGenreScreen!!)
-                .add(fragmentContainerView.id,comicsByGenreFragment!!, comicsByGenreFragmentTag).hide(comicsByGenreFragment!!)
+                .add(fragmentContainerView.id,comicsByGenreScreen!!, comicsByGenreFragmentTag).hide(comicsByGenreScreen!!)
                 .commit()
         }
         return comicsSearchScreenFragmentView
@@ -90,7 +90,7 @@ class ComicsSearchScreen:Fragment() {
         childFragmentManager.putFragment(outState, comicsGenreScreenTag,
         comicsGenreScreen!!)
         childFragmentManager.putFragment(outState, comicsByGenreFragmentTag,
-        comicsByGenreFragment!!)
+        comicsByGenreScreen!!)
 
     }
 
@@ -113,7 +113,7 @@ class ComicsSearchScreen:Fragment() {
                         SearchScreenNavigationAction.NavigateToComicsByGenreFragmentScreen ->{
                             childFragmentManager.beginTransaction()
                                 .hide(getFragmentFromIndex(currentFragmentIndex))
-                                .show(comicsByGenreFragment!!)
+                                .show(comicsByGenreScreen!!)
                                 .commit()
                             currentFragmentIndex = comicsByGenreFragmentIndex
                         }
@@ -135,16 +135,16 @@ class ComicsSearchScreen:Fragment() {
         if (savedInstanceState==null || comicsGenreScreen==null) return
         currentFragmentIndex = savedInstanceState.getInt(currentFragmentIndexTag)
         comicsGenreScreen = childFragmentManager.findFragmentByTag(comicsGenreScreenTag) as ComicsGenreScreen
-        comicsByGenreFragment = childFragmentManager.findFragmentByTag(comicsByGenreFragmentTag) as ComicsByGenreFragment
+        comicsByGenreScreen = childFragmentManager.findFragmentByTag(comicsByGenreFragmentTag) as ComicsByGenreScreen
         val currentFragment = getFragmentFromIndex(currentFragmentIndex)
         childFragmentManager.beginTransaction()
             .hide(comicsGenreScreen!!)
-            .hide(comicsByGenreFragment!!)
+            .hide(comicsByGenreScreen!!)
             .show(currentFragment)
             .commit()
     }
     private fun getFragmentFromIndex(currentIndex:Int):Fragment = when(currentIndex){
-        comicsByGenreFragmentIndex-> comicsByGenreFragment!!
+        comicsByGenreFragmentIndex-> comicsByGenreScreen!!
         comicsGenreScreenIndex -> comicsGenreScreen!!
         else ->{
             doActionIfWeAreOnDebug { logger.e("an unrecognized index given $currentIndex") }

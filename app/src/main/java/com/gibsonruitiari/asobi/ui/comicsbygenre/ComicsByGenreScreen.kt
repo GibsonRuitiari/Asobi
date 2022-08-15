@@ -13,7 +13,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.security.interfaces.RSAKey
 
-class ComicsByGenreFragment: PaginatedFragment() {
+class ComicsByGenreScreen: PaginatedFragment() {
     private val comicsByGenreViewModel:ComicsByGenreViewModel by viewModel(owner = {requireParentFragment()})
     private val logger:Logger by inject()
     override fun onComicClicked(comicItem: ViewComics) {

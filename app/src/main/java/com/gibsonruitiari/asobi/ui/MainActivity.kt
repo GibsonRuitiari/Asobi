@@ -8,7 +8,6 @@ import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.databinding.ActivityMainBinding
-import com.gibsonruitiari.asobi.ui.comicssearch.ComicsGenreScreen
 import com.gibsonruitiari.asobi.ui.comicssearch.ComicsSearchScreen
 import com.gibsonruitiari.asobi.ui.userlibrary.UserLibrary
 import com.gibsonruitiari.asobi.utilities.extensions.doActionIfWeAreOnDebug
@@ -23,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var userLibraryFragment:UserLibrary
-    private lateinit var mainFragment:MainFragment
+    private lateinit var homeScreen:HomeScreen
     private lateinit var comicsSearchScreen:ComicsSearchScreen
     private val logger:Logger by inject()
     private var selectedFragmentIndex = mainFragmentIndex
@@ -46,23 +45,23 @@ class MainActivity : AppCompatActivity() {
         val fragmentContainerId = binding.fragmentContainer.id
         if (savedInstanceState==null){
             /* first time initialization */
-            mainFragment = MainFragment()
+            homeScreen = HomeScreen()
             comicsSearchScreen = ComicsSearchScreen()
             userLibraryFragment = UserLibrary()
             supportFragmentManager.beginTransaction()
-                .add(fragmentContainerId,mainFragment, mainFragmentTag).show(mainFragment)
+                .add(fragmentContainerId,homeScreen, mainFragmentTag).show(homeScreen)
                 .add(fragmentContainerId,comicsSearchScreen, searchFragmentTag).hide(comicsSearchScreen)
                 .add(fragmentContainerId,userLibraryFragment, userLibraryFragmentTag).hide(userLibraryFragment)
                 .commitNow()
 
         }else{
             selectedFragmentIndex = savedInstanceState.getInt(selectedIndexTag, mainFragmentIndex)
-            mainFragment = supportFragmentManager.findFragmentByTag(mainFragmentTag) as MainFragment
+            homeScreen = supportFragmentManager.findFragmentByTag(mainFragmentTag) as HomeScreen
             comicsSearchScreen = supportFragmentManager.findFragmentByTag(searchFragmentTag) as ComicsSearchScreen
             userLibraryFragment = supportFragmentManager.findFragmentByTag(userLibraryFragmentTag) as UserLibrary
             val currentFragment = getFragmentFromIndex(selectedFragmentIndex)
             supportFragmentManager.beginTransaction()
-                .hide(mainFragment)
+                .hide(homeScreen)
                 .hide(comicsSearchScreen)
                 .hide(userLibraryFragment)
                 .show(currentFragment)
@@ -101,7 +100,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.mainScreen ->{
                     supportFragmentManager.beginTransaction()
                         .hide(currentFragment)
-                        .show(mainFragment)
+                        .show(homeScreen)
                         .commit()
                     selectedFragmentIndex= mainFragmentIndex
                     true
@@ -160,7 +159,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun getFragmentFromIndex(currentIndex:Int):Fragment= when (currentIndex) {
-        mainFragmentIndex -> mainFragment
+        mainFragmentIndex -> homeScreen
         searchFragmentIndex -> comicsSearchScreen
         userLibraryFragmentIndex -> userLibraryFragment
         else -> {
@@ -172,7 +171,7 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
         outState.putInt(selectedIndexTag,selectedFragmentIndex)
-        supportFragmentManager.putFragment(outState, mainFragmentTag,mainFragment)
+        supportFragmentManager.putFragment(outState, mainFragmentTag,homeScreen)
         supportFragmentManager.putFragment(outState, searchFragmentTag,comicsSearchScreen)
         supportFragmentManager.putFragment(outState, userLibraryFragmentTag,userLibraryFragment)
     }
@@ -180,10 +179,10 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         val currentFragment = getFragmentFromIndex(selectedFragmentIndex)
         when {
-            currentFragment != mainFragment -> {
+            currentFragment != homeScreen -> {
                 supportFragmentManager.beginTransaction()
                     .hide(currentFragment)
-                    .show(mainFragment)
+                    .show(homeScreen)
                     .commit()
                 selectedFragmentIndex = mainFragmentIndex
                 navigationBarView.selectedItemId=R.id.mainScreen
