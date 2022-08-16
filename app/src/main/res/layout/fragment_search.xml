@@ -44,7 +44,18 @@
    <androidx.constraintlayout.widget.ConstraintLayout
        android:layout_width="match_parent"
        android:layout_height="match_parent"
+       app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
        android:fitsSystemWindows="true">
+       <androidx.recyclerview.widget.RecyclerView
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:id="@+id/search_results_rv"
+           android:layout_marginTop="@dimen/margin_small"
+           app:layout_constraintStart_toStartOf="parent"
+           app:layout_constraintEnd_toStartOf="parent"
+           app:layout_constraintTop_toTopOf="parent"
+           android:visibility="gone"
+           tools:visibility="visible"/>
        <androidx.appcompat.widget.AppCompatTextView
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
