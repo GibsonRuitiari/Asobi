@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreScreen
+import com.gibsonruitiari.asobi.ui.comicssearch.ComicsGenreScreen
 import com.gibsonruitiari.asobi.ui.completedcomics.CompletedComicsFragment
 import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment
 import com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsFragment
@@ -54,24 +55,26 @@ class HomeScreen:Fragment() {
         private const val popularComicsFragmentIndex=4
         private const val completedComicsFragmentIndex=5
     }
-    private val onBackPressedCallback = object :OnBackPressedCallback(true){
+    private val onBackPressedCallback = object:OnBackPressedCallback(true){
         override fun handleOnBackPressed() {
-            val currentFragment=getFragmentFromIndex(currentFragmentIndex)
-            if (currentFragment!=discoverFragment){
-                childFragmentManager.beginTransaction()
-                    .hide(currentFragment)
-                    .show(discoverFragment!!)
-                    .commit()
-            }else {
-                // current fragment is discover fragment
-                println("current frag ${currentFragment.tag}")
-                isEnabled=false
-                //requireActivity().finish()
-                requireActivity().onBackPressed()
+            when(val currentFragment=getFragmentFromIndex(currentFragmentIndex)){
+                is DiscoverFragment->{
+                    isEnabled=false
+                    activity?.onBackPressed()
+                    doActionIfWeAreOnDebug { logger.i("[return to main activity main activity on back press is called ? ]") }
+                }
+                else->{
+                    childFragmentManager.beginTransaction()
+                        .hide(currentFragment)
+                        .show(discoverFragment!!)
+                        .commit()
+                    currentFragmentIndex = discoverFragmentIndex
+                    doActionIfWeAreOnDebug { logger.i("[set the current fragment to discover fragment ]") }
+                }
             }
+
         }
     }
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -82,7 +85,6 @@ class HomeScreen:Fragment() {
         childFragmentManager.putFragment(outState, popularComicsFragmentTag,popularComicsFragment!!)
         childFragmentManager.putFragment(outState, completedComicsFragmentTag,completedComicsFragment!!)
         childFragmentManager.putFragment(outState, comicsByGenreFragmentTag,comicsByGenreScreen!!)
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

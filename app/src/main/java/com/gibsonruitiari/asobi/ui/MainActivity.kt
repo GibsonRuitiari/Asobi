@@ -178,19 +178,36 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val currentFragment = getFragmentFromIndex(selectedFragmentIndex)
-        when {
-            currentFragment != homeScreen -> {
-                supportFragmentManager.beginTransaction()
+        val backPressedDispatcher = currentFragment.activity?.onBackPressedDispatcher
+        if (currentFragment is ComicsSearchScreen){
+            backPressedDispatcher?.let {
+                if (backPressedDispatcher.hasEnabledCallbacks()){
+                    currentFragment.activity?.onBackPressedDispatcher?.onBackPressed()
+                }else{
+                    supportFragmentManager.beginTransaction()
                     .hide(currentFragment)
                     .show(homeScreen)
                     .commit()
                 selectedFragmentIndex = mainFragmentIndex
                 navigationBarView.selectedItemId=R.id.mainScreen
+                }
             }
-            else ->{
-                super.onBackPressed()
-            }
+        }else if (currentFragment is HomeScreen){
+            currentFragment.activity?.onBackPressedDispatcher?.onBackPressed()
         }
+//        when {
+//            currentFragment != homeScreen -> {
+//                supportFragmentManager.beginTransaction()
+//                    .hide(currentFragment)
+//                    .show(homeScreen)
+//                    .commit()
+//                selectedFragmentIndex = mainFragmentIndex
+//                navigationBarView.selectedItemId=R.id.mainScreen
+//            }
+//            else ->{
+//                super.onBackPressed()
+//            }
+//        }
     }
 
 }

@@ -1,21 +1,17 @@
 package com.gibsonruitiari.asobi.ui.comicssearch
 
-import android.animation.ObjectAnimator
 import android.animation.TimeInterpolator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Color
-import android.graphics.Paint
 import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable.shapes.RectShape
-import android.graphics.drawable.shapes.Shape
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
-import androidx.activity.addCallback
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -132,19 +128,21 @@ class ComicsSearchResultsScreen: Fragment() {
         }
     }
     /* End: Fragment view */
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(enabled = true) {
-            if (::searchResultsScreenToolbar.isInitialized){
-                if (toolbarExpanded.not()){
-                    mainActivityViewModel.openComicsGenreScreenFromSearchScreen()
-                }else{
-                    toolbarExpanded=false // back to default setting when back button is clicked
-                    changeToolbarLayoutMarginOnClick()
-                }
-            }
-        }
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        activity?.onBackPressedDispatcher?.addCallback(this, object :OnBackPressedCallback(true){
+//            override fun handleOnBackPressed() {
+//                doActionIfWeAreOnDebug { logger.i("[comics search result screen back press]") }
+//                if (toolbarExpanded){
+//                    expandCollapseMarginAnimation(60)
+//                }else{
+//                    isEnabled=false
+//                    activity?.onBackPressed()
+//                }
+//
+//            }
+//        })
+//    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -159,8 +157,9 @@ class ComicsSearchResultsScreen: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-       changeToolbarLayoutMarginOnClick()
+        changeToolbarLayoutMarginOnClick()
     }
+
     private fun changeToolbarLayoutMarginOnClick(){
         with(searchResultsScreenToolbar){
             val marginLayoutParams = layoutParams as ViewGroup.MarginLayoutParams
@@ -170,7 +169,7 @@ class ComicsSearchResultsScreen: Fragment() {
                     val animator= expandCollapseMarginAnimation(toolbarStartMargin, toolbarEndMargin)
                     animator.addUpdateListener {
                         val recentlyAnimatedValue=it.animatedValue as Int
-                        doActionIfWeAreOnDebug { logger.i("recently animated margin value is $recentlyAnimatedValue") }
+                    //    doActionIfWeAreOnDebug { logger.i("recently animated margin value is $recentlyAnimatedValue") }
                         marginLayoutParams.setMargins(recentlyAnimatedValue.dp)
                         layoutParams = marginLayoutParams
                     }
@@ -181,7 +180,7 @@ class ComicsSearchResultsScreen: Fragment() {
                     val animator= expandCollapseMarginAnimation(toolbarEndMargin, toolbarStartMargin)
                     animator.addUpdateListener {
                         val recentlyAnimatedValue=it.animatedValue as Int
-                        doActionIfWeAreOnDebug { logger.i("recently animated margin value is $recentlyAnimatedValue") }
+                     //   doActionIfWeAreOnDebug { logger.i("recently animated margin value is $recentlyAnimatedValue") }
                         marginLayoutParams.setMargins(recentlyAnimatedValue.dp)
                         layoutParams = marginLayoutParams
                     }

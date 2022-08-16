@@ -51,20 +51,25 @@ class ComicsSearchScreen:Fragment() {
     }
     private val onBackPressedCallback = object:OnBackPressedCallback(true){
         override fun handleOnBackPressed() {
-            val currentFragment=getFragmentFromIndex(currentFragmentIndex)
-            if (currentFragment!=comicsGenreScreen){
-                childFragmentManager.beginTransaction()
-                    .hide(currentFragment)
-                    .show(comicsGenreScreen!!)
-                    .commit()
-            }else{
-                isEnabled=false
+            when (val currentFragment=getFragmentFromIndex(currentFragmentIndex)) {
+                is ComicsGenreScreen->{
+                    isEnabled=false
+                    activity?.onBackPressed()
+                }
+                else -> {
+                    childFragmentManager.beginTransaction()
+                        .hide(currentFragment)
+                        .show(comicsGenreScreen!!)
+                        .commit()
+                    currentFragmentIndex= comicsGenreScreenIndex
+                    doActionIfWeAreOnDebug { logger.i("[switch fragment to comics genre screen ]]") }
+                }
             }
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(onBackPressedCallback)
+        activity?.onBackPressedDispatcher?.addCallback(this,onBackPressedCallback)
         if (savedInstanceState==null){
             comicsGenreScreen = ComicsGenreScreen()
             comicsByGenreScreen= ComicsByGenreScreen()
@@ -120,7 +125,6 @@ class ComicsSearchScreen:Fragment() {
                         SearchScreenNavigationAction.NavigateToComicsByGenreFragmentScreen ->{
                             doActionIfWeAreOnDebug { logger.i("navigating to comics by genre  screen") }
                             childFragmentManager.beginTransaction()
-                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .hide(getFragmentFromIndex(currentFragmentIndex))
                                 .show(comicsByGenreScreen!!)
                                 .commit()
@@ -129,20 +133,18 @@ class ComicsSearchScreen:Fragment() {
                         SearchScreenNavigationAction.NavigateToComicsGenreScreen -> {
                             doActionIfWeAreOnDebug { logger.i("navigating to comics genre screen") }
                             childFragmentManager.beginTransaction()
-                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .hide(getFragmentFromIndex(currentFragmentIndex))
                                 .show(comicsGenreScreen!!)
                                 .commit()
                             currentFragmentIndex = comicsGenreScreenIndex
                         }
                         SearchScreenNavigationAction.NavigateToComicsSearchResultScreen ->{
-                            doActionIfWeAreOnDebug { logger.i("navigating to comics search result screen") }
                             childFragmentManager.beginTransaction()
-                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .hide(getFragmentFromIndex(currentFragmentIndex))
                                 .show(comicsSearchResultScreen!!)
                                 .commit()
                             currentFragmentIndex = comicsSearchResultScreenIndex
+                            doActionIfWeAreOnDebug { logger.i("navigating to comics search result screen $currentFragmentIndex") }
                         }
                     }
                 }
@@ -159,7 +161,6 @@ class ComicsSearchScreen:Fragment() {
         comicsSearchResultScreen = childFragmentManager.findFragmentByTag(comicsSearchResultsScreenTag) as ComicsSearchResultsScreen
         val currentFragment = getFragmentFromIndex(currentFragmentIndex)
         childFragmentManager.beginTransaction()
-            .setTransition(TRANSIT_FRAGMENT_FADE)
             .hide(comicsGenreScreen!!)
             .hide(comicsByGenreScreen!!)
             .hide(comicsSearchResultScreen!!)
