@@ -33,6 +33,7 @@ import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -42,7 +43,7 @@ class ComicsGenreScreen:Fragment() {
     /* Start: ComicsGenreScreen fragment variables declaration */
     private val comicsSearchViewModel: ComicsSearchViewModel by viewModel()
     private val comicsByGenreViewModel:ComicsByGenreViewModel by viewModel()
-    private val mainActivityViewModel:MainActivityViewModel by viewModel(owner = {requireParentFragment()})
+    private val mainActivityViewModel:MainActivityViewModel by sharedViewModel(owner = {requireParentFragment()})
     private val logger:Logger by inject()
     private var loadingJob:Job?=null
 
@@ -56,9 +57,9 @@ class ComicsGenreScreen:Fragment() {
 
     /* Start: ComicsGenreScreen fragment view */
     internal class ComicsGenreScreenView(context: Context):ParentFragmentsView(context){
-        lateinit var _searchButton:MaterialButton
-        lateinit var _searchTextLabel:AppCompatTextView
-        lateinit var _genresRecyclerView:RecyclerView
+        lateinit var searchButton:MaterialButton
+        lateinit var searchTextLabel:AppCompatTextView
+        lateinit var genresRecyclerView:RecyclerView
         init {
             constraintLayoutContainer(context)
         }
@@ -71,14 +72,14 @@ class ComicsGenreScreen:Fragment() {
             }
             addView(constraintLayout)
             val constraintSet = ConstraintSet()
-             _searchTextLabel=searchTextLabel(context,constraintSet)
-            constraintLayout.addView(_searchTextLabel)
-             _searchButton = comicsGenreScreenSearchButton(context,constraintSet,_searchTextLabel.id)
-            constraintLayout.addView(_searchButton)
-            val _genreLabel = comicsGenreLabel(context,constraintSet,_searchButton.id)
-            constraintLayout.addView(_genreLabel)
-             _genresRecyclerView=comicsGenreScreenRecyclerView(context,constraintSet,_genreLabel.id)
-            constraintLayout.addView(_genresRecyclerView)
+             searchTextLabel=searchTextLabel(context,constraintSet)
+            constraintLayout.addView(searchTextLabel)
+             searchButton = comicsGenreScreenSearchButton(context,constraintSet,searchTextLabel.id)
+            constraintLayout.addView(searchButton)
+            val genreLabel = comicsGenreLabel(context,constraintSet,searchButton.id)
+            constraintLayout.addView(genreLabel)
+             genresRecyclerView=comicsGenreScreenRecyclerView(context,constraintSet,genreLabel.id)
+            constraintLayout.addView(genresRecyclerView)
             constraintSet.applyTo(constraintLayout)
         }
         private fun searchTextLabel(context: Context,
@@ -160,9 +161,9 @@ class ComicsGenreScreen:Fragment() {
         savedInstanceState: Bundle?
     ): View {
         comicsGenreScreenRootLayout = ComicsGenreScreenView(requireContext())
-        comicsGenreRecyclerView=(comicsGenreScreenRootLayout as ComicsGenreScreenView)._genresRecyclerView
-        comicsGenreScreenSearchButton=(comicsGenreScreenRootLayout as ComicsGenreScreenView)._searchButton
-        comicsGenreSearchTextLabel =(comicsGenreScreenRootLayout as ComicsGenreScreenView)._searchTextLabel
+        comicsGenreRecyclerView=(comicsGenreScreenRootLayout as ComicsGenreScreenView).genresRecyclerView
+        comicsGenreScreenSearchButton=(comicsGenreScreenRootLayout as ComicsGenreScreenView).searchButton
+        comicsGenreSearchTextLabel =(comicsGenreScreenRootLayout as ComicsGenreScreenView).searchTextLabel
         return comicsGenreScreenRootLayout
     }
 
@@ -172,6 +173,10 @@ class ComicsGenreScreen:Fragment() {
         setUpMainFragmentRecyclerView()
         loadData(isHidden)
         searchFragmentRecyclerViewOnScrollListener()
+        comicsGenreScreenSearchButton.setOnSafeClickListener {
+            doActionIfWeAreOnDebug { logger.i("search button clicked opening search results screen") }
+            mainActivityViewModel.openComicsSearchResultsScreen()
+        }
 
     }
 
@@ -240,13 +245,7 @@ class ComicsGenreScreen:Fragment() {
         }
 }
 
-    private fun showKeyboard(view: View) {
-        WindowInsetsControllerCompat(requireActivity().window,view).show(WindowInsetsCompat.Type.ime())
-    }
 
-    private fun dismissKeyboard(view: View) {
-        WindowInsetsControllerCompat(requireActivity().window,view).hide(WindowInsetsCompat.Type.ime())
-    }
     private var BindingViewHolder<GenreComicItemBinding>.genres by viewHolderDelegate<UiGenreModel>()
     private fun BindingViewHolder<GenreComicItemBinding>.bindComicGenres(comicGenres:UiGenreModel) {
         this.genres = comicGenres
@@ -273,7 +272,7 @@ class ComicsGenreScreen:Fragment() {
     companion object{
         private val easeOutInterpolatorArray= floatArrayOf(0f,0f, 0.58f,1f)
         // states need to be a 2d array
-        val colorStates = intArrayOf(Color.GRAY,Color.BLACK) // pressed, -pressed
+        private val colorStates = intArrayOf(Color.GRAY,Color.BLACK) // pressed, -pressed
         val states = arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf(-android.R.attr.state_pressed))
         val defaultColorStateList = ColorStateList(states, colorStates)
         fun filterUiGenreModelToGenre(uiGenreModel: UiGenreModel):Genres? = Genres.values().firstOrNull { val originalName=uiGenreModel.genreName.replace(it.emoji ?: "","");it.genreName.contentEquals(originalName) }

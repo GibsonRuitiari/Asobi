@@ -18,6 +18,9 @@ class MainActivityViewModel:ViewModel() {
     fun openComicsByGenreScreenFromSearchScreen(){
         _comicsSearchScreenNavigationEvents.trySend(SearchScreenNavigationAction.NavigateToComicsByGenreFragmentScreen)
     }
+    fun openComicsSearchResultsScreen(){
+        _comicsSearchScreenNavigationEvents.trySend(SearchScreenNavigationAction.NavigateToComicsSearchResultScreen)
+    }
     fun openDiscoverScreen(){
         mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToDiscoverScreen)
     }
@@ -41,6 +44,7 @@ class MainActivityViewModel:ViewModel() {
 sealed class SearchScreenNavigationAction{
     object NavigateToComicsGenreScreen:SearchScreenNavigationAction()
     object NavigateToComicsByGenreFragmentScreen:SearchScreenNavigationAction()
+    object NavigateToComicsSearchResultScreen:SearchScreenNavigationAction()
 }
 sealed class MainFragmentNavigationAction{
     object NavigateToDiscoverScreen:MainFragmentNavigationAction()

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
  * ComicSearchScreen?Lack of a better word man
@@ -30,18 +32,22 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
  */
 class ComicsSearchScreen:Fragment() {
     private val logger:Logger by inject()
-    private val mainFragmentViewModel:MainActivityViewModel by sharedViewModel()
+    private val mainFragmentViewModel:MainActivityViewModel by viewModel()
     private lateinit var fragmentContainerView:FragmentContainerView
     private var comicsGenreScreen:ComicsGenreScreen?=null
     private var comicsByGenreScreen:ComicsByGenreScreen?=null
+    private var comicsSearchResultScreen:ComicsSearchResultsScreen?=null
+
     private var currentFragmentIndex= comicsGenreScreenIndex
     private var navigationEventsJob:Job?=null
     companion object{
         private const val comicsGenreScreenTag ="comics genre screen tag"
         private const val comicsByGenreFragmentTag ="comics by genre fragment tag"
         private const val currentFragmentIndexTag="current fragment tag"
+        private const val comicsSearchResultsScreenTag ="comics search results screen tag"
         private const val comicsGenreScreenIndex=0
         private const val comicsByGenreFragmentIndex=1
+        private const val comicsSearchResultScreenIndex =2
     }
     private val onBackPressedCallback = object:OnBackPressedCallback(true){
         override fun handleOnBackPressed() {
@@ -62,6 +68,7 @@ class ComicsSearchScreen:Fragment() {
         if (savedInstanceState==null){
             comicsGenreScreen = ComicsGenreScreen()
             comicsByGenreScreen= ComicsByGenreScreen()
+            comicsSearchResultScreen = ComicsSearchResultsScreen()
         }
     }
     override fun onCreateView(
@@ -75,6 +82,7 @@ class ComicsSearchScreen:Fragment() {
             childFragmentManager.beginTransaction()
                 .add(fragmentContainerView.id,comicsGenreScreen!!, comicsGenreScreenTag).show(comicsGenreScreen!!)
                 .add(fragmentContainerView.id,comicsByGenreScreen!!, comicsByGenreFragmentTag).hide(comicsByGenreScreen!!)
+                .add(fragmentContainerView.id,comicsSearchResultScreen!!,comicsSearchResultsScreenTag).hide(comicsSearchResultScreen!!)
                 .commit()
         }
         return comicsSearchScreenFragmentView
@@ -87,11 +95,9 @@ class ComicsSearchScreen:Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt(currentFragmentIndexTag,currentFragmentIndex)
-        childFragmentManager.putFragment(outState, comicsGenreScreenTag,
-        comicsGenreScreen!!)
-        childFragmentManager.putFragment(outState, comicsByGenreFragmentTag,
-        comicsByGenreScreen!!)
-
+        childFragmentManager.putFragment(outState, comicsGenreScreenTag,comicsGenreScreen!!)
+        childFragmentManager.putFragment(outState, comicsByGenreFragmentTag,comicsByGenreScreen!!)
+        childFragmentManager.putFragment(outState, comicsSearchResultsScreenTag,comicsSearchResultScreen!!)
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -109,20 +115,34 @@ class ComicsSearchScreen:Fragment() {
         navigationEventsJob = viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 mainFragmentViewModel.comicsSearchScreenNavigationEvents.collectLatest {
+                    doActionIfWeAreOnDebug { logger.i("collection of navigation events started") }
                     when(it){
                         SearchScreenNavigationAction.NavigateToComicsByGenreFragmentScreen ->{
+                            doActionIfWeAreOnDebug { logger.i("navigating to comics by genre  screen") }
                             childFragmentManager.beginTransaction()
+                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .hide(getFragmentFromIndex(currentFragmentIndex))
                                 .show(comicsByGenreScreen!!)
                                 .commit()
                             currentFragmentIndex = comicsByGenreFragmentIndex
                         }
                         SearchScreenNavigationAction.NavigateToComicsGenreScreen -> {
+                            doActionIfWeAreOnDebug { logger.i("navigating to comics genre screen") }
                             childFragmentManager.beginTransaction()
+                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .hide(getFragmentFromIndex(currentFragmentIndex))
                                 .show(comicsGenreScreen!!)
                                 .commit()
                             currentFragmentIndex = comicsGenreScreenIndex
+                        }
+                        SearchScreenNavigationAction.NavigateToComicsSearchResultScreen ->{
+                            doActionIfWeAreOnDebug { logger.i("navigating to comics search result screen") }
+                            childFragmentManager.beginTransaction()
+                                .setTransition(TRANSIT_FRAGMENT_FADE)
+                                .hide(getFragmentFromIndex(currentFragmentIndex))
+                                .show(comicsSearchResultScreen!!)
+                                .commit()
+                            currentFragmentIndex = comicsSearchResultScreenIndex
                         }
                     }
                 }
@@ -136,16 +156,20 @@ class ComicsSearchScreen:Fragment() {
         currentFragmentIndex = savedInstanceState.getInt(currentFragmentIndexTag)
         comicsGenreScreen = childFragmentManager.findFragmentByTag(comicsGenreScreenTag) as ComicsGenreScreen
         comicsByGenreScreen = childFragmentManager.findFragmentByTag(comicsByGenreFragmentTag) as ComicsByGenreScreen
+        comicsSearchResultScreen = childFragmentManager.findFragmentByTag(comicsSearchResultsScreenTag) as ComicsSearchResultsScreen
         val currentFragment = getFragmentFromIndex(currentFragmentIndex)
         childFragmentManager.beginTransaction()
+            .setTransition(TRANSIT_FRAGMENT_FADE)
             .hide(comicsGenreScreen!!)
             .hide(comicsByGenreScreen!!)
+            .hide(comicsSearchResultScreen!!)
             .show(currentFragment)
             .commit()
     }
     private fun getFragmentFromIndex(currentIndex:Int):Fragment = when(currentIndex){
         comicsByGenreFragmentIndex-> comicsByGenreScreen!!
         comicsGenreScreenIndex -> comicsGenreScreen!!
+        comicsSearchResultScreenIndex -> comicsSearchResultScreen!!
         else ->{
             doActionIfWeAreOnDebug { logger.e("an unrecognized index given $currentIndex") }
             throw IllegalArgumentException("unrecognized index $currentIndex")
