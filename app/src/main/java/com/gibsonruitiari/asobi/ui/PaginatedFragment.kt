@@ -90,16 +90,17 @@ abstract class PaginatedFragment:Fragment(){
             }
         }
     }
-    private val onBackPressedCallback=object :OnBackPressedCallback(false){
-        override fun handleOnBackPressed() {
-            doActionIfWeAreOnDebug { logger.i("From Paginated fragment going back to discover screen") }
-            mainActivityViewModel.openDiscoverScreen()
-        }
-    }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(onBackPressedCallback)
-    }
+//    private val onBackPressedCallback=object :OnBackPressedCallback(true){
+//        override fun handleOnBackPressed() {
+//            doActionIfWeAreOnDebug { logger.i("From Paginated fragment going back to discover screen") }
+//            mainActivityViewModel.openDiscoverScreen()
+//           // activity?.onBackPressed()
+//        }
+//    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        requireActivity().onBackPressedDispatcher.addCallback(onBackPressedCallback)
+//    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -22,6 +23,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.setMargins
 import androidx.fragment.app.Fragment
 import com.gibsonruitiari.asobi.R
+import com.gibsonruitiari.asobi.data.search
 import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.Logger
@@ -30,7 +32,9 @@ import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.properties.Delegates
 
+@VisibleForTesting
 class ComicsSearchResultsScreen: Fragment() {
     /* Start: initialization of view variables */
     private lateinit var searchResultsScreenToolbar:MaterialToolbar
@@ -128,21 +132,7 @@ class ComicsSearchResultsScreen: Fragment() {
         }
     }
     /* End: Fragment view */
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        activity?.onBackPressedDispatcher?.addCallback(this, object :OnBackPressedCallback(true){
-//            override fun handleOnBackPressed() {
-//                doActionIfWeAreOnDebug { logger.i("[comics search result screen back press]") }
-//                if (toolbarExpanded){
-//                    expandCollapseMarginAnimation(60)
-//                }else{
-//                    isEnabled=false
-//                    activity?.onBackPressed()
-//                }
-//
-//            }
-//        })
-//    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -160,43 +150,43 @@ class ComicsSearchResultsScreen: Fragment() {
         changeToolbarLayoutMarginOnClick()
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+       if (hidden && toolbarExpanded) {
+           doActionIfWeAreOnDebug { logger.i("hidden and toolbar expanded") }
+           animateToolbarChanges()
+       }
+    }
     private fun changeToolbarLayoutMarginOnClick(){
-        with(searchResultsScreenToolbar){
-            val marginLayoutParams = layoutParams as ViewGroup.MarginLayoutParams
-            val expandedDrawable = shapeDrawable.apply { paint.color=resources.getColor(R.color.davy_grey,null)}
-            setOnClickListener {
-                toolbarExpanded = if (toolbarExpanded.not()){
-                    val animator= expandCollapseMarginAnimation(toolbarStartMargin, toolbarEndMargin)
-                    animator.addUpdateListener {
-                        val recentlyAnimatedValue=it.animatedValue as Int
-                    //    doActionIfWeAreOnDebug { logger.i("recently animated margin value is $recentlyAnimatedValue") }
-                        marginLayoutParams.setMargins(recentlyAnimatedValue.dp)
-                        layoutParams = marginLayoutParams
-                    }
-                    animator.doOnEnd { background = expandedDrawable }
-                    animator.start()
-                    true
-                }else{
-                    val animator= expandCollapseMarginAnimation(toolbarEndMargin, toolbarStartMargin)
-                    animator.addUpdateListener {
-                        val recentlyAnimatedValue=it.animatedValue as Int
-                     //   doActionIfWeAreOnDebug { logger.i("recently animated margin value is $recentlyAnimatedValue") }
-                        marginLayoutParams.setMargins(recentlyAnimatedValue.dp)
-                        layoutParams = marginLayoutParams
-                    }
-                    animator.doOnEnd { background=resources.getDrawable(R.drawable.toolbar_bg,null)}
-                    animator.start()
-                    false
-                }
-            }
-        }
+        searchResultsScreenToolbar.setOnClickListener { animateToolbarChanges() }
     }
     /* Start: Fragment's specific utility methods */
-    private fun expandCollapseMarginAnimation(start:Int,end:Int,
-                                              animationDuration:Long=250, animationInterpolator:TimeInterpolator=AccelerateDecelerateInterpolator()):ValueAnimator = ValueAnimator.ofInt(start,end).apply {
-            interpolator = animationInterpolator
-            duration=animationDuration
+    private fun animateToolbarChanges(animationInterpolator:TimeInterpolator=AccelerateDecelerateInterpolator(),
+    animationDuration:Long=250L){
+        val expandedDrawable = shapeDrawable.apply { paint.color=resources.getColor(R.color.davy_grey,null)}
+        val marginLayoutParams = searchResultsScreenToolbar.layoutParams as ViewGroup.MarginLayoutParams
+        toolbarExpanded=if (toolbarExpanded.not()){
+            val animator = ValueAnimator.ofInt(toolbarStartMargin, toolbarEndMargin).apply { interpolator=animationInterpolator;duration=animationDuration }
+            animator.addUpdateListener {
+                val recentlyAnimatedValue = it.animatedValue as Int
+                marginLayoutParams.setMargins(recentlyAnimatedValue.dp)
+                searchResultsScreenToolbar.layoutParams=marginLayoutParams
+            }
+            animator.doOnEnd { searchResultsScreenToolbar.background = expandedDrawable }
+            animator.start()
+            true
+        }else{
+            val animator=ValueAnimator.ofInt(toolbarEndMargin, toolbarStartMargin).apply { interpolator=animationInterpolator;duration=animationDuration}
+            animator.addUpdateListener {
+                val recentlyAnimatedValue = it.animatedValue as Int
+                marginLayoutParams.setMargins(recentlyAnimatedValue.dp)
+                searchResultsScreenToolbar.layoutParams = marginLayoutParams
+            }
+            animator.doOnEnd { searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null) }
+            animator.start()
+            false
         }
+    }
     private fun showKeyboard(view: View) {
         WindowInsetsControllerCompat(requireActivity().window,view).show(WindowInsetsCompat.Type.ime())
     }

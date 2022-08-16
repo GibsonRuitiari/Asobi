@@ -56,6 +56,7 @@ class ComicsSearchScreen:Fragment() {
                     isEnabled=false
                     activity?.onBackPressed()
                 }
+
                 else -> {
                     childFragmentManager.beginTransaction()
                         .hide(currentFragment)
@@ -167,6 +168,7 @@ class ComicsSearchScreen:Fragment() {
             .show(currentFragment)
             .commit()
     }
+
     private fun getFragmentFromIndex(currentIndex:Int):Fragment = when(currentIndex){
         comicsByGenreFragmentIndex-> comicsByGenreScreen!!
         comicsGenreScreenIndex -> comicsGenreScreen!!
