@@ -3,31 +3,34 @@ package com.gibsonruitiari.asobi.ui.comicssearch
 import android.animation.TimeInterpolator
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 import android.os.Bundle
 import android.text.InputType
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
-import androidx.activity.OnBackPressedCallback
+import android.widget.EditText
+import android.widget.LinearLayout
+import androidx.activity.addCallback
 import androidx.annotation.VisibleForTesting
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.view.*
-import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
-import com.gibsonruitiari.asobi.data.search
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
-import com.gibsonruitiari.asobi.ui.MainActivityViewModel
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
@@ -37,23 +40,19 @@ import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.views.ParentFragmentsView
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textfield.TextInputLayout.END_ICON_CLEAR_TEXT
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.properties.Delegates
 
 @VisibleForTesting
 class ComicsSearchResultsScreen: Fragment() {
     /* Start: initialization of view variables */
-    private lateinit var searchResultsScreenToolbar:MaterialToolbar
+    private lateinit var searchResultsScreenToolbar:Toolbar
     private lateinit var searchResultsScreenSearchTitle:AppCompatTextView
     private lateinit var searchResultsScreenSearchSubtitle:AppCompatTextView
     private lateinit var searchResultsScreenRecyclerView: RecyclerView
     private lateinit var searchResultsTextInputLayout: TextInputLayout
-    private lateinit var searchResultsEditText:TextInputEditText
+    private lateinit var searchResultsEditText:EditText
     /* End: initialization of view variables */
 
     private var toolbarExpanded:Boolean =false
@@ -64,10 +63,10 @@ class ComicsSearchResultsScreen: Fragment() {
         :ParentFragmentsView(context){
         lateinit var searchExplanationSubtitle:AppCompatTextView
         lateinit var searchExplanationTitle:AppCompatTextView
-        lateinit var searchResultsToolbar:MaterialToolbar
+        lateinit var searchResultsToolbar:Toolbar
         lateinit var searchResultsRecyclerView: RecyclerView
         lateinit var searchResultsTextInputLayout: TextInputLayout
-        lateinit var searchResultsEditText:TextInputEditText
+        lateinit var searchResultsEditText:EditText
         init {
             searchScreenResultsAppBar(context)
             searchScreenResultsConstraintLayout(context)
@@ -77,18 +76,19 @@ class ComicsSearchResultsScreen: Fragment() {
                 id=ViewCompat.generateViewId()
                 layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 elevation= noElevationValue
+
             }
             addView(appBarLayout)
             searchResultsToolbar = searchScreenResultsMaterialToolbar(context)
             appBarLayout.addView(searchResultsToolbar)
         }
-        private fun searchScreenResultsMaterialToolbar(context: Context):MaterialToolbar{
-            val materialToolbar = MaterialToolbar(context).apply {
+        private fun searchScreenResultsMaterialToolbar(context: Context):Toolbar{
+            val materialToolbar = Toolbar(context).apply {
                 id=ViewCompat.generateViewId()
                 layoutParams = AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 background = context.getDrawable(R.drawable.toolbar_bg)
                 setTitleTextColor(Color.WHITE)
-                isTitleCentered=true
+                textAlignment= TEXT_ALIGNMENT_CENTER
                 title = context.getString(R.string.search_label)
                 /* elevation not being changed not working for some reason? */
                 elevation= noElevationValue
@@ -101,21 +101,24 @@ class ComicsSearchResultsScreen: Fragment() {
         private fun searchScreenTextInputLayout(context: Context):TextInputLayout{
             val textInputLayout = TextInputLayout(context).apply {
                 id=ViewCompat.generateViewId()
-                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT)
-                isHintEnabled=true
+                isHintEnabled=false
                 visibility=View.GONE
-                isHintAnimationEnabled=true
+                boxBackgroundMode=TextInputLayout.BOX_BACKGROUND_NONE
+                setEndIconTintList(defaultColorStateList)
                 endIconMode=END_ICON_CLEAR_TEXT
             }
-             searchResultsEditText = TextInputEditText(textInputLayout.context).apply {
+             searchResultsEditText = EditText(textInputLayout.context).apply {
                 id=ViewCompat.generateViewId()
-                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT)
                 inputType=InputType.TYPE_CLASS_TEXT
-                maxLines=1
-                importantForAutofill= IMPORTANT_FOR_AUTOFILL_NO
-                background=context.resources.getDrawable(R.color.davy_grey,null)
+                 maxLines=1
+                 setTextColor(ColorStateList.valueOf(Color.WHITE))
+                 background = context.getDrawable(R.color.davy_grey)
+                 gravity =Gravity.CENTER_VERTICAL
+                 hint = context.resources.getString(R.string.search_comics_hint)
                 imeOptions= EditorInfo.IME_ACTION_SEARCH
             }
             textInputLayout.addView(searchResultsEditText)
@@ -188,7 +191,18 @@ class ComicsSearchResultsScreen: Fragment() {
         }
     }
     /* End: Fragment view */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
+        activity?.onBackPressedDispatcher?.addCallback(this, true){
+           if (toolbarExpanded) animateToolbarChanges()
+           else {
+               cleanUpSearchQuery()
+               isEnabled=false
+               activity?.onBackPressed()
+           }
+       }
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -208,7 +222,11 @@ class ComicsSearchResultsScreen: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         changeToolbarLayoutMarginOnClick()
         setUpSearchResultsScreenRecyclerView()
+
+        setUpTextInputLayoutActionListener()
+
     }
+
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
@@ -217,7 +235,20 @@ class ComicsSearchResultsScreen: Fragment() {
            animateToolbarChanges()
        }
     }
-
+    private fun setUpTextInputLayoutActionListener(){
+        searchResultsTextInputLayout.editText?.setOnEditorActionListener { v, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH){
+                val query = searchResultsTextInputLayout.editText?.text.toString()
+                doActionIfWeAreOnDebug { logger.i("search query $query") }
+                dismissKeyboard(v)
+                return@setOnEditorActionListener  true
+            }
+            return@setOnEditorActionListener false
+        }
+        if(searchResultsTextInputLayout.editText?.text.isNullOrBlank()){
+            searchResultsTextInputLayout.editText?.let { if (it.hasFocus()) showKeyboard(it) }
+        }
+    }
     private fun changeToolbarLayoutMarginOnClick(){
         searchResultsScreenToolbar.setOnClickListener { animateToolbarChanges() }
     }
@@ -251,12 +282,9 @@ class ComicsSearchResultsScreen: Fragment() {
             }
             animator.doOnEnd { searchResultsScreenToolbar.background = expandedDrawable;searchResultsScreenToolbar.title="" }
             animator.start()
-            searchResultsTextInputLayout.animate()
-                .setInterpolator(animationInterpolator)
-                .alpha(1f)
-                .setDuration(500)
-                .withEndAction { searchResultsTextInputLayout.visibility=View.VISIBLE }
-                .start()
+            fadeSearchResultsTextInputLayout(1f){
+                searchResultsTextInputLayout.visibility=View.VISIBLE
+             searchResultsTextInputLayout.editText?.let { it.requestFocus();showKeyboard(it.findFocus()) }}
             true
         }else{
             val animator=ValueAnimator.ofInt(toolbarEndMargin, toolbarStartMargin).apply { interpolator=animationInterpolator;duration=animationDuration}
@@ -267,13 +295,21 @@ class ComicsSearchResultsScreen: Fragment() {
             }
             animator.doOnEnd { searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null);searchResultsScreenToolbar.title=resources.getString(R.string.search_comics_hint)}
             animator.start()
-            searchResultsTextInputLayout.animate().alpha(0f)
-                .setInterpolator(animationInterpolator)
-                .setDuration(500)
-                .withEndAction { searchResultsTextInputLayout.visibility=View.GONE }
-                .start()
+        fadeSearchResultsTextInputLayout(0f){searchResultsTextInputLayout.visibility=View.GONE; cleanUpSearchQuery()}
             false
         }
+    }
+    private fun cleanUpSearchQuery(){
+        searchResultsTextInputLayout.editText?.clearFocus()
+        searchResultsTextInputLayout.editText?.setText("")
+    }
+    private inline fun fadeSearchResultsTextInputLayout(alpha:Float,animationInterpolator: TimeInterpolator=AccelerateDecelerateInterpolator(),
+    crossinline endAction:()->Unit){
+        searchResultsTextInputLayout.animate().alpha(alpha)
+            .setInterpolator(animationInterpolator)
+            .setDuration(500)
+            .withEndAction { endAction.invoke() }
+            .start()
     }
     private fun showKeyboard(view: View) {
         WindowInsetsControllerCompat(requireActivity().window,view).show(WindowInsetsCompat.Type.ime())
@@ -298,6 +334,9 @@ class ComicsSearchResultsScreen: Fragment() {
         private const val toolbarStartMargin=16
         private const val toolbarEndMargin=0
         private const val noElevationValue=0f
+        private val colorStates = intArrayOf(Color.GRAY,Color.WHITE) // pressed, -pressed
+        val states = arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf(-android.R.attr.state_pressed))
+        val defaultColorStateList = ColorStateList(states, colorStates)
         val shapeDrawable = ShapeDrawable(RectShape()).apply {
             this.setPadding(0,0,0,0)}
 
