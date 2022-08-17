@@ -20,7 +20,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.activity.addCallback
 import androidx.annotation.VisibleForTesting
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -193,7 +192,6 @@ class ComicsSearchResultsScreen: Fragment() {
     /* End: Fragment view */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         activity?.onBackPressedDispatcher?.addCallback(this, true){
            if (toolbarExpanded) animateToolbarChanges()
            else {
@@ -222,7 +220,6 @@ class ComicsSearchResultsScreen: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         changeToolbarLayoutMarginOnClick()
         setUpSearchResultsScreenRecyclerView()
-
         setUpTextInputLayoutActionListener()
 
     }
@@ -269,32 +266,14 @@ class ComicsSearchResultsScreen: Fragment() {
         }
     }
     /* Start: Fragment's specific utility methods */
-    private fun animateToolbarChanges(animationInterpolator:TimeInterpolator=AccelerateDecelerateInterpolator(),
-    animationDuration:Long=250L){
+    private fun animateToolbarChanges(){
         val expandedDrawable = shapeDrawable.apply { paint.color=resources.getColor(R.color.davy_grey,null)}
-        val marginLayoutParams = searchResultsScreenToolbar.layoutParams as ViewGroup.MarginLayoutParams
         toolbarExpanded=if (toolbarExpanded.not()){
-            val animator = ValueAnimator.ofInt(toolbarStartMargin, toolbarEndMargin).apply { interpolator=animationInterpolator;duration=animationDuration }
-            animator.addUpdateListener {
-                val recentlyAnimatedValue = it.animatedValue as Int
-                marginLayoutParams.setMargins(recentlyAnimatedValue.dp)
-                searchResultsScreenToolbar.layoutParams=marginLayoutParams
-            }
-            animator.doOnEnd { searchResultsScreenToolbar.background = expandedDrawable;searchResultsScreenToolbar.title="" }
-            animator.start()
-            fadeSearchResultsTextInputLayout(1f){
-                searchResultsTextInputLayout.visibility=View.VISIBLE
-             searchResultsTextInputLayout.editText?.let { it.requestFocus();showKeyboard(it.findFocus()) }}
+           expandCollapseSearchScreenResultsToolbar(toolbarStartMargin, toolbarEndMargin){searchResultsScreenToolbar.background = expandedDrawable;searchResultsScreenToolbar.title=""}
+          fadeSearchResultsTextInputLayout(1f){ searchResultsTextInputLayout.visibility=View.VISIBLE;searchResultsTextInputLayout.editText?.let { it.requestFocus();showKeyboard(it.findFocus()) }}
             true
         }else{
-            val animator=ValueAnimator.ofInt(toolbarEndMargin, toolbarStartMargin).apply { interpolator=animationInterpolator;duration=animationDuration}
-            animator.addUpdateListener {
-                val recentlyAnimatedValue = it.animatedValue as Int
-                marginLayoutParams.setMargins(recentlyAnimatedValue.dp)
-                searchResultsScreenToolbar.layoutParams = marginLayoutParams
-            }
-            animator.doOnEnd { searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null);searchResultsScreenToolbar.title=resources.getString(R.string.search_comics_hint)}
-            animator.start()
+        expandCollapseSearchScreenResultsToolbar(toolbarEndMargin, toolbarStartMargin){searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null);searchResultsScreenToolbar.title=resources.getString(R.string.search_label)}
         fadeSearchResultsTextInputLayout(0f){searchResultsTextInputLayout.visibility=View.GONE; cleanUpSearchQuery()}
             false
         }
@@ -302,6 +281,19 @@ class ComicsSearchResultsScreen: Fragment() {
     private fun cleanUpSearchQuery(){
         searchResultsTextInputLayout.editText?.clearFocus()
         searchResultsTextInputLayout.editText?.setText("")
+    }
+    private inline fun expandCollapseSearchScreenResultsToolbar(start:Int,end:Int,animationDuration: Long=500,
+                                                                animationInterpolator: TimeInterpolator=AccelerateDecelerateInterpolator(),
+                                                                crossinline action:()->Unit){
+        val marginLayoutParams = searchResultsScreenToolbar.layoutParams as ViewGroup.MarginLayoutParams
+        val animator = ValueAnimator.ofInt(start, end).apply { interpolator=animationInterpolator;duration=animationDuration }
+        animator.addUpdateListener {
+            val recentlyAnimatedValue = it.animatedValue as Int
+            marginLayoutParams.setMargins(recentlyAnimatedValue.dp)
+            searchResultsScreenToolbar.layoutParams=marginLayoutParams
+        }
+        animator.doOnEnd { action.invoke() }
+        animator.start()
     }
     private inline fun fadeSearchResultsTextInputLayout(alpha:Float,animationInterpolator: TimeInterpolator=AccelerateDecelerateInterpolator(),
     crossinline endAction:()->Unit){
