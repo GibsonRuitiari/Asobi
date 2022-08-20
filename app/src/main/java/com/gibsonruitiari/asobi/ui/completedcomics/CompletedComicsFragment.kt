@@ -18,11 +18,9 @@ class CompletedComicsFragment: PaginatedFragment() {
            listAdapter.submitData(it)
        }
     }
-    override suspend fun asynchronouslyInitializeFragmentViews() {
-        fragmentToolbar.title=getString(R.string.completed_comics)
-        fragmentToolbar.setTitleTextColor(Color.WHITE)
-        fragmentToolbar.isTitleCentered=true
-        fragmentToolbar.setTitleTextAppearance(requireContext(),R.style.TextAppearance_Asobi_Headline4)    }
+
+
+    override fun getTitle(): String =getString(R.string.completed_comics)
 
     override fun getFragmentColor(): Int = Color.parseColor("#4cc9f0")
 

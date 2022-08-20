@@ -16,15 +16,8 @@ class OngoingComicsFragment : PaginatedFragment() {
     }
     private val ongoingComicsViewModel: OngoingComicsViewModel by viewModel()
 
-
-    override suspend fun asynchronouslyInitializeFragmentViews() {
-        fragmentToolbar.title=getString(R.string.ongoing_comics)
-        fragmentToolbar.setTitleTextColor(Color.WHITE)
-        fragmentToolbar.isTitleCentered=true
-        fragmentToolbar.setTitleTextAppearance(requireContext(),R.style.TextAppearance_Asobi_Headline4)    }
-
     override fun getFragmentColor(): Int =  Color.parseColor("#D46C4E")
-
+    override fun getTitle(): String = getString(R.string.ongoing_comics)
     override suspend fun observePagedData() {
         ongoingComicsViewModel.pagedList.collectLatest {
             listAdapter.submitData(it)

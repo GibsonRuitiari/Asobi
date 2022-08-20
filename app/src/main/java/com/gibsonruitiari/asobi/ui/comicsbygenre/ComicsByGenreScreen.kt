@@ -15,12 +15,7 @@ class ComicsByGenreScreen: PaginatedFragment() {
        Toast.makeText(requireContext(),"comic item: ${comicItem.comicLink}", Toast.LENGTH_SHORT).show()
     }
 
-    override suspend fun asynchronouslyInitializeFragmentViews() {
-        fragmentToolbar.title=getString(R.string.comics_by_genre)
-        fragmentToolbar.setTitleTextColor(Color.WHITE)
-        fragmentToolbar.isTitleCentered=true
-        fragmentToolbar.setTitleTextAppearance(requireContext(),R.style.TextAppearance_Asobi_Headline4)
-    }
+    override fun getTitle(): String = getString(R.string.comics_by_genre)
     override fun getFragmentColor(): Int {
         return comicsByGenreViewModel.currentGenreChoice.value?.toUiGenreModel()?.genreColor
             ?: Color.parseColor("#CF0B82")

@@ -1,18 +1,18 @@
 package com.gibsonruitiari.asobi.ui
 
 import android.animation.LayoutTransition
+import android.animation.ObjectAnimator
+import android.animation.StateListAnimator
+import android.content.Context
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
-import android.widget.ImageView
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -23,7 +23,6 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.gibsonruitiari.asobi.R
-import com.gibsonruitiari.asobi.databinding.BaseFragmentBinding
 import com.gibsonruitiari.asobi.databinding.ComicItemLayoutBinding
 import com.gibsonruitiari.asobi.ui.comicsadapters.BindingViewHolder
 import com.gibsonruitiari.asobi.ui.comicsadapters.composedPagedAdapter
@@ -32,38 +31,42 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.Logger
+import com.gibsonruitiari.asobi.utilities.views.ParentFragmentsView
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 @Suppress("UNCHECKED_CAST")
 abstract class PaginatedFragment:Fragment(){
-    private var _baseFragmentBinding: BaseFragmentBinding?=null
-     val fragmentBinding get() = _baseFragmentBinding!!
+
     private var isFragmentHidden:Boolean=true
     private var loadingJob:Job?=null
     private val logger:Logger by inject()
     private var pagingDataAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
     val listAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> get() = pagingDataAdapter!!
-    val fragmentToolbar get() =  fragmentBinding.toolbar
-    abstract suspend fun asynchronouslyInitializeFragmentViews()
+
+    abstract fun getTitle():String
     abstract fun getFragmentColor():Int
     abstract suspend fun observePagedData()
     abstract fun onComicClicked(comicItem: ViewComics)
 
 
     /* Start of view variables  */
-    private lateinit var mainFragmentSwipeRefreshLayout: SwipeRefreshLayout
-     lateinit var mainFragmentRecyclerView:RecyclerView
-    private lateinit var mainFragmentConstraintLayoutContainer:ConstraintLayout
-    private lateinit var mainFragmentFrameLayoutContainer:FrameLayout
-    private lateinit var loadingLayout: LoadingLayout
-    private lateinit var mainFragmentErrorEmptyLayoutContainer:ConstraintLayout
-    private lateinit var mainFragmentErrorEmptyLayoutImageView:AppCompatImageView
-    private lateinit var mainFragmentErrorEmptySubtitle:AppCompatTextView
-    private lateinit var mainFragmentErrorEmptyTitle:AppCompatTextView
+    private lateinit var paginatedFragmentSwipeRefreshLayout:SwipeRefreshLayout
+     lateinit var paginatedFragmentRecyclerView: RecyclerView
+    private lateinit var paginatedFragmentLoadingLayout: LoadingLayout
+    private lateinit var paginatedFragmentErrorEmptyLayout:ConstraintLayout
+    private lateinit var paginatedFragmentAppBarLayout:AppBarLayout
+    private lateinit var paginatedFragmentToolbar:Toolbar
+    private lateinit var paginatedFragmentConstraintLayout:ConstraintLayout
+    private lateinit var paginatedFragmentErrorEmptyTitle:AppCompatTextView
+    private lateinit var paginatedFragmentErrorEmptySubtitle:AppCompatTextView
+    private lateinit var paginatedFragmentViewErrorEmptyRetryButton:MaterialButton
+
     /* End of view variables  */
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -87,179 +90,103 @@ abstract class PaginatedFragment:Fragment(){
             }
         }
     }
+    inner class PaginatedFragmentView constructor(context: Context)
+        :ParentFragmentsView(context){
+        lateinit var paginatedFragmentAppBarLayout:AppBarLayout
+        lateinit var paginatedFragmentToolbar:Toolbar
+        lateinit var paginatedFragmentConstraintLayout:ConstraintLayout
+        lateinit var paginatedFragmentSwipeRefreshLayout: SwipeRefreshLayout
+        lateinit var paginatedFragmentRecyclerView: RecyclerView
+        private val colorSchemes=resourcesInstance().getIntArray(R.array.swipe_refresh_colors)
+        init {
+            paginatedFragmentAppBarLayout(context)
+            paginatedFragmentConstraintLayout(context)
+        }
+        private fun paginatedFragmentAppBarLayout(context: Context){
+            paginatedFragmentAppBarLayout = AppBarLayout(context).apply {
+                id=ViewCompat.generateViewId()
+                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+                (layoutParams as LayoutParams).setMargins(0.dp)
+                setBackgroundColor(resources.getColor(R.color.transparent,null))
+                fitsSystemWindows=true
+            }
+            addView(paginatedFragmentAppBarLayout)
+            paginatedFragmentToolbar = paginatedFragmentMaterialToolbar(paginatedFragmentAppBarLayout.context)
+            paginatedFragmentAppBarLayout.addView(paginatedFragmentToolbar)
+
+        }
+        private fun paginatedFragmentMaterialToolbar(context: Context):Toolbar{
+            val materialToolbar = Toolbar(context).apply{
+                id=ViewCompat.generateViewId()
+                layoutParams = AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    65.dp)
+                setBackgroundColor(resources.getColor(R.color.transparent,null))
+                elevation=0f
+                (layoutParams as AppBarLayout.LayoutParams).scrollFlags= AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL + AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
+            }
+            return materialToolbar
+        }
+        private fun paginatedFragmentConstraintLayout(context: Context){
+            paginatedFragmentConstraintLayout=ConstraintLayout(context).apply {
+                id=ViewCompat.generateViewId()
+                fitsSystemWindows=true
+                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+                (layoutParams as LayoutParams).behavior = AppBarLayout.ScrollingViewBehavior()
+                (layoutParams as LayoutParams).setMargins(0.dp,10.dp,0.dp,10.dp)
+            }
+            addView(paginatedFragmentConstraintLayout)
+            val constraintSet = ConstraintSet()
+            paginatedFragmentSwipeRefreshLayout=paginatedFragmentSwipeRefreshLayout(paginatedFragmentConstraintLayout.context,constraintSet)
+            paginatedFragmentConstraintLayout.addView(paginatedFragmentSwipeRefreshLayout)
+            constraintSet.applyTo(paginatedFragmentConstraintLayout)
+        }
+        private fun paginatedFragmentSwipeRefreshLayout(context: Context,constraintSet: ConstraintSet):SwipeRefreshLayout{
+            val swipeRefreshLayout = SwipeRefreshLayout(context).apply {
+                id = ViewCompat.generateViewId()
+                setColorSchemeColors(*colorSchemes)
+            }
+            val swipeRefreshLayoutId= swipeRefreshLayout.id
+            constraintSet.setViewLayoutParams(swipeRefreshLayoutId, ConstraintSet.MATCH_CONSTRAINT,ConstraintSet.MATCH_CONSTRAINT)
+            constraintSet constrainTopToParent swipeRefreshLayoutId
+            constraintSet constrainEndToParent swipeRefreshLayoutId
+            constraintSet constrainStartToParent swipeRefreshLayoutId
+            constraintSet constrainBottomToParent  swipeRefreshLayoutId
+            paginatedFragmentRecyclerView = paginatedFragmentRecyclerView(swipeRefreshLayout.context)
+            swipeRefreshLayout.addView(paginatedFragmentRecyclerView)
+            return swipeRefreshLayout
+        }
+        private fun paginatedFragmentRecyclerView(context: Context):RecyclerView{
+            /* Recycler View that holds the paginated data initially is it invisible/gone */
+            return RecyclerView(context).apply {
+                id = ViewCompat.generateViewId()
+                layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT)
+                val animation= AnimationUtils.loadLayoutAnimation(this.context, R.anim.layout_animation_scale_in)
+                animate(animation)
+                visibility = View.GONE
+            }
+        }
+
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _baseFragmentBinding = BaseFragmentBinding.inflate(inflater,container,false)
-        val colorSchemes=resourcesInstance().getIntArray(R.array.swipe_refresh_colors)
-        val parentContainer = fragmentBinding.root
 
-
-
-        /* Add  constraint layout  container*/
-
-        mainFragmentConstraintLayoutContainer = ConstraintLayout(parentContainer.context).apply {
-            id = ViewCompat.generateViewId()
-            layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
-
-            (layoutParams as CoordinatorLayout.LayoutParams).behavior = AppBarLayout.ScrollingViewBehavior()
-        //    (layoutParams as CoordinatorLayout.LayoutParams).setMargins(marginLeft,marginTop+10.dp,marginRight,marginBottom)
-        }
-        parentContainer.addView(mainFragmentConstraintLayoutContainer)
-
-        /* Add swipe refresh layout */
-        mainFragmentSwipeRefreshLayout = SwipeRefreshLayout(mainFragmentConstraintLayoutContainer.context).apply {
-            id = ViewCompat.generateViewId()
-            setColorSchemeColors(*colorSchemes)
-        }
-        mainFragmentConstraintLayoutContainer.addView(mainFragmentSwipeRefreshLayout)
-        val set= ConstraintSet()
-        set.clone(mainFragmentConstraintLayoutContainer)
-        /* set constraints for swipe refresh layout*/
-        set.constrainWidth(mainFragmentSwipeRefreshLayout.id,resources.getDimension(R.dimen.match_constraint_value).toInt())
-        set.constrainHeight(mainFragmentSwipeRefreshLayout.id,resources.getDimension(R.dimen.match_constraint_value).toInt()) // spread as far as possible
-        set.connect(mainFragmentSwipeRefreshLayout.id,
-            ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        set.connect(mainFragmentSwipeRefreshLayout.id,
-            ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        set.connect(mainFragmentSwipeRefreshLayout.id,
-            ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-        set.connect(mainFragmentSwipeRefreshLayout.id,
-            ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
-        set.applyTo(mainFragmentConstraintLayoutContainer)
-
-
-        /* add frame layout to swipe refresh layout*/
-        mainFragmentFrameLayoutContainer = FrameLayout(mainFragmentSwipeRefreshLayout.context).apply {
-            id= ViewCompat.generateViewId()
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
-            /* animate layout changes using the default LayoutTransition() */
-            layoutTransition= LayoutTransition()
-        }
-        mainFragmentSwipeRefreshLayout.addView(mainFragmentFrameLayoutContainer)
-
-        /* Stack things up on the frame layout container-> recycler view;error-layout;empty-layout;loading-layout */
-
-        /* Loading layout initially the view is visible */
-        loadingLayout = LoadingLayout(mainFragmentFrameLayoutContainer.context).apply {
-            id= ViewCompat.generateViewId()
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
-        }
-        mainFragmentFrameLayoutContainer.addView(loadingLayout)
-
-        /* Recycler View that holds the paginated data initially is it invisible/gone */
-        mainFragmentRecyclerView = RecyclerView(mainFragmentFrameLayoutContainer.context).apply {
-            id = ViewCompat.generateViewId()
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
-            val animation= AnimationUtils.loadLayoutAnimation(this.context, R.anim.layout_animation_scale_in)
-            animate(animation)
-            visibility = View.GONE
-        }
-        mainFragmentFrameLayoutContainer.addView(mainFragmentRecyclerView)
-
-
-        /* The Error Empty Layout (for lack of a better word) basically the layout that will be shown in-case data is empty
-        * or there is an error while loading the data from network  */
-
-        mainFragmentErrorEmptyLayoutContainer = ConstraintLayout(mainFragmentFrameLayoutContainer.context).apply {
-            id= ViewCompat.generateViewId()
-            layoutParams= FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT)
-            (layoutParams as FrameLayout.LayoutParams).gravity = Gravity.CENTER
-            background = resourcesInstance().getDrawable(R.color.matte,null)
-            visibility = View.GONE
-        }
-
-        mainFragmentFrameLayoutContainer.addView(mainFragmentErrorEmptyLayoutContainer)
-
-        /* Add things to the Error_EmptyLayout Container -> image to be shown to indicate error
-        * title and subtitle to show the user */
-
-        mainFragmentErrorEmptyLayoutImageView = AppCompatImageView(mainFragmentErrorEmptyLayoutContainer.context).apply{
-            id= ViewCompat.generateViewId()
-            scaleType = ImageView.ScaleType.CENTER_CROP
-            setImageResource( R.drawable.no_internet_connection_image)
-            contentDescription= getString(R.string.error_image)
-        }
-
-        mainFragmentErrorEmptyLayoutContainer.addView(mainFragmentErrorEmptyLayoutImageView)
-
-
-        mainFragmentErrorEmptyTitle = AppCompatTextView(mainFragmentErrorEmptyLayoutContainer.context).apply {
-            id = ViewCompat.generateViewId()
-            gravity= Gravity.CENTER
-            textSize = 16f
-            setTextColor(Color.WHITE)
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-            typeface = Typeface.SANS_SERIF
-
-        }
-        mainFragmentErrorEmptyLayoutContainer.addView(mainFragmentErrorEmptyTitle)
-
-        mainFragmentErrorEmptySubtitle = AppCompatTextView(mainFragmentErrorEmptyLayoutContainer.context).apply {
-            id = ViewCompat.generateViewId()
-            gravity= Gravity.CENTER
-            textSize = 14f
-            setTextColor(Color.WHITE)
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-            text="Try searching for something"
-        }
-
-        mainFragmentErrorEmptyLayoutContainer.addView(mainFragmentErrorEmptySubtitle)
-
-
-
-        /* Apply constraints to emptyErrorLayoutContainer together with it's children */
-
-        val errorEmptyLayoutConstraintSet = ConstraintSet()
-        errorEmptyLayoutConstraintSet.clone(mainFragmentErrorEmptyLayoutContainer)
-
-        /*Set the width and height of the error_empty layout container's children views  */
-        errorEmptyLayoutConstraintSet.constrainWidth(mainFragmentErrorEmptyTitle.id, resourcesInstance().getDimension(R.dimen.match_constraint_value).toInt())
-        errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentErrorEmptyTitle.id, ConstraintSet.WRAP_CONTENT)
-
-        errorEmptyLayoutConstraintSet.constrainWidth(mainFragmentErrorEmptySubtitle.id, resourcesInstance().getDimension(R.dimen.match_constraint_value).toInt())
-        errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentErrorEmptySubtitle.id, ConstraintSet.WRAP_CONTENT)
-
-
-        errorEmptyLayoutConstraintSet.constrainHeight(mainFragmentErrorEmptyLayoutImageView.id,resourcesInstance().getDimension(R.dimen.comic_item_width).toInt())
-        errorEmptyLayoutConstraintSet.constrainWidth(mainFragmentErrorEmptyLayoutImageView.id,resourcesInstance().getDimension(R.dimen.comic_item_width).toInt())
-
-
-        /* Set the constraints for error_empty layout container's children views */
-
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptyLayoutImageView.id,
-            ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptyLayoutImageView.id,
-            ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptyLayoutImageView.id,
-            ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptyLayoutImageView.id,
-            ConstraintSet.BOTTOM, mainFragmentErrorEmptyTitle.id, ConstraintSet.TOP)
-
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptySubtitle.id,
-            ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptySubtitle.id,
-            ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptySubtitle.id,
-            ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptySubtitle.id,
-            ConstraintSet.TOP,mainFragmentErrorEmptyTitle.id, ConstraintSet.BOTTOM)
-
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptyTitle.id,
-            ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptyTitle.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptyTitle.id, ConstraintSet.TOP,mainFragmentErrorEmptyLayoutImageView.id, ConstraintSet.BOTTOM)
-        errorEmptyLayoutConstraintSet.connect(mainFragmentErrorEmptyTitle.id, ConstraintSet.BOTTOM,mainFragmentErrorEmptySubtitle.id, ConstraintSet.TOP)
-
-
-        /* Apply the constraints to EmptyError Layout container */
-        errorEmptyLayoutConstraintSet.applyTo(mainFragmentErrorEmptyLayoutContainer)
-        return parentContainer
+        val fragmentView = PaginatedFragmentView(requireContext())
+        paginatedFragmentConstraintLayout=fragmentView.paginatedFragmentConstraintLayout
+        paginatedFragmentAppBarLayout=fragmentView.paginatedFragmentAppBarLayout
+        paginatedFragmentRecyclerView=fragmentView.paginatedFragmentRecyclerView
+        paginatedFragmentToolbar=fragmentView.paginatedFragmentToolbar
+        paginatedFragmentLoadingLayout=fragmentView.loadingStateLayout
+        paginatedFragmentErrorEmptyLayout=fragmentView.errorEmptyStateLayout
+        paginatedFragmentSwipeRefreshLayout = fragmentView.paginatedFragmentSwipeRefreshLayout
+        paginatedFragmentErrorEmptyTitle = fragmentView.errorTitle
+        paginatedFragmentErrorEmptySubtitle = fragmentView.subtitleError
+        paginatedFragmentViewErrorEmptyRetryButton= fragmentView.retryButton
+        return fragmentView
 
     }
 
@@ -269,6 +196,7 @@ abstract class PaginatedFragment:Fragment(){
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
         animateAppBarColorsOnScroll()
+        setUpToolbarTitle()
 
     }
     override fun onHiddenChanged(hidden: Boolean) {
@@ -284,52 +212,44 @@ abstract class PaginatedFragment:Fragment(){
         }
         changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
     }
+
     private fun applyBarElevationAndBackgroundColor(color:Int,
     barElevation:Float){
-        fragmentBinding.appbar.apply {
+        paginatedFragmentAppBarLayout.apply {
             setBackgroundColor(color)
             elevation=barElevation
         }
-        fragmentToolbar.apply {
+        paginatedFragmentToolbar.apply {
             setBackgroundColor(color)
             elevation=barElevation
         }
     }
-//    private fun changeStatusBarColorOnHiddenChanged(hidden:Boolean){
-//        if(!hidden){
-//            changeStatusBarToTransparentInFragment(getFragmentColor())
-//            fragmentBinding.toolbar.setBackgroundColor(getFragmentColor())
-//        }else{
-//            changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
-//        }
-//    }
     private fun observeStateFromViewModel(){
         loadingJob?.cancel()
         loadingJob=launchAndRepeatWithViewLifecycle {
             launch {  /* Observe paged data */ observePagedData() }
-            launch { asynchronouslyInitializeFragmentViews() }
         }
     }
 
     /*Start:Show Correct State based on the data events observed above */
     private fun onDataLoadedSuccessfullyShowData(){
-        mainFragmentRecyclerView.isVisible = true
-        fragmentBinding.toolbar.isVisible=true
-        mainFragmentErrorEmptyLayoutContainer.isVisible = false
-        loadingLayout.hide()
+        paginatedFragmentAppBarLayout.isVisible=true
+        paginatedFragmentRecyclerView.visibility=View.VISIBLE
+        paginatedFragmentErrorEmptyLayout.isVisible = false
+        paginatedFragmentLoadingLayout.hide()
     }
 
     private fun onErrorOrEmptyDataShowErrorOrEmptyState(){
-        mainFragmentRecyclerView.isVisible=false
-        fragmentBinding.toolbar.isVisible=false
-        mainFragmentErrorEmptyLayoutContainer.isVisible=true
-        loadingLayout.hide()
+        paginatedFragmentRecyclerView.isVisible=false
+        paginatedFragmentAppBarLayout.isVisible=false
+        paginatedFragmentErrorEmptyLayout.isVisible=true
+        paginatedFragmentLoadingLayout.hide()
     }
     private fun onLoadingShowLoadingState(){
-        mainFragmentRecyclerView.isVisible=false
-        fragmentBinding.toolbar.isVisible=false
-        mainFragmentErrorEmptyLayoutContainer.isVisible=false
-        loadingLayout.show()
+        paginatedFragmentRecyclerView.isVisible=false
+        paginatedFragmentAppBarLayout.isVisible=false
+        paginatedFragmentErrorEmptyLayout.isVisible=false
+        paginatedFragmentLoadingLayout.show()
     }
 
     /*End: Observe Ui States And Show Correct State */
@@ -348,20 +268,28 @@ abstract class PaginatedFragment:Fragment(){
                 is LoadState.Error->{
                     val throwable_ = (it.refresh as LoadState.Error).error
                     val errorMessage=throwable_.parseThrowableErrorMessageIntoUsefulMessage()
-                    mainFragmentFrameLayoutContainer.showSnackBar(errorMessage)
+
+                    paginatedFragmentSwipeRefreshLayout.showSnackBar(errorMessage)
                     setEmptyErrorStateTitleAndSubtitle(getString(R.string.error_state_title),
                         errorMessage)
                     onErrorOrEmptyDataShowErrorOrEmptyState()
                 }
             }
-            setUpSwipeRefreshWidgetState(mainFragmentSwipeRefreshLayout.isRefreshing && (it.refresh is LoadState.Loading))
+            setUpSwipeRefreshWidgetState(paginatedFragmentSwipeRefreshLayout.isRefreshing && (it.refresh is LoadState.Loading))
         }
 
     }
     /* Start: Setting up Ui Components */
     private fun setEmptyErrorStateTitleAndSubtitle(title:String, subtitle:String){
-        mainFragmentErrorEmptyTitle.text = title
-        mainFragmentErrorEmptySubtitle.text = subtitle
+        paginatedFragmentErrorEmptyTitle.text=title
+        paginatedFragmentErrorEmptySubtitle.text = subtitle
+    }
+    private fun setUpToolbarTitle(){
+        paginatedFragmentToolbar.title= getTitle()
+        paginatedFragmentToolbar.setTitleTextColor(Color.WHITE)
+        paginatedFragmentToolbar.textAlignment=
+            CoordinatorLayout.TEXT_ALIGNMENT_CENTER
+        paginatedFragmentToolbar.setTitleTextAppearance(requireContext(),R.style.TextAppearance_Asobi_Headline4)
     }
 
     private fun setUpRecyclerViewAdapter():PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> = composedPagedAdapter(createViewHolder = { viewGroup: ViewGroup, _: Int ->
@@ -373,32 +301,23 @@ abstract class PaginatedFragment:Fragment(){
     })
 
     private fun setUpSwipeRefreshWidgetState(isRefreshing:Boolean){
-        mainFragmentSwipeRefreshLayout.isRefreshing = isRefreshing
+        paginatedFragmentSwipeRefreshLayout.isRefreshing = isRefreshing
     }
     private fun setUpSwipeRefreshWidget(){
-        with(mainFragmentSwipeRefreshLayout){
+        with(paginatedFragmentSwipeRefreshLayout){
             doOnNextLayout {
                 // similar to Modifier.maxWidth() in compose
-                setContentToMaxWidth(mainFragmentSwipeRefreshLayout)
+                setContentToMaxWidth(paginatedFragmentSwipeRefreshLayout)
             }
             setOnRefreshListener { pagingDataAdapter?.refresh() }
-
-            val ct=WindowInsetsCompat.Type.displayCutout()
-
-            val height = if (ct!=0){
-                ct +height
-            }else 0
-            setSlingshotDistance(height)
-            setProgressViewEndTarget(false, height)
         }
     }
     private fun setUpMainFragmentRecyclerView(){
         val screenWidth= resourcesInstance().displayMetrics.run {
             widthPixels/density }
-        with(mainFragmentRecyclerView){
+        with(paginatedFragmentRecyclerView){
             doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
-                val systemInsets = windowInsetsCompat.getInsets(
-                    WindowInsetsCompat.Type.systemBars())
+                val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars())
                 view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom)
             }
             setHasFixedSize(true)
@@ -410,7 +329,7 @@ abstract class PaginatedFragment:Fragment(){
         }
     }
     private fun animateAppBarColorsOnScroll(){
-        mainFragmentRecyclerView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
+        paginatedFragmentRecyclerView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (recyclerView.canScrollVertically(-1).not()){
@@ -438,7 +357,6 @@ abstract class PaginatedFragment:Fragment(){
     /* End: Setting up Ui Components */
     override fun onDestroy() {
         super.onDestroy()
-        _baseFragmentBinding = null
         pagingDataAdapter =null
     }
 

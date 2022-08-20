@@ -16,12 +16,7 @@ class PopularComicsFragment: PaginatedFragment() {
 
     override fun getFragmentColor(): Int =  Color.parseColor("#FFA402")
 
-    override suspend fun asynchronouslyInitializeFragmentViews() {
-        fragmentToolbar.title=getString(R.string.popular_comics)
-        fragmentToolbar.setTitleTextColor(Color.WHITE)
-        fragmentToolbar.isTitleCentered=true
-        fragmentToolbar.setTitleTextAppearance(requireContext(),R.style.TextAppearance_Asobi_Headline4)
-    }
+    override fun getTitle(): String=getString(R.string.popular_comics)
 
     override suspend fun observePagedData() {
        popularComicsViewModel.pagedList.collectLatest {

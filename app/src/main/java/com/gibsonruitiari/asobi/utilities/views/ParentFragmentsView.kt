@@ -4,11 +4,13 @@ import android.content.Context
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
+import com.google.android.material.button.MaterialButton
 
 /**This will act as the parent/base view-group for most of the fragments that need to show states:loading,error,data
  *  used across the application
@@ -17,6 +19,9 @@ import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
  */
 open class ParentFragmentsView  (context: Context):CoordinatorLayout(context){
    val loadingStateLayout:LoadingLayout
+    val errorTitle: AppCompatTextView
+    val subtitleError: AppCompatTextView
+    val retryButton: MaterialButton
    val errorEmptyStateLayout:ConstraintLayout
     init {
         id = ViewCompat.generateViewId()
@@ -25,9 +30,13 @@ open class ParentFragmentsView  (context: Context):CoordinatorLayout(context){
         layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.MATCH_PARENT)
         loadingStateLayout = loadingLayout(context)
-        errorEmptyStateLayout = ErrorStateLayout(context).apply { visibility=View.GONE }
+        errorEmptyStateLayout = ErrorStateLayout(context).apply {
+            visibility=View.GONE }
         this.addView(loadingStateLayout)
         this.addView(errorEmptyStateLayout)
+        errorTitle=errorEmptyStateLayout.errorTitle
+        subtitleError=errorEmptyStateLayout.subtitleError
+        retryButton=errorEmptyStateLayout.retryButton
     }
     private fun loadingLayout(context: Context):LoadingLayout =
         LoadingLayout(context).apply {

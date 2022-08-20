@@ -124,6 +124,18 @@ class HomeScreen:Fragment() {
         loadData(isHidden)
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (discoverFragment==null && latestComicsFragment==null&&ongoingComicsFragment==null&&popularComicsFragment==null
+            &&completedComicsFragment==null){
+            discoverFragment=DiscoverFragment()
+            latestComicsFragment=LatestComicsFragment()
+            ongoingComicsFragment=OngoingComicsFragment()
+            popularComicsFragment= PopularComicsFragment()
+            comicsByGenreScreen= ComicsByGenreScreen()
+            completedComicsFragment= CompletedComicsFragment()
+        }
+    }
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         loadData(hidden)
