@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -38,20 +37,16 @@ import com.google.android.material.appbar.AppBarLayout
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 @Suppress("UNCHECKED_CAST")
 abstract class PaginatedFragment:Fragment(){
     private var _baseFragmentBinding: BaseFragmentBinding?=null
-    private val fragmentBinding get() = _baseFragmentBinding!!
+     val fragmentBinding get() = _baseFragmentBinding!!
     private var isFragmentHidden:Boolean=true
     private var loadingJob:Job?=null
-    private val logger: Logger by inject()
-    private val mainActivityViewModel:MainActivityViewModel by sharedViewModel()
-
-    var pagingListAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
-    // abstract val toolbarTitle:String
-    val backgroundImg get() = fragmentBinding.backgroundImg
+    private val logger:Logger by inject()
+    private var pagingDataAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> ?=null
+    val listAdapter:PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> get() = pagingDataAdapter!!
     val fragmentToolbar get() =  fragmentBinding.toolbar
     abstract suspend fun asynchronouslyInitializeFragmentViews()
     abstract fun getFragmentColor():Int
@@ -61,7 +56,7 @@ abstract class PaginatedFragment:Fragment(){
 
     /* Start of view variables  */
     private lateinit var mainFragmentSwipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var mainFragmentRecyclerView:RecyclerView
+     lateinit var mainFragmentRecyclerView:RecyclerView
     private lateinit var mainFragmentConstraintLayoutContainer:ConstraintLayout
     private lateinit var mainFragmentFrameLayoutContainer:FrameLayout
     private lateinit var loadingLayout: LoadingLayout
@@ -87,6 +82,8 @@ abstract class PaginatedFragment:Fragment(){
             this.item = comic
             with(binding){
                 comicsImageView.loadPhotoUrl(comic.comicThumbnail)
+                title.text=item.comicName
+                title.visibility=View.VISIBLE
             }
         }
     }
@@ -106,6 +103,7 @@ abstract class PaginatedFragment:Fragment(){
         mainFragmentConstraintLayoutContainer = ConstraintLayout(parentContainer.context).apply {
             id = ViewCompat.generateViewId()
             layoutParams = CoordinatorLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+
             (layoutParams as CoordinatorLayout.LayoutParams).behavior = AppBarLayout.ScrollingViewBehavior()
         //    (layoutParams as CoordinatorLayout.LayoutParams).setMargins(marginLeft,marginTop+10.dp,marginRight,marginBottom)
         }
@@ -114,7 +112,6 @@ abstract class PaginatedFragment:Fragment(){
         /* Add swipe refresh layout */
         mainFragmentSwipeRefreshLayout = SwipeRefreshLayout(mainFragmentConstraintLayoutContainer.context).apply {
             id = ViewCompat.generateViewId()
-
             setColorSchemeColors(*colorSchemes)
         }
         mainFragmentConstraintLayoutContainer.addView(mainFragmentSwipeRefreshLayout)
@@ -267,11 +264,11 @@ abstract class PaginatedFragment:Fragment(){
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        pagingListAdapter = setUpRecyclerViewAdapter()
+        pagingDataAdapter = setUpRecyclerViewAdapter()
         setUpMainFragmentRecyclerView()
         listenToUiEventsAndUpdateUiAccordingly()
         setUpSwipeRefreshWidget()
-      //  fragmentBinding.toolbar.title=toolbarTitle
+        animateAppBarColorsOnScroll()
 
     }
     override fun onHiddenChanged(hidden: Boolean) {
@@ -285,15 +282,27 @@ abstract class PaginatedFragment:Fragment(){
                 loadingJob.cancelIfActive()
             }
         }
-        changeStatusBarColorOnHiddenChanged(isFragmentHidden)
+        changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
     }
-    private fun changeStatusBarColorOnHiddenChanged(hidden:Boolean){
-        if(!hidden){
-            changeStatusBarToTransparentInFragment(getFragmentColor())
-        }else{
-            changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
+    private fun applyBarElevationAndBackgroundColor(color:Int,
+    barElevation:Float){
+        fragmentBinding.appbar.apply {
+            setBackgroundColor(color)
+            elevation=barElevation
+        }
+        fragmentToolbar.apply {
+            setBackgroundColor(color)
+            elevation=barElevation
         }
     }
+//    private fun changeStatusBarColorOnHiddenChanged(hidden:Boolean){
+//        if(!hidden){
+//            changeStatusBarToTransparentInFragment(getFragmentColor())
+//            fragmentBinding.toolbar.setBackgroundColor(getFragmentColor())
+//        }else{
+//            changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
+//        }
+//    }
     private fun observeStateFromViewModel(){
         loadingJob?.cancel()
         loadingJob=launchAndRepeatWithViewLifecycle {
@@ -305,30 +314,30 @@ abstract class PaginatedFragment:Fragment(){
     /*Start:Show Correct State based on the data events observed above */
     private fun onDataLoadedSuccessfullyShowData(){
         mainFragmentRecyclerView.isVisible = true
-        fragmentBinding.baseFragAppbar.isVisible=true
+        fragmentBinding.toolbar.isVisible=true
         mainFragmentErrorEmptyLayoutContainer.isVisible = false
         loadingLayout.hide()
     }
 
     private fun onErrorOrEmptyDataShowErrorOrEmptyState(){
         mainFragmentRecyclerView.isVisible=false
-        fragmentBinding.baseFragAppbar.isVisible=false
+        fragmentBinding.toolbar.isVisible=false
         mainFragmentErrorEmptyLayoutContainer.isVisible=true
         loadingLayout.hide()
     }
     private fun onLoadingShowLoadingState(){
         mainFragmentRecyclerView.isVisible=false
-        fragmentBinding.baseFragAppbar.isVisible=false
+        fragmentBinding.toolbar.isVisible=false
         mainFragmentErrorEmptyLayoutContainer.isVisible=false
         loadingLayout.show()
     }
 
     /*End: Observe Ui States And Show Correct State */
     private fun listenToUiEventsAndUpdateUiAccordingly(){
-        pagingListAdapter?.addLoadStateListener {
+        pagingDataAdapter?.addLoadStateListener {
             when(it.refresh){
                 is LoadState.NotLoading->{
-                    if (pagingListAdapter?.itemCount ==0){
+                    if (pagingDataAdapter?.itemCount ==0){
                         setEmptyErrorStateTitleAndSubtitle(getString(R.string.error_state_title), getString(R.string.empty_title))
                         onErrorOrEmptyDataShowErrorOrEmptyState()
                     }else{
@@ -349,7 +358,6 @@ abstract class PaginatedFragment:Fragment(){
         }
 
     }
-
     /* Start: Setting up Ui Components */
     private fun setEmptyErrorStateTitleAndSubtitle(title:String, subtitle:String){
         mainFragmentErrorEmptyTitle.text = title
@@ -373,7 +381,7 @@ abstract class PaginatedFragment:Fragment(){
                 // similar to Modifier.maxWidth() in compose
                 setContentToMaxWidth(mainFragmentSwipeRefreshLayout)
             }
-            setOnRefreshListener { pagingListAdapter?.refresh() }
+            setOnRefreshListener { pagingDataAdapter?.refresh() }
 
             val ct=WindowInsetsCompat.Type.displayCutout()
 
@@ -395,17 +403,43 @@ abstract class PaginatedFragment:Fragment(){
             }
             setHasFixedSize(true)
             scrollToTop()
-            adapter = pagingListAdapter
+            adapter = pagingDataAdapter
             /*By default the medium density is 160f so we minus 4 just increase to accommodate smaller screens and come up with a proper
             * no of span count for our grid layout */
             layoutManager = gridLayoutManager(spanCount = (screenWidth/156f).toInt())
         }
     }
+    private fun animateAppBarColorsOnScroll(){
+        mainFragmentRecyclerView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (recyclerView.canScrollVertically(-1).not()){
+                    changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
+                    applyBarElevationAndBackgroundColor(resources.getColor(R.color.matte,null),0f)
+                }
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy>0){
+                    // scrolling down
+                    doActionIfWeAreOnDebug { logger.i("dy>0 scrolling down $dy") }
+                    changeStatusBarToTransparentInFragment(getFragmentColor())
+                    applyBarElevationAndBackgroundColor(getFragmentColor(), 4f)
+                }else if (dy<-1) {
+                    // scrolling up
+                    doActionIfWeAreOnDebug {  logger.i("dy<-1 scrolling up $dy") }
+                    changeStatusBarToTransparentInFragment(getFragmentColor())
+                    applyBarElevationAndBackgroundColor(getFragmentColor(),4f)
+                }
+            }
+        })
+    }
     /* End: Setting up Ui Components */
     override fun onDestroy() {
         super.onDestroy()
         _baseFragmentBinding = null
-        pagingListAdapter =null
+        pagingDataAdapter =null
     }
 
     companion object{

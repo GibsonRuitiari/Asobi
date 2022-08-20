@@ -3,6 +3,7 @@ package com.gibsonruitiari.asobi.utilities.extensions
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.view.animation.Interpolator
 import android.view.animation.LayoutAnimationController
@@ -13,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
 import com.gibsonruitiari.asobi.R
@@ -29,7 +31,12 @@ fun View.showSnackBar(
         .setAnchorView(anchor)
         .show()
 }
-
+/**
+ * Returns this ViewGroup's first child of specified class
+ */
+inline fun <reified T> ViewGroup.findChild(): T? {
+    return children.find { it is T } as? T
+}
 fun View.fade(target:Float,transitionDuration:Long=250,transitionDelay: Long=0, animationInterpolator: Interpolator = LinearInterpolator()): Animator {
     return  ObjectAnimator.ofFloat(this,"alpha",target).apply {
         duration = transitionDuration

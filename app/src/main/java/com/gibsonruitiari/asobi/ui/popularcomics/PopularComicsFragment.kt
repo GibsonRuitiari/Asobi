@@ -1,7 +1,6 @@
 package com.gibsonruitiari.asobi.ui.popularcomics
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.widget.Toast
 import com.gibsonruitiari.asobi.R
 import com.gibsonruitiari.asobi.ui.PaginatedFragment
@@ -19,12 +18,14 @@ class PopularComicsFragment: PaginatedFragment() {
 
     override suspend fun asynchronouslyInitializeFragmentViews() {
         fragmentToolbar.title=getString(R.string.popular_comics)
-        backgroundImg.background=resources.getDrawable(R.drawable.popular_comics_screen_gradient,null)
+        fragmentToolbar.setTitleTextColor(Color.WHITE)
+        fragmentToolbar.isTitleCentered=true
+        fragmentToolbar.setTitleTextAppearance(requireContext(),R.style.TextAppearance_Asobi_Headline4)
     }
 
     override suspend fun observePagedData() {
        popularComicsViewModel.pagedList.collectLatest {
-           pagingListAdapter?.submitData(it)
+           listAdapter.submitData(it)
        }
     }
 

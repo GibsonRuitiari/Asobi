@@ -2,6 +2,7 @@ package com.gibsonruitiari.asobi.utilities.extensions
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.res.Resources
 import android.graphics.Path
 import android.os.Parcel
@@ -51,6 +52,10 @@ fun Job?.cancelIfActive(){
    this?.let {
        if (it.isActive) it.cancel()
    }
+}
+
+fun Context.isTablet(): Boolean {
+    return resources.configuration.smallestScreenWidthDp >= 720
 }
 /*  Utility methods for our ConstraintLayout container */
  fun ConstraintSet.setViewLayoutParams(viewId:Int, width:Int, height:Int){

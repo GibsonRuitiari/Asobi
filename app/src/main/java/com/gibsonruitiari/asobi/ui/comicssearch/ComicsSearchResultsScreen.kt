@@ -45,6 +45,8 @@ import org.koin.android.ext.android.inject
 
 @VisibleForTesting
 class ComicsSearchResultsScreen: Fragment() {
+    //todo: store search query in state onSavedInstance i.e
+
     /* Start: initialization of view variables */
     private lateinit var searchResultsScreenToolbar:Toolbar
     private lateinit var searchResultsScreenSearchTitle:AppCompatTextView
@@ -329,8 +331,6 @@ class ComicsSearchResultsScreen: Fragment() {
         private val colorStates = intArrayOf(Color.GRAY,Color.WHITE) // pressed, -pressed
         val states = arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf(-android.R.attr.state_pressed))
         val defaultColorStateList = ColorStateList(states, colorStates)
-        val shapeDrawable = ShapeDrawable(RectShape()).apply {
-            this.setPadding(0,0,0,0)}
-
+        val shapeDrawable = ShapeDrawable(RectShape()).apply { setPadding(0,0,0,0)}
     }
 }

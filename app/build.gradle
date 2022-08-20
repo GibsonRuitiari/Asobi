@@ -53,6 +53,9 @@ dependencies {
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
 
 
+    implementation "io.github.reactivecircus.flowbinding:flowbinding-android:1.2.0"
+    implementation "io.github.reactivecircus.flowbinding:flowbinding-appcompat:1.2.0"
+
     // window metrics
     implementation 'androidx.window:window:1.0.0'
 
@@ -67,7 +70,7 @@ dependencies {
     implementation  'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.0'
 
-
+    implementation 'dev.chrisbanes.insetter:insetter:0.6.1'
     // for repository
     implementation 'org.jsoup:jsoup:1.15.1'
     implementation 'com.squareup.okhttp3:okhttp-dnsoverhttps:4.9.3'

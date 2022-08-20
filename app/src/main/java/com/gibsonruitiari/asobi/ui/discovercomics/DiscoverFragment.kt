@@ -48,6 +48,7 @@ class DiscoverFragment:Fragment() {
     private lateinit var _discoverFragmentBinding:DiscoverComicsFragmentBinding
     private val discoverFragmentBinding:DiscoverComicsFragmentBinding
     get() = _discoverFragmentBinding
+    private var color:Int?=null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -189,15 +190,11 @@ class DiscoverFragment:Fragment() {
                 mainActivityViewModel.openCompletedComicsScreen()
             }
             marvelMoreText.setOnClickListener {
-                // update genre
-
                 comicFilterViewModel.setGenre(Genres.MARVEL)
-                // comicsByGenreViewModel.loadData()
                 mainActivityViewModel.openComicsByGenreScreen()
             }
             dcMoreText.setOnClickListener {
                 comicFilterViewModel.setGenre(Genres.DC_COMICS)
-               // comicsByGenreViewModel.loadData()
                 mainActivityViewModel.openComicsByGenreScreen()
             }
 
@@ -237,6 +234,7 @@ class DiscoverFragment:Fragment() {
         if (hidden){
             dataLoadingJob?.cancelIfActive()
         }else{
+            discoverFragmentBinding.discoverFragmentContainer.scrollY=0
             observeStateFromViewModel()
         }
     }
@@ -299,11 +297,17 @@ class DiscoverFragment:Fragment() {
         }
     }
     private fun dynamicallyChangeStatusBarColorOnScroll(){
+        // line changed
+        color?.let { changeStatusBarToTransparentInFragment(it) }
         discoverFragmentBinding.discoverFragmentContainer.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
+            if (scrollY==0){
+                doActionIfWeAreOnDebug { logger.i("scroll y=0 in scroll view") }
+            }
             if (scrollY>0){
                 changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
             }else{
-                changeStatusBarToTransparentInFragment(resources.getColor(R.color.black,null))
+                val _color = color ?: resources.getColor(R.color.black,null)
+                changeStatusBarToTransparentInFragment(_color)
             }
         })
     }
@@ -319,7 +323,7 @@ class DiscoverFragment:Fragment() {
                         .ime()
                 )
                 // pad the coordinator layout to ensure it stays above the nav bar
-                view.updatePadding(bottom = viewPaddingState.bottom + systemInsets.bottom + 25.dp)
+                view.updatePadding(bottom = viewPaddingState.bottom + systemInsets.bottom + 10.dp)
             }
         }
     }
@@ -360,14 +364,17 @@ class DiscoverFragment:Fragment() {
         val hour by lazy { org.threeten.bp.LocalTime.now().hour }
         return when{
             hour<12 -> {
+                color= resources.getColor(R.color.carolina_blue,null)
                 discoverFragmentBinding.toolbar.background= resources.getDrawable(R.drawable.discover_screen_gradient_morning,null)
                 getString(R.string.good_morning)
             }
             hour <17 ->{
+                color = resources.getColor(R.color.sun_yellow,null)
                 discoverFragmentBinding.toolbar.background= resources.getDrawable(R.drawable.discover_screen_gradient_afternoon,null)
                 getString(R.string.good_afternoon)
             }
             else->{
+                color = resources.getColor(R.color.bright_orange,null)
                 discoverFragmentBinding.toolbar.background= resources.getDrawable(R.drawable.discover_screen_gradient_evening,null)
                 getString(R.string.good_evening)
             }

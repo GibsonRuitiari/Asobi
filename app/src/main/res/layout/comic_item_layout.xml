@@ -20,5 +20,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:adjustViewBounds="true"/>
-
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:padding="8dp"
+        android:shadowColor="@color/black"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="4"
+        android:textAppearance="?attr/textAppearanceTitleSmall"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        tools:visibility="visible"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/comics_image_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="Sample name" />
 </androidx.constraintlayout.widget.ConstraintLayout>
