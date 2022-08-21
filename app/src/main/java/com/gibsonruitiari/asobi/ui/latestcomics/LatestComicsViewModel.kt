@@ -17,7 +17,7 @@ class LatestComicsViewModel constructor(pagedLatestComicsObserver: PagedLatestCo
         .flowObservable
         .cachedIn(viewModelScope)
     companion object{
-        val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10, initialLoadSize = 30,
+        val pagingConfig = PagingConfig(pageSize = 20, prefetchDistance = 10, initialLoadSize = 20,
             enablePlaceholders = true)
     }
 }

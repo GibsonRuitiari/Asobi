@@ -13,7 +13,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class LatestComicsFragment: PaginatedFragment() {
     override
     fun onComicClicked(comicItem:ViewComics){
-        Toast.makeText(requireContext(),"${comicItem.comicLink} clicked", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(),"${comicItem.comicName} clicked", Toast.LENGTH_SHORT).show()
     }
 
     private val latestComicsViewModel: LatestComicsViewModel by viewModel()

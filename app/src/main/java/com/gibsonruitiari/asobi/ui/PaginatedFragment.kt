@@ -1,6 +1,5 @@
 package com.gibsonruitiari.asobi.ui
 
-import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.animation.StateListAnimator
 import android.content.Context
@@ -10,12 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.FrameLayout
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.paging.LoadState
@@ -60,8 +56,8 @@ abstract class PaginatedFragment:Fragment(){
      lateinit var paginatedFragmentRecyclerView: RecyclerView
     private lateinit var paginatedFragmentLoadingLayout: LoadingLayout
     private lateinit var paginatedFragmentErrorEmptyLayout:ConstraintLayout
-    private lateinit var paginatedFragmentAppBarLayout:AppBarLayout
-    private lateinit var paginatedFragmentToolbar:Toolbar
+   private lateinit var paginatedFragmentAppBarLayout:AppBarLayout
+    private lateinit var paginatedFragmentToolbar:MaterialToolbar
     private lateinit var paginatedFragmentConstraintLayout:ConstraintLayout
     private lateinit var paginatedFragmentErrorEmptyTitle:AppCompatTextView
     private lateinit var paginatedFragmentErrorEmptySubtitle:AppCompatTextView
@@ -85,43 +81,52 @@ abstract class PaginatedFragment:Fragment(){
             this.item = comic
             with(binding){
                 comicsImageView.loadPhotoUrl(comic.comicThumbnail)
-                title.text=item.comicName
-                title.visibility=View.VISIBLE
             }
         }
     }
-    inner class PaginatedFragmentView constructor(context: Context)
+    /* Start: Fragment view */
+    internal class PaginatedFragmentView constructor(context: Context)
         :ParentFragmentsView(context){
-        lateinit var paginatedFragmentAppBarLayout:AppBarLayout
-        lateinit var paginatedFragmentToolbar:Toolbar
+      lateinit var paginatedFragmentAppBarLayout:AppBarLayout
+      lateinit var paginatedFragmentToolbar:MaterialToolbar
         lateinit var paginatedFragmentConstraintLayout:ConstraintLayout
         lateinit var paginatedFragmentSwipeRefreshLayout: SwipeRefreshLayout
         lateinit var paginatedFragmentRecyclerView: RecyclerView
-        private val colorSchemes=resourcesInstance().getIntArray(R.array.swipe_refresh_colors)
+        private val colorSchemes=context.resources.getIntArray(R.array.swipe_refresh_colors)
         init {
             paginatedFragmentAppBarLayout(context)
             paginatedFragmentConstraintLayout(context)
+
         }
         private fun paginatedFragmentAppBarLayout(context: Context){
+            val appBarStateListAnimator = StateListAnimator()
             paginatedFragmentAppBarLayout = AppBarLayout(context).apply {
                 id=ViewCompat.generateViewId()
-                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                (layoutParams as LayoutParams).setMargins(0.dp)
+
+                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,60)
+                (layoutParams as LayoutParams).setMargins(0)
+                background=null
                 setBackgroundColor(resources.getColor(R.color.transparent,null))
                 fitsSystemWindows=true
+                elevation=0f
+                appBarStateListAnimator.addState(IntArray(0),ObjectAnimator.ofFloat(this,"elevation",0f))
+                stateListAnimator= appBarStateListAnimator
             }
             addView(paginatedFragmentAppBarLayout)
             paginatedFragmentToolbar = paginatedFragmentMaterialToolbar(paginatedFragmentAppBarLayout.context)
             paginatedFragmentAppBarLayout.addView(paginatedFragmentToolbar)
-
         }
-        private fun paginatedFragmentMaterialToolbar(context: Context):Toolbar{
-            val materialToolbar = Toolbar(context).apply{
+        private fun paginatedFragmentMaterialToolbar(context: Context):MaterialToolbar{
+            val toolbarStateListAnimator = StateListAnimator()
+            val materialToolbar = MaterialToolbar(context).apply{
                 id=ViewCompat.generateViewId()
-                layoutParams = AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    65.dp)
+                layoutParams = AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+                background=null
                 setBackgroundColor(resources.getColor(R.color.transparent,null))
                 elevation=0f
+                toolbarStateListAnimator.addState(IntArray(0),ObjectAnimator.ofFloat(this,"elevation",0f))
+                stateListAnimator=toolbarStateListAnimator
+                (layoutParams as AppBarLayout.LayoutParams).setMargins(0.dp)
                 (layoutParams as AppBarLayout.LayoutParams).scrollFlags= AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL + AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
             }
             return materialToolbar
@@ -129,10 +134,14 @@ abstract class PaginatedFragment:Fragment(){
         private fun paginatedFragmentConstraintLayout(context: Context){
             paginatedFragmentConstraintLayout=ConstraintLayout(context).apply {
                 id=ViewCompat.generateViewId()
-                fitsSystemWindows=true
                 layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+                fitsSystemWindows=true
                 (layoutParams as LayoutParams).behavior = AppBarLayout.ScrollingViewBehavior()
-                (layoutParams as LayoutParams).setMargins(0.dp,10.dp,0.dp,10.dp)
+                elevation=0f
+                val anim=StateListAnimator()
+                anim.addState(IntArray(0),ObjectAnimator.ofFloat(this@apply,"elevation",0f))
+                stateListAnimator=anim
+              //  (layoutParams as LayoutParams).setMargins(0.dp,10.dp,0.dp,10.dp)
             }
             addView(paginatedFragmentConstraintLayout)
             val constraintSet = ConstraintSet()
@@ -166,9 +175,9 @@ abstract class PaginatedFragment:Fragment(){
                 visibility = View.GONE
             }
         }
-
-
     }
+    /* End: Fragment view */
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -216,12 +225,14 @@ abstract class PaginatedFragment:Fragment(){
     private fun applyBarElevationAndBackgroundColor(color:Int,
     barElevation:Float){
         paginatedFragmentAppBarLayout.apply {
+            background= null
             setBackgroundColor(color)
             elevation=barElevation
         }
         paginatedFragmentToolbar.apply {
             setBackgroundColor(color)
             elevation=barElevation
+            background=null
         }
     }
     private fun observeStateFromViewModel(){
@@ -253,6 +264,7 @@ abstract class PaginatedFragment:Fragment(){
     }
 
     /*End: Observe Ui States And Show Correct State */
+
     private fun listenToUiEventsAndUpdateUiAccordingly(){
         pagingDataAdapter?.addLoadStateListener {
             when(it.refresh){
@@ -287,11 +299,9 @@ abstract class PaginatedFragment:Fragment(){
     private fun setUpToolbarTitle(){
         paginatedFragmentToolbar.title= getTitle()
         paginatedFragmentToolbar.setTitleTextColor(Color.WHITE)
-        paginatedFragmentToolbar.textAlignment=
-            CoordinatorLayout.TEXT_ALIGNMENT_CENTER
+        paginatedFragmentToolbar.isTitleCentered=true
         paginatedFragmentToolbar.setTitleTextAppearance(requireContext(),R.style.TextAppearance_Asobi_Headline4)
     }
-
     private fun setUpRecyclerViewAdapter():PagingDataAdapter<ViewComics,RecyclerView.ViewHolder> = composedPagedAdapter(createViewHolder = { viewGroup: ViewGroup, _: Int ->
         viewGroup.viewHolderFrom(ComicItemLayoutBinding::inflate).apply {
             itemView.setOnClickListener { onComicClicked(item) }

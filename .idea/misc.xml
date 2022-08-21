@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable-v21/collection_gradient_overlay.xml" value="0.211" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable-v24/chip_check.xml" value="0.1285" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable-v24/chip_dot.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable-v24/discover_screen_gradient_afternoon.xml" value="0.1405" />
@@ -12,6 +13,7 @@
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/bottom_nav_gradient.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/chip_dot.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/chip_icon.xml" value="0.1" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/collection_gradient_overlay.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/comics_by_genre_screen_gradient.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/completed_comics_screen_gradient.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/drawable/discover_screen_gradient.xml" value="0.21" />
@@ -54,7 +56,7 @@
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/base_fragment.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comic_filter_fragment.xml" value="0.25" />
-        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comic_item_layout.xml" value="0.25" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comic_item_layout.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comic_item_layout_discover.xml" value="0.5" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comic_item_layout_large.xml" value="0.22" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/comics_by_genre_fragment.xml" value="0.1" />
@@ -67,6 +69,7 @@
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/fragment_search.xml" value="0.1" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/fragment_second.xml" value="0.1911231884057971" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/fragment_swipe_recyclerview.xml" value="0.1" />
+        <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/fragment_user_library.xml" value="0.23020833333333332" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/genre_comic_item.xml" value="0.23020833333333332" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/loading_state_layout.xml" value="0.21614583333333334" />
         <entry key="..\:/Users/Ruiriari Gibson/AndroidStudioProjects/Asobi/app/src/main/res/layout/main_fragment.xml" value="0.23020833333333332" />

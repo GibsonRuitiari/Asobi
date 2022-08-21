@@ -1,5 +1,7 @@
 package com.gibsonruitiari.asobi.ui.comicssearch
 
+import android.animation.ObjectAnimator
+import android.animation.StateListAnimator
 import android.animation.TimeInterpolator
 import android.animation.ValueAnimator
 import android.content.Context
@@ -21,7 +23,6 @@ import android.widget.LinearLayout
 import androidx.activity.addCallback
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
@@ -39,6 +40,7 @@ import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.views.ParentFragmentsView
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textfield.TextInputLayout.END_ICON_CLEAR_TEXT
 import org.koin.android.ext.android.inject
@@ -48,7 +50,7 @@ class ComicsSearchResultsScreen: Fragment() {
     //todo: store search query in state onSavedInstance i.e
 
     /* Start: initialization of view variables */
-    private lateinit var searchResultsScreenToolbar:Toolbar
+    private lateinit var searchResultsScreenToolbar:MaterialToolbar
     private lateinit var searchResultsScreenSearchTitle:AppCompatTextView
     private lateinit var searchResultsScreenSearchSubtitle:AppCompatTextView
     private lateinit var searchResultsScreenRecyclerView: RecyclerView
@@ -64,10 +66,14 @@ class ComicsSearchResultsScreen: Fragment() {
         :ParentFragmentsView(context){
         lateinit var searchExplanationSubtitle:AppCompatTextView
         lateinit var searchExplanationTitle:AppCompatTextView
-        lateinit var searchResultsToolbar:Toolbar
+        lateinit var searchResultsToolbar:MaterialToolbar
         lateinit var searchResultsRecyclerView: RecyclerView
         lateinit var searchResultsTextInputLayout: TextInputLayout
         lateinit var searchResultsEditText:EditText
+        private val animator=StateListAnimator().apply{
+            addState(IntArray(0),
+                ObjectAnimator.ofFloat(this,"elevation",0f))
+        }
         init {
             searchScreenResultsAppBar(context)
             searchScreenResultsConstraintLayout(context)
@@ -77,22 +83,26 @@ class ComicsSearchResultsScreen: Fragment() {
                 id=ViewCompat.generateViewId()
                 layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 elevation= noElevationValue
-
+                stateListAnimator=animator
+                background=null
+                setBackgroundColor(context.resources.getColor(R.color.transparent,null))
             }
             addView(appBarLayout)
             searchResultsToolbar = searchScreenResultsMaterialToolbar(context)
             appBarLayout.addView(searchResultsToolbar)
         }
-        private fun searchScreenResultsMaterialToolbar(context: Context):Toolbar{
-            val materialToolbar = Toolbar(context).apply {
+        private fun searchScreenResultsMaterialToolbar(context: Context):MaterialToolbar{
+            val materialToolbar = MaterialToolbar(context).apply {
                 id=ViewCompat.generateViewId()
                 layoutParams = AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 background = context.getDrawable(R.drawable.toolbar_bg)
                 setTitleTextColor(Color.WHITE)
-                textAlignment= TEXT_ALIGNMENT_CENTER
+                isTitleCentered=true
                 title = context.getString(R.string.search_label)
+                isClickable=true
                 /* elevation not being changed not working for some reason? */
                 elevation= noElevationValue
+                stateListAnimator=animator
                 (layoutParams as AppBarLayout.LayoutParams).setMargins(toolbarStartMargin.dp)
             }
             searchResultsTextInputLayout= searchScreenTextInputLayout(materialToolbar.context)
@@ -192,6 +202,7 @@ class ComicsSearchResultsScreen: Fragment() {
         }
     }
     /* End: Fragment view */
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.onBackPressedDispatcher?.addCallback(this, true){
@@ -249,7 +260,10 @@ class ComicsSearchResultsScreen: Fragment() {
         }
     }
     private fun changeToolbarLayoutMarginOnClick(){
-        searchResultsScreenToolbar.setOnClickListener { animateToolbarChanges() }
+
+        searchResultsScreenToolbar.setOnClickListener {
+            logger.i("clickeed")
+            animateToolbarChanges() }
     }
     private fun setUpSearchResultsScreenRecyclerView(){
         val screenWidth= resourcesInstance().displayMetrics.run {
@@ -271,12 +285,17 @@ class ComicsSearchResultsScreen: Fragment() {
     private fun animateToolbarChanges(){
         val expandedDrawable = shapeDrawable.apply { paint.color=resources.getColor(R.color.davy_grey,null)}
         toolbarExpanded=if (toolbarExpanded.not()){
-           expandCollapseSearchScreenResultsToolbar(toolbarStartMargin, toolbarEndMargin){searchResultsScreenToolbar.background = expandedDrawable;searchResultsScreenToolbar.title=""}
-          fadeSearchResultsTextInputLayout(1f){ searchResultsTextInputLayout.visibility=View.VISIBLE;searchResultsTextInputLayout.editText?.let { it.requestFocus();showKeyboard(it.findFocus()) }}
+           expandCollapseSearchScreenResultsToolbar(toolbarStartMargin, toolbarEndMargin){
+               searchResultsScreenToolbar.background = expandedDrawable
+               searchResultsScreenToolbar.title=""}
+          fadeSearchResultsTextInputLayout(1f){ searchResultsTextInputLayout.visibility=View.VISIBLE
+              searchResultsTextInputLayout.editText?.let { it.requestFocus();showKeyboard(it.findFocus()) }}
             true
         }else{
-        expandCollapseSearchScreenResultsToolbar(toolbarEndMargin, toolbarStartMargin){searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null);searchResultsScreenToolbar.title=resources.getString(R.string.search_label)}
-        fadeSearchResultsTextInputLayout(0f){searchResultsTextInputLayout.visibility=View.GONE; cleanUpSearchQuery()}
+        expandCollapseSearchScreenResultsToolbar(toolbarEndMargin, toolbarStartMargin){searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null)
+            searchResultsScreenToolbar.title=resources.getString(R.string.search_label)}
+        fadeSearchResultsTextInputLayout(0f){searchResultsTextInputLayout.visibility=View.GONE
+            cleanUpSearchQuery()}
             false
         }
     }
