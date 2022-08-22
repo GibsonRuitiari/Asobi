@@ -7,11 +7,11 @@ import com.gibsonruitiari.asobi.utilities.Effect
 import com.gibsonruitiari.asobi.utilities.State
 
 data class SearchComicsState(val isLoading:Boolean,
-val searchResults:SearchComicsResult):State{
+                             val noSearchQuery:Boolean,val searchResults:SearchComicsResult):State{
     companion object{
         private val defaultSearchResult = SearchComicsResult.empty
         val empty = SearchComicsState(isLoading = defaultSearchResult.isLoading,
-        searchResults = defaultSearchResult)
+        searchResults = defaultSearchResult, noSearchQuery = true)
     }
 }
 

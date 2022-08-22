@@ -103,7 +103,7 @@ abstract class PaginatedFragment:Fragment(){
             paginatedFragmentAppBarLayout = AppBarLayout(context).apply {
                 id=ViewCompat.generateViewId()
 
-                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,60)
+                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,60.dp)
                 (layoutParams as LayoutParams).setMargins(0)
                 background=null
                 setBackgroundColor(resources.getColor(R.color.transparent,null))
@@ -120,7 +120,7 @@ abstract class PaginatedFragment:Fragment(){
             val toolbarStateListAnimator = StateListAnimator()
             val materialToolbar = MaterialToolbar(context).apply{
                 id=ViewCompat.generateViewId()
-                layoutParams = AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+                layoutParams = AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT)
                 background=null
                 setBackgroundColor(resources.getColor(R.color.transparent,null))
                 elevation=0f
@@ -223,10 +223,11 @@ abstract class PaginatedFragment:Fragment(){
     }
 
     private fun applyBarElevationAndBackgroundColor(color:Int,
-    barElevation:Float){
+    barElevation:Float,isVisible:Boolean=false){
         paginatedFragmentAppBarLayout.apply {
             background= null
             setBackgroundColor(color)
+            visibility= if (isVisible)View.VISIBLE else View.GONE
             elevation=barElevation
         }
         paginatedFragmentToolbar.apply {
@@ -344,22 +345,21 @@ abstract class PaginatedFragment:Fragment(){
                 super.onScrollStateChanged(recyclerView, newState)
                 if (recyclerView.canScrollVertically(-1).not()){
                     changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
-                    applyBarElevationAndBackgroundColor(resources.getColor(R.color.matte,null),0f)
+                    applyBarElevationAndBackgroundColor(resources.getColor(R.color.matte,null),0f,true)
                 }
             }
-
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 if (dy>0){
                     // scrolling down
                     doActionIfWeAreOnDebug { logger.i("dy>0 scrolling down $dy") }
                     changeStatusBarToTransparentInFragment(getFragmentColor())
-                    applyBarElevationAndBackgroundColor(getFragmentColor(), 4f)
+                    applyBarElevationAndBackgroundColor(getFragmentColor(), 4f,false)
                 }else if (dy<-1) {
                     // scrolling up
                     doActionIfWeAreOnDebug {  logger.i("dy<-1 scrolling up $dy") }
                     changeStatusBarToTransparentInFragment(getFragmentColor())
-                    applyBarElevationAndBackgroundColor(getFragmentColor(),4f)
+                    applyBarElevationAndBackgroundColor(getFragmentColor(),4f,false)
                 }
             }
         })

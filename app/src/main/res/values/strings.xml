@@ -61,6 +61,8 @@
     <string name="search_comics_hint">Search comics,or series</string>
     <string name="search_explanation">Read what you love</string>
     <string name="search_explanation_subtitle">Search for comics issues, series and much more.</string>
+    <string name="search_empty_title">Shucks! Our elves did not find a comic book with such name ; try searching for something else</string>
+    <string name="no_search_query">You did not search for anything</string>
     <string name="search_query">search query</string>
     <string name="browse_all">Browse all</string>
     <string name="marvel">Marvel</string>

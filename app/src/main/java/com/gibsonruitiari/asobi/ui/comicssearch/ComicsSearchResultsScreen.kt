@@ -39,15 +39,18 @@ import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
 import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.views.ParentFragmentsView
+import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textfield.TextInputLayout.END_ICON_CLEAR_TEXT
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @VisibleForTesting
 class ComicsSearchResultsScreen: Fragment() {
-    //todo: store search query in state onSavedInstance i.e
 
     /* Start: initialization of view variables */
     private lateinit var searchResultsScreenToolbar:MaterialToolbar
@@ -55,10 +58,16 @@ class ComicsSearchResultsScreen: Fragment() {
     private lateinit var searchResultsScreenSearchSubtitle:AppCompatTextView
     private lateinit var searchResultsScreenRecyclerView: RecyclerView
     private lateinit var searchResultsTextInputLayout: TextInputLayout
+    private lateinit var searchResultsErrorTitle:AppCompatTextView
+    private lateinit var searchResultsErrorSubtitle:AppCompatTextView
     private lateinit var searchResultsEditText:EditText
+    private lateinit var loadingLayout:LoadingLayout
+    private lateinit var errorEmptyLayout:ConstraintLayout
     /* End: initialization of view variables */
 
     private var toolbarExpanded:Boolean =false
+    private val searchViewModel:ComicsSearchViewModel by viewModel()
+    private var loadingJob:Job?=null
     private val logger:Logger by inject()
 
     /* Start: Fragment view */
@@ -70,26 +79,28 @@ class ComicsSearchResultsScreen: Fragment() {
         lateinit var searchResultsRecyclerView: RecyclerView
         lateinit var searchResultsTextInputLayout: TextInputLayout
         lateinit var searchResultsEditText:EditText
-        private val animator=StateListAnimator().apply{
-            addState(IntArray(0),
-                ObjectAnimator.ofFloat(this,"elevation",0f))
-        }
+        private val appbarAnimator=StateListAnimator().apply{ addState(IntArray(0), ObjectAnimator.ofFloat(this,"elevation",0f)) }
+        private val toolbarAnimator = StateListAnimator().apply { addState(IntArray(0),ObjectAnimator.ofFloat(this,
+        "elevation",0f)) }
         init {
-            searchScreenResultsAppBar(context)
+
             searchScreenResultsConstraintLayout(context)
         }
-        private fun searchScreenResultsAppBar(context: Context){
+        private fun searchScreenResultsAppBar(context: Context, constraintSet: ConstraintSet):AppBarLayout{
             val appBarLayout  = AppBarLayout(context).apply {
                 id=ViewCompat.generateViewId()
-                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+               // layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 elevation= noElevationValue
-                stateListAnimator=animator
-                background=null
+                stateListAnimator=appbarAnimator
                 setBackgroundColor(context.resources.getColor(R.color.transparent,null))
             }
-            addView(appBarLayout)
+            constraintSet.setViewLayoutParams(appBarLayout.id, ConstraintSet.MATCH_CONSTRAINT,ConstraintSet.WRAP_CONTENT)
+            constraintSet constrainTopToParent appBarLayout.id
+            constraintSet constrainStartToParent appBarLayout.id
+            constraintSet constrainEndToParent appBarLayout.id
             searchResultsToolbar = searchScreenResultsMaterialToolbar(context)
             appBarLayout.addView(searchResultsToolbar)
+            return appBarLayout
         }
         private fun searchScreenResultsMaterialToolbar(context: Context):MaterialToolbar{
             val materialToolbar = MaterialToolbar(context).apply {
@@ -102,7 +113,7 @@ class ComicsSearchResultsScreen: Fragment() {
                 isClickable=true
                 /* elevation not being changed not working for some reason? */
                 elevation= noElevationValue
-                stateListAnimator=animator
+                stateListAnimator=toolbarAnimator
                 (layoutParams as AppBarLayout.LayoutParams).setMargins(toolbarStartMargin.dp)
             }
             searchResultsTextInputLayout= searchScreenTextInputLayout(materialToolbar.context)
@@ -137,30 +148,34 @@ class ComicsSearchResultsScreen: Fragment() {
         }
         private fun searchScreenResultsConstraintLayout(context: Context){
             val constraintLayout = ConstraintLayout(context).apply {
-                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT)
+                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
                 id=ViewCompat.generateViewId()
                 fitsSystemWindows=true
+                stateListAnimator=appbarAnimator
             }
             addView(constraintLayout)
             val constraintSet = ConstraintSet()
-            searchResultsRecyclerView = searchResultsScreenRecyclerView(context, constraintSet)
+            val appbar=searchScreenResultsAppBar(context,constraintSet)
+            constraintLayout.addView(appbar)
+
+            searchResultsRecyclerView = searchResultsScreenRecyclerView(context, constraintSet,appbar.id)
             constraintLayout.addView(searchResultsRecyclerView)
             searchExplanationTitle = searchScreenResultsSearchTitle(context,constraintSet)
             constraintLayout.addView(searchExplanationTitle)
             searchExplanationSubtitle = searchScreenResultsSearchSubtitle(context,constraintSet,searchExplanationTitle.id)
             constraintLayout.addView(searchExplanationSubtitle)
-            // add views
             constraintSet.applyTo(constraintLayout)
         }
-        private fun searchResultsScreenRecyclerView(context: Context,constraintSet: ConstraintSet):RecyclerView{
+        private fun searchResultsScreenRecyclerView(context: Context,constraintSet: ConstraintSet,appBarId:Int):RecyclerView{
             val recyclerView = RecyclerView(context).apply { id=ViewCompat.generateViewId(); visibility=View.GONE
                 val animation= AnimationUtils.loadLayoutAnimation(this.context, R.anim.layout_animation_scale_in)
+                elevation=0f
+                stateListAnimator=toolbarAnimator
                 animate(animation)}
             val recyclerViewId= recyclerView.id
             constraintSet.setViewLayoutParams(recyclerViewId, ConstraintSet.MATCH_CONSTRAINT,ConstraintSet.MATCH_CONSTRAINT)
             constraintSet.applyMargin(recyclerViewId, marginTop = toolbarStartMargin)
-            constraintSet constrainTopToParent recyclerViewId
+            constraintSet.connect(recyclerViewId,ConstraintSet.TOP,appBarId,ConstraintSet.BOTTOM)
             constraintSet constrainEndToParent recyclerViewId
             constraintSet constrainStartToParent recyclerViewId
             constraintSet constrainBottomToParent  recyclerViewId
@@ -173,6 +188,7 @@ class ComicsSearchResultsScreen: Fragment() {
                 text=searchTitle
                 setTextColor(Color.WHITE)
                 setTextAppearance(R.style.TextAppearance_Asobi_Headline4)
+                visibility=View.GONE
             }
             val appCompatTextViewId= appCompatTextView.id
             constraintSet.setViewLayoutParams(appCompatTextViewId, ConstraintSet.WRAP_CONTENT,ConstraintSet.WRAP_CONTENT)
@@ -190,6 +206,7 @@ class ComicsSearchResultsScreen: Fragment() {
                 id=ViewCompat.generateViewId()
                 text =searchResultsScreenSubtitle
                 setTextColor(Color.WHITE)
+                visibility=View.GONE
                 setTextAppearance(R.style.TextAppearance_Asobi_Subtitle1)
             }
             val searchSubtitleId=appCompatTextView.id
@@ -209,6 +226,8 @@ class ComicsSearchResultsScreen: Fragment() {
            if (toolbarExpanded) animateToolbarChanges()
            else {
                cleanUpSearchQuery()
+               hideStateLayoutsOnBackPressed()
+               searchViewModel.clearSearchResult()
                isEnabled=false
                activity?.onBackPressed()
            }
@@ -226,23 +245,28 @@ class ComicsSearchResultsScreen: Fragment() {
         searchResultsScreenRecyclerView = fragmentView.searchResultsRecyclerView
         searchResultsEditText = fragmentView.searchResultsEditText
         searchResultsTextInputLayout = fragmentView.searchResultsTextInputLayout
+        loadingLayout = fragmentView.loadingStateLayout
+        errorEmptyLayout=fragmentView.errorEmptyStateLayout
+        searchResultsErrorTitle = fragmentView.errorTitle
+        searchResultsErrorSubtitle=fragmentView.subtitleError
         return fragmentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        searchResultsScreenSearchTitle.fade(1f).start()
+        searchResultsScreenSearchSubtitle.fade(1f).start()
         changeToolbarLayoutMarginOnClick()
-        setUpSearchResultsScreenRecyclerView()
         setUpTextInputLayoutActionListener()
-
+        // see
+        setUpSearchResultsScreenRecyclerView()
     }
-
-
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
+        loadSearchResults(hidden)
        if (hidden && toolbarExpanded) {
-           doActionIfWeAreOnDebug { logger.i("hidden and toolbar expanded") }
            animateToolbarChanges()
+           searchViewModel.clearSearchResult()
        }
     }
     private fun setUpTextInputLayoutActionListener(){
@@ -250,6 +274,9 @@ class ComicsSearchResultsScreen: Fragment() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH){
                 val query = searchResultsTextInputLayout.editText?.text.toString()
                 doActionIfWeAreOnDebug { logger.i("search query $query") }
+                onSearchQuerySubmittedDoSearch(query)
+                searchResultsScreenSearchTitle.fade(0f).start()
+                searchResultsScreenSearchSubtitle.fade(0f).start()
                 dismissKeyboard(v)
                 return@setOnEditorActionListener  true
             }
@@ -259,12 +286,82 @@ class ComicsSearchResultsScreen: Fragment() {
             searchResultsTextInputLayout.editText?.let { if (it.hasFocus()) showKeyboard(it) }
         }
     }
-    private fun changeToolbarLayoutMarginOnClick(){
-
-        searchResultsScreenToolbar.setOnClickListener {
-            logger.i("clickeed")
-            animateToolbarChanges() }
+    private fun onSearchQuerySubmittedDoSearch(searchQuery:String){
+        if (searchQuery.isNotEmpty() && searchQuery.isNotBlank()){
+            searchViewModel.setSearchTerm(searchQuery)
+            loadSearchResults(isHidden)
+        }
     }
+    private fun loadSearchResults(isFragmentHidden:Boolean){
+        if (isFragmentHidden){
+            loadingJob?.cancelIfActive()
+        }else{
+            // cancel existing work and start again
+            loadingJob?.cancel()
+            loadingJob=launchAndRepeatWithViewLifecycle {
+                observeSearchResultsData()
+                observeSearchResultsError()
+            }
+        }
+    }
+    private suspend fun observeSearchResultsError(){
+        searchViewModel.observeSideEffect().collectLatest {
+            if (it is SearchComicsSideEffect.Error){
+                onErrorShowErrorLayout()
+                searchResultsErrorTitle.text=getString(R.string.error_state_title)
+                searchResultsErrorSubtitle.text=it.message
+            }
+        }
+    }
+    private suspend fun observeSearchResultsData(){
+        searchViewModel.observeState().collectLatest {
+            if (it.isLoading){
+                onLoadingStateShowLoadingLayout()
+                doActionIfWeAreOnDebug { logger.i("loading search results") }
+            }else if (it.noSearchQuery.not()){
+                doActionIfWeAreOnDebug { logger.i("search query provided beep") }
+                val searchData = it.searchResults.searchResults
+                val searchDataLoadingState = it.searchResults.isLoading
+                if (searchData.isEmpty() && !searchDataLoadingState){
+                    onErrorShowErrorLayout()
+                    searchResultsErrorTitle.text=getString(R.string.error_state_title)
+                    searchResultsErrorSubtitle.text=getString(R.string.search_empty_title)
+                }else{
+                    searchScreenResultsRecyclerViewAdapter.submitList(searchData)
+                    onDataLoadedSuccessfullyShowDataLayout()
+                    doActionIfWeAreOnDebug { println("total number of search results ${searchData.size} ${System.lineSeparator()} results-> $searchData") }
+                }
+            }
+        }
+    }
+    private fun onLoadingStateShowLoadingLayout(){
+        searchResultsScreenRecyclerView.fade(0f).start()
+        loadingLayout.show()
+        errorEmptyLayout.visibility=View.GONE
+    }
+    private fun onErrorShowErrorLayout() {
+        searchResultsScreenRecyclerView.fade(0f).start()
+        loadingLayout.hide()
+        errorEmptyLayout.visibility=View.VISIBLE
+    }
+    private fun onDataLoadedSuccessfullyShowDataLayout(){
+        loadingLayout.hide()
+
+        errorEmptyLayout.visibility=View.GONE
+        searchResultsScreenRecyclerView.fade(1f).start()
+    }
+    private fun changeToolbarLayoutMarginOnClick(){
+        searchResultsScreenToolbar.setOnClickListener { animateToolbarChanges() }
+    }
+    private fun hideStateLayoutsOnBackPressed(){
+        searchScreenResultsRecyclerViewAdapter.submitList(emptyList())
+        errorEmptyLayout.visibility=View.GONE
+        loadingLayout.hide()
+        searchResultsScreenRecyclerView.fade(0f).start()
+        searchResultsScreenSearchTitle.fade(1f).start()
+        searchResultsScreenSearchSubtitle.fade(1f).start()
+    }
+
     private fun setUpSearchResultsScreenRecyclerView(){
         val screenWidth= resourcesInstance().displayMetrics.run {
             widthPixels/density }
@@ -288,14 +385,12 @@ class ComicsSearchResultsScreen: Fragment() {
            expandCollapseSearchScreenResultsToolbar(toolbarStartMargin, toolbarEndMargin){
                searchResultsScreenToolbar.background = expandedDrawable
                searchResultsScreenToolbar.title=""}
-          fadeSearchResultsTextInputLayout(1f){ searchResultsTextInputLayout.visibility=View.VISIBLE
-              searchResultsTextInputLayout.editText?.let { it.requestFocus();showKeyboard(it.findFocus()) }}
+            searchResultsTextInputLayout.fade(1f){ searchResultsTextInputLayout.editText?.let { it.requestFocus();showKeyboard(it.findFocus()) } }.start()
             true
         }else{
         expandCollapseSearchScreenResultsToolbar(toolbarEndMargin, toolbarStartMargin){searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null)
             searchResultsScreenToolbar.title=resources.getString(R.string.search_label)}
-        fadeSearchResultsTextInputLayout(0f){searchResultsTextInputLayout.visibility=View.GONE
-            cleanUpSearchQuery()}
+            searchResultsTextInputLayout.fade(0f){ cleanUpSearchQuery()}.start()
             false
         }
     }
@@ -303,7 +398,7 @@ class ComicsSearchResultsScreen: Fragment() {
         searchResultsTextInputLayout.editText?.clearFocus()
         searchResultsTextInputLayout.editText?.setText("")
     }
-    private inline fun expandCollapseSearchScreenResultsToolbar(start:Int,end:Int,animationDuration: Long=500,
+    private inline fun expandCollapseSearchScreenResultsToolbar(start:Int,end:Int,animationDuration: Long=250,
                                                                 animationInterpolator: TimeInterpolator=AccelerateDecelerateInterpolator(),
                                                                 crossinline action:()->Unit){
         val marginLayoutParams = searchResultsScreenToolbar.layoutParams as ViewGroup.MarginLayoutParams
@@ -316,14 +411,7 @@ class ComicsSearchResultsScreen: Fragment() {
         animator.doOnEnd { action.invoke() }
         animator.start()
     }
-    private inline fun fadeSearchResultsTextInputLayout(alpha:Float,animationInterpolator: TimeInterpolator=AccelerateDecelerateInterpolator(),
-    crossinline endAction:()->Unit){
-        searchResultsTextInputLayout.animate().alpha(alpha)
-            .setInterpolator(animationInterpolator)
-            .setDuration(500)
-            .withEndAction { endAction.invoke() }
-            .start()
-    }
+
     private fun showKeyboard(view: View) {
         WindowInsetsControllerCompat(requireActivity().window,view).show(WindowInsetsCompat.Type.ime())
     }
@@ -332,7 +420,8 @@ class ComicsSearchResultsScreen: Fragment() {
         WindowInsetsControllerCompat(requireActivity().window,view).hide(WindowInsetsCompat.Type.ime())
     }
     /* End: Fragment's specific utility methods */
-    private val searchScreenResultsRecyclerViewAdapter = listAdapterOf(initialItems = emptyList<ViewComics>(), viewHolderCreator = {parent, viewType ->
+
+    private val searchScreenResultsRecyclerViewAdapter = listAdapterOf(initialItems = emptyList<ViewComics>(), viewHolderCreator = {parent, _ ->
         parent.viewHolderFrom(ComicItemLayoutBinding::inflate)
     }, viewHolderBinder ={holder, item, _ ->
         holder.bind(item) })

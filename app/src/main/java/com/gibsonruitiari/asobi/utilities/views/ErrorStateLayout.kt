@@ -37,6 +37,7 @@ class ErrorStateLayout  constructor(context:Context):ConstraintLayout(context) {
         constraintSet.setViewLayoutParams(subtitleError.id,0.dp,ConstraintSet.WRAP_CONTENT)
         constraintSet.setViewLayoutParams(retryButton.id,150.dp,60.dp)
 
+        constraintSet.applyMargin(errorImageView.id, marginTop = 50.dp)
         constraintSet.applyMargin(errorTitle.id, marginTop = 8.dp, marginEnd = 24.dp, marginStart = 24.dp)
         constraintSet.applyMargin(subtitleError.id, marginTop = 16.dp, marginEnd = 24.dp, marginStart = 24.dp)
         constraintSet.applyMargin(retryButton.id, marginStart = 16.dp, marginEnd = 16.dp,marginTop=16.dp)
@@ -44,6 +45,7 @@ class ErrorStateLayout  constructor(context:Context):ConstraintLayout(context) {
         constraintSet constrainStartToParent errorImageView.id
         constraintSet constrainTopToParent  errorImageView.id
         constraintSet constrainEndToParent  errorImageView.id
+        //constraintSet constrainBottomToParent errorImageView.id
         constraintSet.connect(errorImageView.id,ConstraintSet.BOTTOM,errorTitle.id,ConstraintSet.TOP)
 
         constraintSet constrainStartToParent errorTitle.id
@@ -89,11 +91,10 @@ class ErrorStateLayout  constructor(context:Context):ConstraintLayout(context) {
     private fun errorLayoutRetryMaterialButton(context: Context):MaterialButton{
         return MaterialButton(context).apply {
             id=ViewCompat.generateViewId()
-            setBackgroundColor(R.color.aqua_blue)
+            setBackgroundColor(context.getColor(R.color.white))
             text=resources.getString(R.string.cd_retry)
             isAllCaps=false
-            //val color=Color.valueOf(40f,43f,147f)
-            setTextColor(Color.WHITE)
+            setTextColor(context.getColor(R.color.matte))
         }
     }
 

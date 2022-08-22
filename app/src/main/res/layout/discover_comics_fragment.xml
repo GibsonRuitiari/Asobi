@@ -308,6 +308,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginTop="@dimen/margin_normal"
+                android:layout_marginBottom="@dimen/margin_normal"
                 app:layout_constraintTop_toBottomOf="@id/dc_label"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

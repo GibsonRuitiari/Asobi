@@ -432,7 +432,7 @@ class DiscoverFragment:Fragment() {
     private val comicsByGenreAdapter = listAdapterOf(initialItems = emptyList(),
                 viewHolderCreator = {parent: ViewGroup, _: Int ->
                     parent.viewHolderFrom(ComicItemLayoutDiscoverBinding::inflate).apply {
-                        itemView.setOnClickListener {  Toast.makeText(requireContext(), "${marvelComics.comicLink} clicked", Toast.LENGTH_SHORT).show() }
+                        itemView.setOnClickListener {  Toast.makeText(requireContext(), "${marvelComics.comicName} clicked", Toast.LENGTH_SHORT).show() }
                     }
                 }, viewHolderBinder = {holder:BindingViewHolder<ComicItemLayoutDiscoverBinding>, item:ViewComics,_->
                     holder.bindMarvelComics(item)

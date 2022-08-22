@@ -37,12 +37,19 @@ fun View.showSnackBar(
 inline fun <reified T> ViewGroup.findChild(): T? {
     return children.find { it is T } as? T
 }
-fun View.fade(target:Float,transitionDuration:Long=250,transitionDelay: Long=0, animationInterpolator: Interpolator = LinearInterpolator()): Animator {
+fun View.fade(target:Float,transitionDuration:Long=250,transitionDelay: Long=0, animationInterpolator: Interpolator = LinearInterpolator(),
+endAction:(View.()->Unit)?=null): Animator {
+    val view_ = this
     return  ObjectAnimator.ofFloat(this,"alpha",target).apply {
         duration = transitionDuration
         startDelay = transitionDelay
         interpolator = animationInterpolator
-        doOnEnd { visibility =if(target==0f) View.GONE else View.VISIBLE  }
+        addUpdateListener {
+           view_.alpha= it.animatedValue as Float
+        }
+        doOnEnd {
+            endAction?.invoke(view_)
+            visibility =if(target==0f) View.GONE else View.VISIBLE }
     }
 }
 fun RecyclerView.animate(animation:LayoutAnimationController){

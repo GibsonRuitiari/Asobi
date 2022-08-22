@@ -1,45 +1,68 @@
 package com.gibsonruitiari.asobi.ui
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.CONFLATED
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import java.lang.Exception
 
 class MainActivityViewModel:ViewModel() {
   private val mainFragmentNavigationEvents = Channel<MainFragmentNavigationAction>(CONFLATED)
     private val _comicsSearchScreenNavigationEvents=Channel<SearchScreenNavigationAction>(CONFLATED)
+    private var navigationJob:Job?=null
+    override fun onCleared() {
+        super.onCleared()
+        // sanity check just in case
+        if (navigationJob!=null) navigationJob=null
+    }
     // only one observer should receive the updates
    val navigationEvents:Flow<MainFragmentNavigationAction> = mainFragmentNavigationEvents.receiveAsFlow()
-    val comicsSearchScreenNavigationEvents =_comicsSearchScreenNavigationEvents.receiveAsFlow()
+   val comicsSearchScreenNavigationEvents =_comicsSearchScreenNavigationEvents.receiveAsFlow()
+
+    private inline fun navigateTo(crossinline navigationAction:()->Unit){
+        // don't trigger navigation if there is a current navigation job ongoing
+        if (navigationJob!=null) return
+        navigationJob = viewModelScope.launch {
+            try {
+                navigationAction.invoke()
+            }catch (ex:Exception){
+                // ignore error
+            }finally {
+                navigationJob=null
+            }
+        }
+    }
 
     fun openComicsGenreScreenFromSearchScreen(){
-        _comicsSearchScreenNavigationEvents.trySend(SearchScreenNavigationAction.NavigateToComicsGenreScreen)
+        navigateTo{ _comicsSearchScreenNavigationEvents.trySend(SearchScreenNavigationAction.NavigateToComicsGenreScreen) }
     }
     fun openComicsByGenreScreenFromSearchScreen(){
-        _comicsSearchScreenNavigationEvents.trySend(SearchScreenNavigationAction.NavigateToComicsByGenreFragmentScreen)
+        navigateTo { _comicsSearchScreenNavigationEvents.trySend(SearchScreenNavigationAction.NavigateToComicsByGenreFragmentScreen) }
     }
     fun openComicsSearchResultsScreen(){
-        _comicsSearchScreenNavigationEvents.trySend(SearchScreenNavigationAction.NavigateToComicsSearchResultScreen)
+         _comicsSearchScreenNavigationEvents.trySend(SearchScreenNavigationAction.NavigateToComicsSearchResultScreen)
     }
     fun openDiscoverScreen(){
-        mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToDiscoverScreen)
+        navigateTo { mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToDiscoverScreen) }
     }
     fun openLatestComicsScreen(){
-        mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToLatestComicsScreen)
+        navigateTo { mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToLatestComicsScreen) }
     }
     fun openOngoingComicsScreen(){
-        mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToOngoingComicsScreen)
+        navigateTo { mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToOngoingComicsScreen) }
     }
     fun openCompletedComicsScreen(){
-        mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToCompletedComicsScreen)
+        navigateTo { mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToCompletedComicsScreen) }
     }
     fun openComicsByGenreScreen(){
-        mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToComicsByGenreScreen)
+        navigateTo {  mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToComicsByGenreScreen) }
     }
     fun openPopularComicsScreen(){
-        mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToPopularComicsScreen)
+        navigateTo { mainFragmentNavigationEvents.trySend(MainFragmentNavigationAction.NavigateToPopularComicsScreen) }
     }
-
 }
 sealed class SearchScreenNavigationAction{
     object NavigateToComicsGenreScreen:SearchScreenNavigationAction()

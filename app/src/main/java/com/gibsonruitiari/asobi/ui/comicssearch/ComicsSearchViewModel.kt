@@ -36,20 +36,25 @@ searchComicsUseCase: SearchComicsUseCase):ViewModel(),CoroutineScopeOwner,Store<
                coroutineScope.launch {
                    searchQuery.debounce(500)
                        .collectLatest { query->
-                           val searchParam=SearchComicsUseCase.SearchComicsUseCaseParams(query)
-                           searchComicsUseCase.execute(searchParam){
-                               onStart {
-                                  coroutineScope.launch { _searchResult.emit(oldState.copy(isLoading = true)) }
+                           if (query.isNotBlank() && query.isNotEmpty()){
+                               val searchParam=SearchComicsUseCase.SearchComicsUseCaseParams(query)
+                               searchComicsUseCase.execute(searchParam){
+                                   onStart {
+                                       coroutineScope.launch { _searchResult.emit(oldState.copy(isLoading = true,noSearchQuery = false)) }
+                                   }
+                                   onNext {
+                                       coroutineScope.launch {
+                                           _searchResult.emit(oldState.copy(isLoading = false, searchResults = it,noSearchQuery = false))
+                                       }
+                                   }
+                                   onError {
+                                       coroutineScope.launch { _searchResult.emit(oldState.copy(isLoading = false,noSearchQuery = false)) }
+                                       onAction(SearchComicsAction.Error(it.message?:"Something went wrong please try again later"))
+                                   }
                                }
-                               onNext {
-                                 coroutineScope.launch {
-                                     _searchResult.emit(oldState.copy(isLoading = false, searchResults = it))
-                                 }
-                               }
-                               onError {
-                                   coroutineScope.launch { _searchResult.emit(oldState.copy(isLoading = false)) }
-                                   onAction(SearchComicsAction.Error(it.message?:"Something went wrong please try again later"))
-                               }
+                           }else{
+                               // no search query provided
+                               coroutineScope.launch { _searchResult.emit(oldState.copy(isLoading = false,noSearchQuery = true)) }
                            }
                        }
                }
@@ -61,10 +66,12 @@ searchComicsUseCase: SearchComicsUseCase):ViewModel(),CoroutineScopeOwner,Store<
             }
         }
     }
-    fun searchTerm(query:String){
-        if (query.isNotBlank()){
-            onAction(SearchComicsAction.ExecuteSearch)
+    fun setSearchTerm(query:String){
+        if (query.isNotBlank() && query.isNotEmpty()){
             searchQuery.value = query
+            println("search view model received: ${searchQuery.value}")
+            onAction(SearchComicsAction.ExecuteSearch)
+
         }
     }
     fun clearSearchResult(){
@@ -74,7 +81,7 @@ searchComicsUseCase: SearchComicsUseCase):ViewModel(),CoroutineScopeOwner,Store<
 
     override fun onCleared() {
         super.onCleared()
-        searchQuery.value=""
+        clearSearchResult()
     }
 
 }
