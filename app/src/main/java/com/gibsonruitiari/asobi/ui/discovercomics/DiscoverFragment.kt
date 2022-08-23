@@ -717,15 +717,16 @@ class DiscoverFragment:Fragment() {
             discoverFragmentToolbarGreetingsTextView = AppCompatTextView(linearLayout.context).apply {
                 id= ViewCompat.generateViewId()
                 layoutParams= LinearLayoutCompat.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT,LinearLayoutCompat.LayoutParams.WRAP_CONTENT)
-                (layoutParams as LinearLayoutCompat.LayoutParams).setMargins(10.dp)
+                (layoutParams as LinearLayoutCompat.LayoutParams).setMargins(marginSmall)
                 setTextAppearance(R.style.TextAppearance_Asobi_Body1)
                 setTextColor(context.getColor(R.color.white))
             }
             linearLayout.addView(discoverFragmentToolbarGreetingsTextView)
             discoverFragmentToolbarNotificationsButton = AppCompatImageButton(linearLayout.context).apply {
                 id= ViewCompat.generateViewId()
-                layoutParams = LinearLayoutCompat.LayoutParams(45.dp,45.dp)
-                (layoutParams as MarginLayoutParams).setMargins(marginSmall,0, marginSmall,0)
+                layoutParams = LinearLayoutCompat.LayoutParams(toolbarIconsDefaultSize,toolbarIconsDefaultSize)
+                (layoutParams as MarginLayoutParams).setMargins(marginSmall,
+                    noMargin, marginSmall, noMargin)
                 (layoutParams as LinearLayoutCompat.LayoutParams).gravity=Gravity.END
                 scaleType= ImageView.ScaleType.CENTER_INSIDE
                 contentDescription=context.getString(R.string.notifications_button)
@@ -737,8 +738,9 @@ class DiscoverFragment:Fragment() {
             linearLayout.addView(discoverFragmentToolbarNotificationsButton)
             discoverFragmentToolbarSettingsButton= AppCompatImageButton(linearLayout.context).apply {
                 id= ViewCompat.generateViewId()
-                layoutParams = LinearLayoutCompat.LayoutParams(45.dp,45.dp)
-                (layoutParams as MarginLayoutParams).setMargins(marginSmall,0, marginSmall,0)
+                layoutParams = LinearLayoutCompat.LayoutParams(toolbarIconsDefaultSize,toolbarIconsDefaultSize)
+                (layoutParams as MarginLayoutParams).setMargins(marginSmall,
+                    noMargin, marginSmall, noMargin)
                 (layoutParams as LinearLayoutCompat.LayoutParams).gravity=Gravity.END
                 scaleType= ImageView.ScaleType.CENTER_INSIDE
                 contentDescription=context.getString(R.string.settings_button)
@@ -1075,8 +1077,7 @@ class DiscoverFragment:Fragment() {
             stateListAnimator=elevationAnimator
         }
         companion object{
-            const val toolbarIconsDefaultWidth =0
-            const val toolbarIconsDefaultHeight =30
+            val toolbarIconsDefaultSize =45.dp
             const val toolbarHeight=145
         }
     }

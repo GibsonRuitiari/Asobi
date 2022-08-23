@@ -11,7 +11,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreScreen
-import com.gibsonruitiari.asobi.ui.comicssearch.ComicsGenreScreen
 import com.gibsonruitiari.asobi.ui.completedcomics.CompletedComicsFragment
 import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverFragment
 import com.gibsonruitiari.asobi.ui.latestcomics.LatestComicsFragment
@@ -65,7 +64,7 @@ class HomeScreen:Fragment() {
                 }
                 else->{
                     childFragmentManager.beginTransaction()
-                        .hide(currentFragment)
+                        .hide(currentFragment ?: defaultDiscoverFragmentInstance())
                         .show(discoverFragment!!)
                         .commit()
                     currentFragmentIndex = discoverFragmentIndex
@@ -91,7 +90,7 @@ class HomeScreen:Fragment() {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(onBackPressedCallback)
         if (savedInstanceState==null){
-            discoverFragment=DiscoverFragment()
+            discoverFragment=defaultDiscoverFragmentInstance()
             latestComicsFragment=LatestComicsFragment()
             ongoingComicsFragment=OngoingComicsFragment()
             popularComicsFragment= PopularComicsFragment()
@@ -124,18 +123,6 @@ class HomeScreen:Fragment() {
         loadData(isHidden)
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (discoverFragment==null && latestComicsFragment==null&&ongoingComicsFragment==null&&popularComicsFragment==null
-            &&completedComicsFragment==null){
-            discoverFragment=DiscoverFragment()
-            latestComicsFragment=LatestComicsFragment()
-            ongoingComicsFragment=OngoingComicsFragment()
-            popularComicsFragment= PopularComicsFragment()
-            comicsByGenreScreen= ComicsByGenreScreen()
-            completedComicsFragment= CompletedComicsFragment()
-        }
-    }
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
         loadData(hidden)
@@ -148,7 +135,7 @@ class HomeScreen:Fragment() {
         }
     }
     private fun observeNavigationEventsFromViewModel(){
-        val currentFragment = getFragmentFromIndex(currentFragmentIndex)
+        val currentFragment = getFragmentFromIndex(currentFragmentIndex) ?: defaultDiscoverFragmentInstance()
         navigationEventsJob?.cancel()
         navigationEventsJob=viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
@@ -156,7 +143,7 @@ class HomeScreen:Fragment() {
                     when(it){
                         MainFragmentNavigationAction.NavigateToDiscoverScreen -> {
                         childFragmentManager.beginTransaction()
-                            .hide(getFragmentFromIndex(currentFragmentIndex))
+                            .hide(currentFragment)
                             .show(discoverFragment!!)
                             .commit()
                         currentFragmentIndex= discoverFragmentIndex
@@ -216,7 +203,7 @@ class HomeScreen:Fragment() {
         popularComicsFragment = childFragmentManager.findFragmentByTag(popularComicsFragmentTag) as PopularComicsFragment
         comicsByGenreScreen = childFragmentManager.findFragmentByTag(comicsByGenreFragmentTag) as ComicsByGenreScreen
         completedComicsFragment = childFragmentManager.findFragmentByTag(completedComicsFragmentTag) as CompletedComicsFragment
-        val currentFragment = getFragmentFromIndex(currentFragmentIndex)
+        val currentFragment = getFragmentFromIndex(currentFragmentIndex) ?: defaultDiscoverFragmentInstance()
         childFragmentManager.beginTransaction()
             .hide(discoverFragment!!)
             .hide(latestComicsFragment!!)
@@ -227,13 +214,14 @@ class HomeScreen:Fragment() {
             .show(currentFragment)
             .commit()
     }
-    private fun getFragmentFromIndex(currentIndex:Int):Fragment= when (currentIndex) {
-        discoverFragmentIndex -> discoverFragment!!
-        latestComicsFragmentIndex -> latestComicsFragment!!
-        ongoingComicsFragmentIndex -> ongoingComicsFragment!!
-        completedComicsFragmentIndex->completedComicsFragment!!
-        genreComicsFragmentIndex->comicsByGenreScreen!!
-        popularComicsFragmentIndex->popularComicsFragment!!
+    private fun defaultDiscoverFragmentInstance():DiscoverFragment = DiscoverFragment()
+    private fun getFragmentFromIndex(currentIndex:Int):Fragment?= when (currentIndex) {
+        discoverFragmentIndex -> discoverFragment
+        latestComicsFragmentIndex -> latestComicsFragment
+        ongoingComicsFragmentIndex -> ongoingComicsFragment
+        completedComicsFragmentIndex->completedComicsFragment
+        genreComicsFragmentIndex->comicsByGenreScreen
+        popularComicsFragmentIndex->popularComicsFragment
         else -> {
             doActionIfWeAreOnDebug { logger.e("an unrecognized index was used $currentIndex") }
             throw IllegalStateException("unrecognized index $currentIndex")
