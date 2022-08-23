@@ -195,19 +195,7 @@ class MainActivity : AppCompatActivity() {
         }else if (currentFragment is HomeScreen){
             currentFragment.activity?.onBackPressedDispatcher?.onBackPressed()
         }
-//        when {
-//            currentFragment != homeScreen -> {
-//                supportFragmentManager.beginTransaction()
-//                    .hide(currentFragment)
-//                    .show(homeScreen)
-//                    .commit()
-//                selectedFragmentIndex = mainFragmentIndex
-//                navigationBarView.selectedItemId=R.id.mainScreen
-//            }
-//            else ->{
-//                super.onBackPressed()
-//            }
-//        }
+
     }
 
 }

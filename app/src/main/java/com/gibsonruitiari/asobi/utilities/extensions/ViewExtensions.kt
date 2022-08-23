@@ -26,8 +26,12 @@ fun View.showSnackBar(
         .setAnchorView(anchor)
         .show()
 }
-
-
+/**
+ * Returns this ViewGroup's first child of specified class
+ */
+inline fun <reified T> ViewGroup.findChild(): T? {
+    return children.find { it is T } as? T
+}
 fun View.fade(target:Float,transitionDuration:Long=250,transitionDelay: Long=0, animationInterpolator: Interpolator = LinearInterpolator(),
 endAction:(View.()->Unit)?=null): Animator {
     val view_ = this

@@ -87,11 +87,7 @@ fun Throwable.parseThrowableErrorMessageIntoUsefulMessage():String = when(this){
 
 val screenWidth = Resources.getSystem().displayMetrics.run { widthPixels/density }
 
-/** Convenience for callbacks/listeners whose return value indicates an event was consumed. */
-inline fun consume(f: () -> Unit): Boolean {
-    f()
-    return true
-}
+
 inline fun Fragment.launchAndRepeatWithViewLifecycle(minActiveState:Lifecycle.State=Lifecycle.State.STARTED,
 crossinline block:suspend CoroutineScope.()->Unit):Job = viewLifecycleOwner.lifecycleScope.launch {
         viewLifecycleOwner.lifecycle.repeatOnLifecycle(minActiveState){

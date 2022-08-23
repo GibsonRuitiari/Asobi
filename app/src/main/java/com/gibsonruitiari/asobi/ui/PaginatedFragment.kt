@@ -31,6 +31,7 @@ import com.gibsonruitiari.asobi.utilities.views.ParentFragmentsView
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -52,6 +53,7 @@ abstract class PaginatedFragment:Fragment(){
 
 
     /* Start of view variables  */
+    private var anchorView:BottomNavigationView?=null
     private lateinit var paginatedFragmentSwipeRefreshLayout:SwipeRefreshLayout
     private lateinit var paginatedFragmentRecyclerView: RecyclerView
     private lateinit var paginatedFragmentLoadingLayout: LoadingLayout
@@ -206,6 +208,7 @@ abstract class PaginatedFragment:Fragment(){
         setUpSwipeRefreshWidget()
         animateAppBarColorsOnScroll()
         setUpToolbarTitle()
+        anchorView=activity?.findViewById<ConstraintLayout>(R.id.root_container)?.findChild<BottomNavigationView>()
 
     }
     override fun onHiddenChanged(hidden: Boolean) {
@@ -282,7 +285,7 @@ abstract class PaginatedFragment:Fragment(){
                     val throwable_ = (it.refresh as LoadState.Error).error
                     val errorMessage=throwable_.parseThrowableErrorMessageIntoUsefulMessage()
 
-                    paginatedFragmentSwipeRefreshLayout.showSnackBar(errorMessage)
+                    paginatedFragmentSwipeRefreshLayout.showSnackBar(errorMessage, anchor = anchorView)
                     setEmptyErrorStateTitleAndSubtitle(getString(R.string.error_state_title),
                         errorMessage)
                     onErrorOrEmptyDataShowErrorOrEmptyState()

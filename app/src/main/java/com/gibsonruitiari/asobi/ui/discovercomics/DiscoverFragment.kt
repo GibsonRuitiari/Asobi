@@ -39,6 +39,7 @@ import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.views.ParentFragmentsView
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -70,6 +71,8 @@ class DiscoverFragment:Fragment() {
     private lateinit var ongoingComicsRecyclerView: RecyclerView
     private lateinit var marvelComicsRecyclerView: RecyclerView
     private lateinit var dcComicsRecyclerView: RecyclerView
+
+    private  var anchorView:BottomNavigationView?=null
 
 
     private lateinit var retryButton: MaterialButton
@@ -141,6 +144,7 @@ class DiscoverFragment:Fragment() {
         onMoreLabelClickListeners()
         setUpDiscoverFragmentRecyclerViews()
         dynamicallyChangeStatusBarColorOnScroll()
+        anchorView=activity?.findViewById<ConstraintLayout>(R.id.root_container)?.findChild<BottomNavigationView>()
         /* Load data once Fragment's view is created based on whether the fragment is hidden or not.
          This is needed since hide()&show() do not change the fragment's view lifecycle, without this,
          the first time the fragment is shown nothing will be shown */
@@ -158,8 +162,8 @@ class DiscoverFragment:Fragment() {
     /* Navigate to notifications activity/settings activity when the buttons are clicked */
     private fun setUpDiscoverFragmentToolbar(){
     discoverFragmentToolbarGreetingsTextView.text=discoverScreenGreetingMessage()
-    discoverFragmentToolbarNotificationsButton.setOnClickListener { doActionIfWeAreOnDebug {rootView.showSnackBar("notifications"); logger.i("notifications button clicked") } }
-    discoverFragmentToolbarSettingsButton.setOnClickListener { doActionIfWeAreOnDebug {rootView.showSnackBar("settings"); logger.i("settings button clicked") } }
+    discoverFragmentToolbarNotificationsButton.setOnClickListener { doActionIfWeAreOnDebug {rootView.showSnackBar("notifications", anchor = anchorView); logger.i("notifications button clicked") } }
+    discoverFragmentToolbarSettingsButton.setOnClickListener { doActionIfWeAreOnDebug {rootView.showSnackBar("settings", anchor = anchorView); logger.i("settings button clicked") } }
     }
     private fun setUpRetryButtonClickListener(){
         with(retryButton){
