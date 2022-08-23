@@ -55,7 +55,6 @@ class ComicsSearchScreen:Fragment() {
                     isEnabled=false
                     activity?.onBackPressed()
                 }
-
                 else -> {
                     childFragmentManager.beginTransaction()
                         .hide(currentFragment)
@@ -172,13 +171,14 @@ class ComicsSearchScreen:Fragment() {
             .setTransition(TRANSIT_FRAGMENT_FADE)
             .commit()
     }
+    private fun defaultFragmentScreenInstance():Fragment = ComicsGenreScreen()
     private fun getFragmentFromIndex(currentIndex:Int):Fragment = when(currentIndex){
-        comicsByGenreFragmentIndex-> comicsByGenreScreen!!
-        comicsGenreScreenIndex -> comicsGenreScreen!!
-        comicsSearchResultScreenIndex -> comicsSearchResultScreen!!
+        comicsByGenreFragmentIndex-> comicsByGenreScreen
+        comicsGenreScreenIndex -> comicsGenreScreen
+        comicsSearchResultScreenIndex -> comicsSearchResultScreen
         else ->{
             doActionIfWeAreOnDebug { logger.e("an unrecognized index given $currentIndex") }
             throw IllegalArgumentException("unrecognized index $currentIndex")
         }
-    }
+    } ?: defaultFragmentScreenInstance()
 }

@@ -214,43 +214,12 @@ class ComicsGenreScreen:Fragment() {
                     doActionIfWeAreOnDebug { logger.i("scrolling up") }
                 }
             }
-//            addOnScrollListener(object:RecyclerView.OnScrollListener(){
-//                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-//                    super.onScrolled(recyclerView, dx, dy)
-//                    if (dy> 25){
-//                        comicsGenreSearchTextLabel.fade(0f, transitionDuration = 500, animationInterpolator = createPathInterpolator(easeOutInterpolatorArray)).start()
-//                        doActionIfWeAreOnDebug { logger.i("scrolling down") }
-//                    }else if (dy<-25){
-//                        comicsGenreSearchTextLabel.fade(1f, transitionDuration = 500, animationInterpolator =createPathInterpolator(easeOutInterpolatorArray)).start()
-//                        doActionIfWeAreOnDebug { logger.i("scrolling up") }
-//                    }
-//                }
-//            })
         }
     }
 
 
     private fun setUpMainFragmentRecyclerView(){
-//        val screenWidth= resourcesInstance().displayMetrics.run { widthPixels/density }
-//        with(comicsGenreRecyclerView){
-//            elevation =0f
-//            this.doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
-//                val systemInsets = windowInsetsCompat.getInsets(
-//                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
-//                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom+20.dp)
-//            }
-//            this.doOnNextLayout {
-//                setContentToMaxWidth(this)
-//            }
-//            this.setHasFixedSize(true)
-//            this.scrollToTop()
-//            this.adapter = genresAdapter
-//            val animation= AnimationUtils.loadLayoutAnimation(this.context, R.anim.grid_layout_animation_from_bottom)
-//            animate(animation)
-//            /*By default the medium density is 160f so we minus 4 just increase to accommodate smaller screens and come up with a proper
-//            * no of span count for our grid layout */
-//            this.layoutManager = this.gridLayoutManager(spanCount = (screenWidth/156f).toInt())
-//        }
+
         with(comicsGenreRecyclerView){
             elevation=0f
             doOnNextLayout { setContentToMaxWidth(this) }

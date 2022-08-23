@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentTransaction.TRANSIT_FRAGMENT_FADE
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -64,8 +65,9 @@ class HomeScreen:Fragment() {
                 }
                 else->{
                     childFragmentManager.beginTransaction()
-                        .hide(currentFragment ?: defaultDiscoverFragmentInstance())
+                        .hide(currentFragment)
                         .show(discoverFragment!!)
+                        .setTransition(TRANSIT_FRAGMENT_FADE)
                         .commit()
                     currentFragmentIndex = discoverFragmentIndex
                     doActionIfWeAreOnDebug { logger.i("[set the current fragment to discover fragment ]") }
@@ -135,7 +137,7 @@ class HomeScreen:Fragment() {
         }
     }
     private fun observeNavigationEventsFromViewModel(){
-        val currentFragment = getFragmentFromIndex(currentFragmentIndex) ?: defaultDiscoverFragmentInstance()
+        val currentFragment = getFragmentFromIndex(currentFragmentIndex)
         navigationEventsJob?.cancel()
         navigationEventsJob=viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
@@ -145,6 +147,7 @@ class HomeScreen:Fragment() {
                         childFragmentManager.beginTransaction()
                             .hide(currentFragment)
                             .show(discoverFragment!!)
+                            .setTransition(TRANSIT_FRAGMENT_FADE)
                             .commit()
                         currentFragmentIndex= discoverFragmentIndex
                     }
@@ -152,6 +155,7 @@ class HomeScreen:Fragment() {
                         childFragmentManager.beginTransaction()
                             .hide(currentFragment)
                             .show(latestComicsFragment!!)
+                            .setTransition(TRANSIT_FRAGMENT_FADE)
                             .commit()
                         currentFragmentIndex= latestComicsFragmentIndex
                         doActionIfWeAreOnDebug { logger.i("current fragment index is $currentFragment is latest frag hidden? ${latestComicsFragment!!.isHidden}") }
@@ -161,6 +165,7 @@ class HomeScreen:Fragment() {
                         childFragmentManager.beginTransaction()
                             .hide(currentFragment)
                             .show(ongoingComicsFragment!!)
+                            .setTransition(TRANSIT_FRAGMENT_FADE)
                             .commit()
                         currentFragmentIndex= ongoingComicsFragmentIndex
                     }
@@ -168,6 +173,7 @@ class HomeScreen:Fragment() {
                             childFragmentManager.beginTransaction()
                                 .hide(currentFragment)
                                 .show(comicsByGenreScreen!!)
+                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .commit()
                             currentFragmentIndex= genreComicsFragmentIndex
                         }
@@ -175,6 +181,7 @@ class HomeScreen:Fragment() {
                             childFragmentManager.beginTransaction()
                                 .hide(currentFragment)
                                 .show(completedComicsFragment!!)
+                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .commit()
                             currentFragmentIndex= completedComicsFragmentIndex
                         }
@@ -182,6 +189,7 @@ class HomeScreen:Fragment() {
                             childFragmentManager.beginTransaction()
                                 .hide(currentFragment)
                                 .show(popularComicsFragment!!)
+                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .commit()
                             currentFragmentIndex= popularComicsFragmentIndex
                         }
@@ -203,7 +211,7 @@ class HomeScreen:Fragment() {
         popularComicsFragment = childFragmentManager.findFragmentByTag(popularComicsFragmentTag) as PopularComicsFragment
         comicsByGenreScreen = childFragmentManager.findFragmentByTag(comicsByGenreFragmentTag) as ComicsByGenreScreen
         completedComicsFragment = childFragmentManager.findFragmentByTag(completedComicsFragmentTag) as CompletedComicsFragment
-        val currentFragment = getFragmentFromIndex(currentFragmentIndex) ?: defaultDiscoverFragmentInstance()
+        val currentFragment = getFragmentFromIndex(currentFragmentIndex)
         childFragmentManager.beginTransaction()
             .hide(discoverFragment!!)
             .hide(latestComicsFragment!!)
@@ -212,10 +220,11 @@ class HomeScreen:Fragment() {
             .hide(completedComicsFragment!!)
             .hide(popularComicsFragment!!)
             .show(currentFragment)
+            .setTransition(TRANSIT_FRAGMENT_FADE)
             .commit()
     }
     private fun defaultDiscoverFragmentInstance():DiscoverFragment = DiscoverFragment()
-    private fun getFragmentFromIndex(currentIndex:Int):Fragment?= when (currentIndex) {
+    private fun getFragmentFromIndex(currentIndex:Int):Fragment= when (currentIndex) {
         discoverFragmentIndex -> discoverFragment
         latestComicsFragmentIndex -> latestComicsFragment
         ongoingComicsFragmentIndex -> ongoingComicsFragment
@@ -226,6 +235,6 @@ class HomeScreen:Fragment() {
             doActionIfWeAreOnDebug { logger.e("an unrecognized index was used $currentIndex") }
             throw IllegalStateException("unrecognized index $currentIndex")
         }
-    }
+    } ?: defaultDiscoverFragmentInstance()
 
 }

@@ -41,6 +41,7 @@ import com.gibsonruitiari.asobi.utilities.views.ParentFragmentsView
 import com.gibsonruitiari.asobi.utilities.widgets.LoadingLayout
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textfield.TextInputLayout.END_ICON_CLEAR_TEXT
 import kotlinx.coroutines.Job
@@ -62,6 +63,7 @@ class ComicsSearchResultsScreen: Fragment() {
     private lateinit var searchResultsEditText:EditText
     private lateinit var loadingLayout:LoadingLayout
     private lateinit var errorEmptyLayout:ConstraintLayout
+    private lateinit var retryButton:MaterialButton
     /* End: initialization of view variables */
 
     private var toolbarExpanded:Boolean =false
@@ -248,6 +250,7 @@ class ComicsSearchResultsScreen: Fragment() {
         errorEmptyLayout=fragmentView.errorEmptyStateLayout
         searchResultsErrorTitle = fragmentView.errorTitle
         searchResultsErrorSubtitle=fragmentView.subtitleError
+        retryButton = fragmentView.retryButton
         return fragmentView
     }
 
@@ -257,7 +260,7 @@ class ComicsSearchResultsScreen: Fragment() {
         searchResultsScreenSearchSubtitle.fade(1f).start()
         changeToolbarLayoutMarginOnClick()
         setUpTextInputLayoutActionListener()
-        // see
+        retryButton.visibility=View.GONE
         setUpSearchResultsScreenRecyclerView()
     }
     override fun onHiddenChanged(hidden: Boolean) {
@@ -362,20 +365,7 @@ class ComicsSearchResultsScreen: Fragment() {
     }
 
     private fun setUpSearchResultsScreenRecyclerView(){
-//        val screenWidth= resourcesInstance().displayMetrics.run {
-//            widthPixels/density }
-//        with(searchResultsScreenRecyclerView){
-//            doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
-//                val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars())
-//                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom)
-//            }
-//            setHasFixedSize(true)
-//            scrollToTop()
-//           adapter = searchScreenResultsRecyclerViewAdapter
-//            /*By default the medium density is 160f so we minus 4 just increase to accommodate smaller screens and come up with a proper
-//            * no of span count for our grid layout */
-//            layoutManager = gridLayoutManager(spanCount = (screenWidth/156f).toInt())
-//        }
+
         searchResultsScreenRecyclerView.defaultRecyclerViewSetUp(recyclerViewAdapter =
         searchScreenResultsRecyclerViewAdapter, gridLayout = true)
     }
@@ -383,13 +373,13 @@ class ComicsSearchResultsScreen: Fragment() {
     private fun animateToolbarChanges(){
         val expandedDrawable = defaultShapeDrawable.apply { paint.color=resources.getColor(R.color.davy_grey,null)}
         toolbarExpanded=if (toolbarExpanded.not()){
-           expandCollapseSearchScreenResultsToolbar(marginMedium, noMargin){
+           expandCollapseSearchScreenResultsToolbar(marginSmall, noMargin){
                searchResultsScreenToolbar.background = expandedDrawable
                searchResultsScreenToolbar.title=""}
             searchResultsTextInputLayout.fade(fullAlpha){ searchResultsTextInputLayout.editText?.let { it.requestFocus();showKeyboard(it.findFocus()) } }.start()
             true
         }else{
-        expandCollapseSearchScreenResultsToolbar(noMargin, marginMedium){searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null)
+        expandCollapseSearchScreenResultsToolbar(noMargin, marginSmall){searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null)
             searchResultsScreenToolbar.title=resources.getString(R.string.search_label)}
             searchResultsTextInputLayout.fade(noAlpha){ cleanUpSearchQuery()}.start()
             false
