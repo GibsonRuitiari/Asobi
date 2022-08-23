@@ -16,7 +16,7 @@ class PopularComicsFragment: PaginatedFragment() {
 
     override fun getFragmentColor(): Int =  Color.parseColor("#FFA402")
 
-    override fun getTitle(): String=getString(R.string.popular_comics)
+    override fun getTitle(): String=requireContext().getString(R.string.popular_comics)
 
     override suspend fun observePagedData() {
        popularComicsViewModel.pagedList.collectLatest {

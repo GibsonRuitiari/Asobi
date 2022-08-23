@@ -61,7 +61,9 @@
     </style>
 
     <style name="TextAppearance.Asobi.Body1" parent="TextAppearance.MaterialComponents.Body1">
-        <!--Your custom type style here-->
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/white</item>
     </style>
 
     <style name="TextAppearance.Asobi.Body2" parent="TextAppearance.MaterialComponents.Body2">

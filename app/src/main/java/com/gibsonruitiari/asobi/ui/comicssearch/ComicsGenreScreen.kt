@@ -2,7 +2,6 @@ package com.gibsonruitiari.asobi.ui.comicssearch
 
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,6 +25,7 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.comicsbygenre.ComicsByGenreViewModel
 import com.gibsonruitiari.asobi.ui.uiModels.UiGenreModel
+import com.gibsonruitiari.asobi.utilities.*
 import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.views.ParentFragmentsView
@@ -94,7 +94,7 @@ class ComicsGenreScreen:Fragment() {
             ConstraintSet.WRAP_CONTENT,ConstraintSet.WRAP_CONTENT)
             constraintSet constrainTopToParent appcompatTextView.id
             constraintSet constrainStartToParent appcompatTextView.id
-            constraintSet.applyMargin(appcompatTextView.id,24.dp,24.dp,24.dp,24.dp)
+            constraintSet.applyMargin(appcompatTextView.id, marginLarge,marginLarge,marginLarge,marginLarge)
             return appcompatTextView
         }
         private fun comicsGenreScreenSearchButton(context: Context,
@@ -104,18 +104,18 @@ class ComicsGenreScreen:Fragment() {
                 iconGravity = 0x1
                 textAlignment = 0x2
                 setTextColor(context.resources.getColor(R.color.davy_grey,null))
-                textSize = 18f // will be automatically converted to 18sp
+                textSize = normalTextSize // will be automatically converted to 18sp
                 contentDescription=context.resources.getString(R.string.search_comics_hint)
                 iconTint= defaultColorStateList
                 text=context.resources.getString(R.string.search_comics_hint)
                 isAllCaps=false
-                iconSize=30.dp
+                iconSize= defaultIconSize
                 setTextColor(defaultColorStateList)
                 setBackgroundColor(Color.WHITE)
                 icon=context.resources.getDrawable(R.drawable.ic_baseline_search_24,null)
             }
-            constraintSet.setViewLayoutParams(searchButton.id, width = ConstraintSet.MATCH_CONSTRAINT,height=65.dp)
-            constraintSet.applyMargin(searchButton.id,marginTop=16.dp, marginStart = 16.dp, marginEnd = 16.dp)
+            constraintSet.setViewLayoutParams(searchButton.id, width = ConstraintSet.MATCH_CONSTRAINT,height= defaultButtonHeight)
+            constraintSet.applyMargin(searchButton.id,marginTop=marginMedium, marginStart = marginMedium, marginEnd = marginMedium)
             constraintSet constrainEndToParent searchButton.id
             constraintSet constrainStartToParent searchButton.id
             constraintSet.connect(searchButton.id,ConstraintSet.TOP,searchLabelId,ConstraintSet.BOTTOM)
@@ -134,7 +134,7 @@ class ComicsGenreScreen:Fragment() {
             constraintSet constrainStartToParent appCompatTextView.id
             constraintSet.connect(appCompatTextView.id,ConstraintSet.TOP,searchButtonId,
             ConstraintSet.BOTTOM)
-            constraintSet.applyMargin(appCompatTextView.id,16.dp,16.dp,16.dp,16.dp)
+            constraintSet.applyMargin(appCompatTextView.id, marginMedium,marginMedium,marginMedium,marginMedium)
             return appCompatTextView
         }
         private fun comicsGenreScreenRecyclerView(context: Context,constraintSet: ConstraintSet,
@@ -147,7 +147,7 @@ class ComicsGenreScreen:Fragment() {
             constraintSet constrainEndToParent recyclerViewId
             constraintSet constrainBottomToParent  recyclerViewId
             constraintSet.connect(recyclerViewId,ConstraintSet.TOP,genreLabelId,ConstraintSet.BOTTOM)
-            constraintSet.applyMargin(recyclerViewId, marginTop =8.dp)
+            constraintSet.applyMargin(recyclerViewId, marginTop = marginSmall)
             return recyclerView
         }
     }
@@ -205,43 +205,58 @@ class ComicsGenreScreen:Fragment() {
     }
     private fun searchFragmentRecyclerViewOnScrollListener(){
         with(comicsGenreRecyclerView){
-            addOnScrollListener(object:RecyclerView.OnScrollListener(){
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    if (dy> 25){
-                        comicsGenreSearchTextLabel.fade(0f, transitionDuration = 500, animationInterpolator = createPathInterpolator(easeOutInterpolatorArray)).start()
-                        doActionIfWeAreOnDebug { logger.i("scrolling down") }
-                    }else if (dy<-25){
-                        comicsGenreSearchTextLabel.fade(1f, transitionDuration = 500, animationInterpolator =createPathInterpolator(easeOutInterpolatorArray)).start()
-                        doActionIfWeAreOnDebug { logger.i("scrolling up") }
-                    }
+            onScrollListener{_, _, yPixelsConsumed ->
+                if (yPixelsConsumed> 25){
+                    comicsGenreSearchTextLabel.fade(0f, transitionDuration = 500, animationInterpolator = createPathInterpolator(easeOutInterpolatorArray)).start()
+                    doActionIfWeAreOnDebug { logger.i("scrolling down") }
+                }else if (yPixelsConsumed<-25){
+                    comicsGenreSearchTextLabel.fade(1f, transitionDuration = 500, animationInterpolator =createPathInterpolator(easeOutInterpolatorArray)).start()
+                    doActionIfWeAreOnDebug { logger.i("scrolling up") }
                 }
-            })
+            }
+//            addOnScrollListener(object:RecyclerView.OnScrollListener(){
+//                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//                    super.onScrolled(recyclerView, dx, dy)
+//                    if (dy> 25){
+//                        comicsGenreSearchTextLabel.fade(0f, transitionDuration = 500, animationInterpolator = createPathInterpolator(easeOutInterpolatorArray)).start()
+//                        doActionIfWeAreOnDebug { logger.i("scrolling down") }
+//                    }else if (dy<-25){
+//                        comicsGenreSearchTextLabel.fade(1f, transitionDuration = 500, animationInterpolator =createPathInterpolator(easeOutInterpolatorArray)).start()
+//                        doActionIfWeAreOnDebug { logger.i("scrolling up") }
+//                    }
+//                }
+//            })
         }
     }
 
 
     private fun setUpMainFragmentRecyclerView(){
-        val screenWidth= resourcesInstance().displayMetrics.run { widthPixels/density }
+//        val screenWidth= resourcesInstance().displayMetrics.run { widthPixels/density }
+//        with(comicsGenreRecyclerView){
+//            elevation =0f
+//            this.doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+//                val systemInsets = windowInsetsCompat.getInsets(
+//                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
+//                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom+20.dp)
+//            }
+//            this.doOnNextLayout {
+//                setContentToMaxWidth(this)
+//            }
+//            this.setHasFixedSize(true)
+//            this.scrollToTop()
+//            this.adapter = genresAdapter
+//            val animation= AnimationUtils.loadLayoutAnimation(this.context, R.anim.grid_layout_animation_from_bottom)
+//            animate(animation)
+//            /*By default the medium density is 160f so we minus 4 just increase to accommodate smaller screens and come up with a proper
+//            * no of span count for our grid layout */
+//            this.layoutManager = this.gridLayoutManager(spanCount = (screenWidth/156f).toInt())
+//        }
         with(comicsGenreRecyclerView){
-            elevation =0f
-            this.doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
-                val systemInsets = windowInsetsCompat.getInsets(
-                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
-                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom+20.dp)
-            }
-            this.doOnNextLayout {
-                setContentToMaxWidth(this)
-            }
-            this.setHasFixedSize(true)
-            this.scrollToTop()
-            this.adapter = genresAdapter
+            elevation=0f
+            doOnNextLayout { setContentToMaxWidth(this) }
             val animation= AnimationUtils.loadLayoutAnimation(this.context, R.anim.grid_layout_animation_from_bottom)
             animate(animation)
-            /*By default the medium density is 160f so we minus 4 just increase to accommodate smaller screens and come up with a proper
-            * no of span count for our grid layout */
-            this.layoutManager = this.gridLayoutManager(spanCount = (screenWidth/156f).toInt())
-
+            defaultRecyclerViewSetUp(recyclerViewAdapter = genresAdapter, paddingBottom = 20.dp, gridLayout = true)
         }
 }
 
@@ -270,13 +285,7 @@ class ComicsGenreScreen:Fragment() {
     })
 
     companion object{
-        private val easeOutInterpolatorArray= floatArrayOf(0f,0f, 0.58f,1f)
-        // states need to be a 2d array
-        private val colorStates = intArrayOf(Color.GRAY,Color.BLACK) // pressed, -pressed
-        val states = arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf(-android.R.attr.state_pressed))
-        val defaultColorStateList = ColorStateList(states, colorStates)
         fun filterUiGenreModelToGenre(uiGenreModel: UiGenreModel):Genres? = Genres.values().firstOrNull { val originalName=uiGenreModel.genreName.replace(it.emoji ?: "","");it.genreName.contentEquals(originalName) }
-
     }
 
 }

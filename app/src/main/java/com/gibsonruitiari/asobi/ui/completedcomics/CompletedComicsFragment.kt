@@ -19,8 +19,7 @@ class CompletedComicsFragment: PaginatedFragment() {
        }
     }
 
-
-    override fun getTitle(): String =getString(R.string.completed_comics)
+    override fun getTitle(): String =requireContext().getString(R.string.completed_comics)
 
     override fun getFragmentColor(): Int = Color.parseColor("#4cc9f0")
 

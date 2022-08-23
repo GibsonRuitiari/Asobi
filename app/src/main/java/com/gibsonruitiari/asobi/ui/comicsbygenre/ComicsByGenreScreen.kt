@@ -14,8 +14,7 @@ class ComicsByGenreScreen: PaginatedFragment() {
     override fun onComicClicked(comicItem: ViewComics) {
        Toast.makeText(requireContext(),"comic item: ${comicItem.comicLink}", Toast.LENGTH_SHORT).show()
     }
-
-    override fun getTitle(): String = getString(R.string.comics_by_genre)
+    override fun getTitle(): String = requireContext().getString(R.string.comics_by_genre)
     override fun getFragmentColor(): Int {
         return comicsByGenreViewModel.currentGenreChoice.value?.toUiGenreModel()?.genreColor
             ?: Color.parseColor("#CF0B82")

@@ -7,8 +7,6 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.RectShape
 import android.os.Bundle
 import android.text.InputType
 import android.view.Gravity
@@ -36,6 +34,7 @@ import com.gibsonruitiari.asobi.ui.comicsadapters.listAdapterOf
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderDelegate
 import com.gibsonruitiari.asobi.ui.comicsadapters.viewHolderFrom
 import com.gibsonruitiari.asobi.ui.uiModels.ViewComics
+import com.gibsonruitiari.asobi.utilities.*
 import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.views.ParentFragmentsView
@@ -79,9 +78,9 @@ class ComicsSearchResultsScreen: Fragment() {
         lateinit var searchResultsRecyclerView: RecyclerView
         lateinit var searchResultsTextInputLayout: TextInputLayout
         lateinit var searchResultsEditText:EditText
-        private val appbarAnimator=StateListAnimator().apply{ addState(IntArray(0), ObjectAnimator.ofFloat(this,"elevation",0f)) }
-        private val toolbarAnimator = StateListAnimator().apply { addState(IntArray(0),ObjectAnimator.ofFloat(this,
-        "elevation",0f)) }
+
+        private val noElevationAnimator = StateListAnimator().apply { addState(IntArray(0),ObjectAnimator.ofFloat(this,
+        "elevation", noElevation)) }
         init {
 
             searchScreenResultsConstraintLayout(context)
@@ -90,8 +89,8 @@ class ComicsSearchResultsScreen: Fragment() {
             val appBarLayout  = AppBarLayout(context).apply {
                 id=ViewCompat.generateViewId()
                // layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                elevation= noElevationValue
-                stateListAnimator=appbarAnimator
+                elevation= noElevation
+                stateListAnimator=noElevationAnimator
                 setBackgroundColor(context.resources.getColor(R.color.transparent,null))
             }
             constraintSet.setViewLayoutParams(appBarLayout.id, ConstraintSet.MATCH_CONSTRAINT,ConstraintSet.WRAP_CONTENT)
@@ -112,9 +111,9 @@ class ComicsSearchResultsScreen: Fragment() {
                 title = context.getString(R.string.search_label)
                 isClickable=true
                 /* elevation not being changed not working for some reason? */
-                elevation= noElevationValue
-                stateListAnimator=toolbarAnimator
-                (layoutParams as AppBarLayout.LayoutParams).setMargins(toolbarStartMargin.dp)
+                elevation= noElevation
+                stateListAnimator=noElevationAnimator
+                (layoutParams as AppBarLayout.LayoutParams).setMargins(marginMedium)
             }
             searchResultsTextInputLayout= searchScreenTextInputLayout(materialToolbar.context)
             materialToolbar.addView(searchResultsTextInputLayout)
@@ -151,7 +150,7 @@ class ComicsSearchResultsScreen: Fragment() {
                 layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
                 id=ViewCompat.generateViewId()
                 fitsSystemWindows=true
-                stateListAnimator=appbarAnimator
+                stateListAnimator=noElevationAnimator
             }
             addView(constraintLayout)
             val constraintSet = ConstraintSet()
@@ -170,11 +169,11 @@ class ComicsSearchResultsScreen: Fragment() {
             val recyclerView = RecyclerView(context).apply { id=ViewCompat.generateViewId(); visibility=View.GONE
                 val animation= AnimationUtils.loadLayoutAnimation(this.context, R.anim.layout_animation_scale_in)
                 elevation=0f
-                stateListAnimator=toolbarAnimator
+                stateListAnimator=noElevationAnimator
                 animate(animation)}
             val recyclerViewId= recyclerView.id
             constraintSet.setViewLayoutParams(recyclerViewId, ConstraintSet.MATCH_CONSTRAINT,ConstraintSet.MATCH_CONSTRAINT)
-            constraintSet.applyMargin(recyclerViewId, marginTop = toolbarStartMargin)
+            constraintSet.applyMargin(recyclerViewId, marginTop = marginMedium)
             constraintSet.connect(recyclerViewId,ConstraintSet.TOP,appBarId,ConstraintSet.BOTTOM)
             constraintSet constrainEndToParent recyclerViewId
             constraintSet constrainStartToParent recyclerViewId
@@ -211,7 +210,7 @@ class ComicsSearchResultsScreen: Fragment() {
             }
             val searchSubtitleId=appCompatTextView.id
             constraintSet.setViewLayoutParams(searchSubtitleId,ConstraintSet.WRAP_CONTENT, ConstraintSet.WRAP_CONTENT)
-            constraintSet.applyMargin(searchSubtitleId, marginTop = toolbarStartMargin.dp)
+            constraintSet.applyMargin(searchSubtitleId, marginTop = marginMedium)
             constraintSet constrainStartToParent searchSubtitleId
             constraintSet constrainEndToParent searchSubtitleId
             constraintSet.connect(searchSubtitleId,ConstraintSet.TOP, searchTitleTextId,ConstraintSet.BOTTOM)
@@ -363,34 +362,36 @@ class ComicsSearchResultsScreen: Fragment() {
     }
 
     private fun setUpSearchResultsScreenRecyclerView(){
-        val screenWidth= resourcesInstance().displayMetrics.run {
-            widthPixels/density }
-        with(searchResultsScreenRecyclerView){
-            doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
-                val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars())
-                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom)
-            }
-            setHasFixedSize(true)
-            scrollToTop()
-           adapter = searchScreenResultsRecyclerViewAdapter
-            /*By default the medium density is 160f so we minus 4 just increase to accommodate smaller screens and come up with a proper
-            * no of span count for our grid layout */
-            layoutManager = gridLayoutManager(spanCount = (screenWidth/156f).toInt())
-        }
+//        val screenWidth= resourcesInstance().displayMetrics.run {
+//            widthPixels/density }
+//        with(searchResultsScreenRecyclerView){
+//            doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+//                val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars())
+//                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom)
+//            }
+//            setHasFixedSize(true)
+//            scrollToTop()
+//           adapter = searchScreenResultsRecyclerViewAdapter
+//            /*By default the medium density is 160f so we minus 4 just increase to accommodate smaller screens and come up with a proper
+//            * no of span count for our grid layout */
+//            layoutManager = gridLayoutManager(spanCount = (screenWidth/156f).toInt())
+//        }
+        searchResultsScreenRecyclerView.defaultRecyclerViewSetUp(recyclerViewAdapter =
+        searchScreenResultsRecyclerViewAdapter, gridLayout = true)
     }
     /* Start: Fragment's specific utility methods */
     private fun animateToolbarChanges(){
-        val expandedDrawable = shapeDrawable.apply { paint.color=resources.getColor(R.color.davy_grey,null)}
+        val expandedDrawable = defaultShapeDrawable.apply { paint.color=resources.getColor(R.color.davy_grey,null)}
         toolbarExpanded=if (toolbarExpanded.not()){
-           expandCollapseSearchScreenResultsToolbar(toolbarStartMargin, toolbarEndMargin){
+           expandCollapseSearchScreenResultsToolbar(marginMedium, noMargin){
                searchResultsScreenToolbar.background = expandedDrawable
                searchResultsScreenToolbar.title=""}
-            searchResultsTextInputLayout.fade(1f){ searchResultsTextInputLayout.editText?.let { it.requestFocus();showKeyboard(it.findFocus()) } }.start()
+            searchResultsTextInputLayout.fade(fullAlpha){ searchResultsTextInputLayout.editText?.let { it.requestFocus();showKeyboard(it.findFocus()) } }.start()
             true
         }else{
-        expandCollapseSearchScreenResultsToolbar(toolbarEndMargin, toolbarStartMargin){searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null)
+        expandCollapseSearchScreenResultsToolbar(noMargin, marginMedium){searchResultsScreenToolbar.background=resources.getDrawable(R.drawable.toolbar_bg,null)
             searchResultsScreenToolbar.title=resources.getString(R.string.search_label)}
-            searchResultsTextInputLayout.fade(0f){ cleanUpSearchQuery()}.start()
+            searchResultsTextInputLayout.fade(noAlpha){ cleanUpSearchQuery()}.start()
             false
         }
     }
@@ -432,13 +433,5 @@ class ComicsSearchResultsScreen: Fragment() {
             comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
         }
     }
-    companion object{
-        private const val toolbarStartMargin=16
-        private const val toolbarEndMargin=0
-        private const val noElevationValue=0f
-        private val colorStates = intArrayOf(Color.GRAY,Color.WHITE) // pressed, -pressed
-        val states = arrayOf(intArrayOf(android.R.attr.state_pressed), intArrayOf(-android.R.attr.state_pressed))
-        val defaultColorStateList = ColorStateList(states, colorStates)
-        val shapeDrawable = ShapeDrawable(RectShape()).apply { setPadding(0,0,0,0)}
-    }
+
 }

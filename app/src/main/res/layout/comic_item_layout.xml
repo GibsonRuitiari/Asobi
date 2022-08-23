@@ -15,7 +15,7 @@
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize10Percent"
         tools:src="@drawable/sunstone"
         android:foreground="@drawable/collection_gradient_overlay"
-        tools:ignore="ContentDescription"
+        tools:ignore="ContentDescription,UnusedAttribute"
         android:scaleType="centerCrop"
         app:layout_constraintDimensionRatio="w,3:2.3"
         app:layout_constraintEnd_toEndOf="parent"

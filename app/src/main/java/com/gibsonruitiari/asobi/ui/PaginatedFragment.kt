@@ -53,10 +53,10 @@ abstract class PaginatedFragment:Fragment(){
 
     /* Start of view variables  */
     private lateinit var paginatedFragmentSwipeRefreshLayout:SwipeRefreshLayout
-     lateinit var paginatedFragmentRecyclerView: RecyclerView
+    private lateinit var paginatedFragmentRecyclerView: RecyclerView
     private lateinit var paginatedFragmentLoadingLayout: LoadingLayout
     private lateinit var paginatedFragmentErrorEmptyLayout:ConstraintLayout
-   private lateinit var paginatedFragmentAppBarLayout:AppBarLayout
+    private lateinit var paginatedFragmentAppBarLayout:AppBarLayout
     private lateinit var paginatedFragmentToolbar:MaterialToolbar
     private lateinit var paginatedFragmentConstraintLayout:ConstraintLayout
     private lateinit var paginatedFragmentErrorEmptyTitle:AppCompatTextView
@@ -324,43 +324,27 @@ abstract class PaginatedFragment:Fragment(){
         }
     }
     private fun setUpMainFragmentRecyclerView(){
-        val screenWidth= resourcesInstance().displayMetrics.run {
-            widthPixels/density }
-        with(paginatedFragmentRecyclerView){
-            doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
-                val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars())
-                view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom)
-            }
-            setHasFixedSize(true)
-            scrollToTop()
-            adapter = pagingDataAdapter
-            /*By default the medium density is 160f so we minus 4 just increase to accommodate smaller screens and come up with a proper
-            * no of span count for our grid layout */
-            layoutManager = gridLayoutManager(spanCount = (screenWidth/156f).toInt())
-        }
+        pagingDataAdapter?.let { paginatedFragmentRecyclerView.defaultRecyclerViewSetUp(recyclerViewAdapter = it,
+        gridLayout = true) }
     }
     private fun animateAppBarColorsOnScroll(){
-        paginatedFragmentRecyclerView.addOnScrollListener(object :RecyclerView.OnScrollListener(){
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (recyclerView.canScrollVertically(-1).not()){
-                    changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
-                    applyBarElevationAndBackgroundColor(resources.getColor(R.color.matte,null),0f,true)
-                }
+        paginatedFragmentRecyclerView.onScrollListener(onScrollStateChange = {recyclerViewInstance, _ ->
+            if (recyclerViewInstance.canScrollVertically(-1).not()){
+                changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
+                applyBarElevationAndBackgroundColor(resources.getColor(R.color.matte,null),0f,true)
             }
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy>0){
-                    // scrolling down
-                    doActionIfWeAreOnDebug { logger.i("dy>0 scrolling down $dy") }
-                    changeStatusBarToTransparentInFragment(getFragmentColor())
-                    applyBarElevationAndBackgroundColor(getFragmentColor(), 4f,false)
-                }else if (dy<-1) {
-                    // scrolling up
-                    doActionIfWeAreOnDebug {  logger.i("dy<-1 scrolling up $dy") }
-                    changeStatusBarToTransparentInFragment(getFragmentColor())
-                    applyBarElevationAndBackgroundColor(getFragmentColor(),4f,false)
-                }
+        },
+        onScroll = {_, _, yPixelsConsumed ->
+            if (yPixelsConsumed>0){
+                // scrolling down
+                doActionIfWeAreOnDebug { logger.i("dy>0 scrolling down $yPixelsConsumed") }
+                changeStatusBarToTransparentInFragment(getFragmentColor())
+                applyBarElevationAndBackgroundColor(getFragmentColor(), 4f,false)
+            }else if (yPixelsConsumed<-1) {
+                // scrolling up
+                doActionIfWeAreOnDebug {  logger.i("dy<-1 scrolling up $yPixelsConsumed") }
+                changeStatusBarToTransparentInFragment(getFragmentColor())
+                applyBarElevationAndBackgroundColor(getFragmentColor(),4f,false)
             }
         })
     }

@@ -17,7 +17,7 @@ class LatestComicsFragment: PaginatedFragment() {
     }
 
     private val latestComicsViewModel: LatestComicsViewModel by viewModel()
-    override fun getTitle(): String= getString(R.string.latest_comics)
+    override fun getTitle(): String= requireContext().getString(R.string.latest_comics)
     override fun getFragmentColor(): Int = Color.parseColor("#74B7A7")
     override suspend fun observePagedData() {
         latestComicsViewModel.pagedList.collectLatest {

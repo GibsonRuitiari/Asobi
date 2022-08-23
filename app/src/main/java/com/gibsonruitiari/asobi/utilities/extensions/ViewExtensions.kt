@@ -4,12 +4,9 @@ import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.view.animation.Interpolator
 import android.view.animation.LayoutAnimationController
 import android.view.animation.LinearInterpolator
-import androidx.annotation.IdRes
-import androidx.annotation.StringRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.doOnEnd
 import androidx.core.view.ViewCompat
@@ -17,8 +14,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.RecyclerView
-import com.gibsonruitiari.asobi.R
-import com.gibsonruitiari.asobi.ui.uiModels.UiMeasureSpec
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -31,12 +26,8 @@ fun View.showSnackBar(
         .setAnchorView(anchor)
         .show()
 }
-/**
- * Returns this ViewGroup's first child of specified class
- */
-inline fun <reified T> ViewGroup.findChild(): T? {
-    return children.find { it is T } as? T
-}
+
+
 fun View.fade(target:Float,transitionDuration:Long=250,transitionDelay: Long=0, animationInterpolator: Interpolator = LinearInterpolator(),
 endAction:(View.()->Unit)?=null): Animator {
     val view_ = this
@@ -55,25 +46,7 @@ endAction:(View.()->Unit)?=null): Animator {
 fun RecyclerView.animate(animation:LayoutAnimationController){
     layoutAnimation= animation
 }
-fun View.showSnackBar(
-    @StringRes textId: Int,
-    duration: Int = Snackbar.LENGTH_SHORT,
-    anchor: View? = null
-) {
-    Snackbar.make(this, textId, duration)
-        .setAnchorView(anchor)
-        .show()
-}
 
-fun View.showSnackBar(
-    @StringRes textId: Int,
-    duration: Int = Snackbar.LENGTH_SHORT,
-    @IdRes anchor: Int
-) {
-    Snackbar.make(this, textId, duration)
-        .setAnchorView(anchor)
-        .show()
-}
 /* Ensure direct child of constraint layout take the maximum width as possible
 * Useful mostly in cases where the screen size increases - screen size> Screen.COMPACT */
 fun setContentToMaxWidth(view: View){
@@ -93,11 +66,31 @@ private fun getContentMaxWidthPercent(maxWidthDp:Int):Float{
         else->1f
     }
 }
-fun View.applyBottomInsets(){
+fun View.applyBottomWindowInsets(paddingBottom: Int=0){
     doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
         val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type
             .ime())
-        view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom)
+        view.updatePadding(bottom= viewPaddingState.bottom + systemInsets.bottom+paddingBottom)
+    }
+}
+fun View.applyStartWindowInsets(paddingStart:Int=0){
+    doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+        val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.ime())
+        view.updatePadding(left= viewPaddingState.start + systemInsets.left+paddingStart)
+    }
+}
+fun View.applyEndWindowInsets(paddingEnd:Int=0){
+    doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+        val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type
+            .ime())
+        view.updatePadding(right= viewPaddingState.end + systemInsets.right+paddingEnd)
+    }
+}
+fun View.applyTopWindowInsets(paddingTop:Int=0){
+    doOnApplyWindowInsets { view, windowInsetsCompat, viewPaddingState ->
+        val systemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type
+            .ime())
+        view.updatePadding(top= viewPaddingState.top + systemInsets.top+paddingTop)
     }
 }
 fun View.doOnApplyWindowInsets(f:(View,WindowInsetsCompat,ViewPaddingState)->Unit){

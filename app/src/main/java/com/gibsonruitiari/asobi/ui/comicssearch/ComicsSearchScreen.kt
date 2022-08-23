@@ -22,7 +22,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -61,6 +60,7 @@ class ComicsSearchScreen:Fragment() {
                     childFragmentManager.beginTransaction()
                         .hide(currentFragment)
                         .show(comicsGenreScreen!!)
+                        .setTransition(TRANSIT_FRAGMENT_FADE)
                         .commit()
                     currentFragmentIndex= comicsGenreScreenIndex
                     doActionIfWeAreOnDebug { logger.i("[switch fragment to comics genre screen ]]") }
@@ -128,6 +128,7 @@ class ComicsSearchScreen:Fragment() {
                             childFragmentManager.beginTransaction()
                                 .hide(getFragmentFromIndex(currentFragmentIndex))
                                 .show(comicsByGenreScreen!!)
+                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .commit()
                             currentFragmentIndex = comicsByGenreFragmentIndex
                         }
@@ -136,6 +137,7 @@ class ComicsSearchScreen:Fragment() {
                             childFragmentManager.beginTransaction()
                                 .hide(getFragmentFromIndex(currentFragmentIndex))
                                 .show(comicsGenreScreen!!)
+                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .commit()
                             currentFragmentIndex = comicsGenreScreenIndex
                         }
@@ -143,6 +145,7 @@ class ComicsSearchScreen:Fragment() {
                             childFragmentManager.beginTransaction()
                                 .hide(getFragmentFromIndex(currentFragmentIndex))
                                 .show(comicsSearchResultScreen!!)
+                                .setTransition(TRANSIT_FRAGMENT_FADE)
                                 .commit()
                             currentFragmentIndex = comicsSearchResultScreenIndex
                             doActionIfWeAreOnDebug { logger.i("navigating to comics search result screen $currentFragmentIndex") }
@@ -166,9 +169,9 @@ class ComicsSearchScreen:Fragment() {
             .hide(comicsByGenreScreen!!)
             .hide(comicsSearchResultScreen!!)
             .show(currentFragment)
+            .setTransition(TRANSIT_FRAGMENT_FADE)
             .commit()
     }
-
     private fun getFragmentFromIndex(currentIndex:Int):Fragment = when(currentIndex){
         comicsByGenreFragmentIndex-> comicsByGenreScreen!!
         comicsGenreScreenIndex -> comicsGenreScreen!!

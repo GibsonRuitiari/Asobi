@@ -3,6 +3,7 @@ package com.gibsonruitiari.asobi.utilities.extensions
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
 /**
@@ -30,6 +31,57 @@ fun RecyclerView.gridLayoutManager(
     })
 }
 
+/**
+ * Convenience method that takes an instance of a recycler view and sets it up
+ * set up applies to recycler views using grid/horizontal layout manager
+ */
+fun<VH:RecyclerView.ViewHolder> RecyclerView.defaultRecyclerViewSetUp(scrollToTop:Boolean=true,
+                                                                      paddingBottom:Int=0,
+                                                                      paddingTop:Int=0,
+                                                                      paddingStart:Int=0,
+                                                                      paddingEnd:Int=0,
+                                                                      itemDecoration: ItemDecoration?=null,
+                                                                      gridLayout:Boolean=false,
+                                                                      hasFixedSize:Boolean=true,
+                                                                      recyclerViewAdapter:RecyclerView.Adapter<VH>){
+    applyStartWindowInsets(paddingStart)
+    applyEndWindowInsets(paddingEnd)
+    applyTopWindowInsets(paddingTop)
+    applyBottomWindowInsets(paddingBottom=paddingBottom)
+    if (hasFixedSize) setHasFixedSize(true)
+    if (scrollToTop) scrollToTop()
+    adapter = recyclerViewAdapter
+
+    layoutManager = if (gridLayout){
+        /*By default the medium density is 160f so we minus 4 just increase to accommodate smaller screens and come up with a proper
+        * no of span count for our grid layout */
+        gridLayoutManager(spanCount = (screenWidth/156f).toInt())
+    }else{
+        horizontalLayoutManager()
+    }
+    itemDecoration?.let { addItemDecoration(it) }
+}
+
+/**
+ * Convenience method that allows one to easily add onScrollListener for
+ * recycler view
+ *
+ */
+inline fun RecyclerView.onScrollListener(noinline onScrollStateChange:((recyclerViewInstance:RecyclerView,
+scrollState:Int)->Unit)?=null,
+crossinline onScroll:((recyclerViewInstance:RecyclerView,xPixelsConsumed:Int,yPixelsConsumed:Int)->Unit)){
+    addOnScrollListener(object :RecyclerView.OnScrollListener(){
+        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+            super.onScrollStateChanged(recyclerView, newState)
+            onScrollStateChange?.invoke(recyclerView,newState)
+        }
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+            onScroll.invoke(recyclerView,dx,dy)
+
+        }
+    })
+}
 
 fun RecyclerView.scrollToTop() {
     layoutManager?.let {
