@@ -13,7 +13,7 @@ import com.gibsonruitiari.asobi.utilities.sMangaToViewComicMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class PagedPopularComicsObserver  constructor(private val logger: Logger,private val popularComicsRepo: PopularComicsRepo):
+class PagedPopularComicsObserver constructor(private val logger: Logger,private val popularComicsRepo: PopularComicsRepo):
     PaginatedEntriesUseCase<PagedPopularComicsObserver.PagedPopularComicsParams,
             ViewComics>() {
     override fun createObservable(params: PagedPopularComicsParams): Flow<PagingData<ViewComics>> {
