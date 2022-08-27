@@ -15,8 +15,10 @@ abstract class BaseDataSource<T:Any> (private val logger: Logger): PagingSource<
       return try {
         val pageNumber = params.key ?: 1
         val data = loadData(pageNumber)
-          logger.i("fetched data $data")
-        val previousKey = if (pageNumber>0) pageNumber-1 else null
+        logger.i("fetched data $data")
+        //  if (pageNumber>0) pageNumber-1 else null
+
+        val previousKey = if (pageNumber==1 ) null else pageNumber-1
         val nextKey = if (data.isNotEmpty()) pageNumber.plus(1) else null
         LoadResult.Page(data = data, prevKey = previousKey, nextKey = nextKey)
     }catch (e:Exception){
