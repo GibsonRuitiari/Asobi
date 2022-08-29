@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -50,7 +49,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @Suppress("UNCHECKED_CAST")
-@VisibleForTesting
+
 class DiscoverFragment:Fragment() {
     private val mainActivityViewModel:MainActivityViewModel by sharedViewModel()
     private val comicsByGenreViewModel: ComicsByGenreViewModel by viewModel(owner = { requireParentFragment() })
@@ -175,7 +174,7 @@ class DiscoverFragment:Fragment() {
         }
     }
     private fun setUpDiscoverFragmentRecyclerViews(){
-     val linearSnapHelper = LinearSnapHelper()
+        val linearSnapHelper = LinearSnapHelper()
         setUpMarvelComicsRecyclerView(linearSnapHelper)
         setUpCompletedComicsRecyclerView(linearSnapHelper)
         setUpPopularComicsRecyclerView(linearSnapHelper)
@@ -357,15 +356,15 @@ class DiscoverFragment:Fragment() {
     }
     private fun dynamicallyChangeStatusBarColorOnScroll(){
         // line changed
-        color?.let { changeStatusBarToTransparentInFragment(it) }
+        color?.let { changeStatusBarColor(it) }
         discoverFragmentContainer.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
             if (scrollY==0){
                 doActionIfWeAreOnDebug { logger.i("scroll y=0 in scroll view") }
             }
             if (scrollY>0){
-                changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
+                changeStatusBarColor(resources.getColor(R.color.transparent,null))
             }else{
-                changeStatusBarToTransparentInFragment(color ?: resources.getColor(R.color.black,null))
+                changeStatusBarColor(color ?: resources.getColor(R.color.black,null))
             }
         })
     }
@@ -452,38 +451,38 @@ class DiscoverFragment:Fragment() {
     private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindMarvelComics(viewComics: ViewComics){
     this.marvelComics = viewComics
     with(binding){
-        comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
+        comicsImageView.loadPhoto(viewComics.comicThumbnail)
     }
 }
     private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindDcComics(viewComics: ViewComics){
         this.dcComics = viewComics
         with(binding){
-            comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
+            comicsImageView.loadPhoto(viewComics.comicThumbnail)
         }
     }
     private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindCompletedComics(viewComics: ViewComics){
         this.completedComics = viewComics
         with(binding){
 
-            comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
+            comicsImageView.loadPhoto(viewComics.comicThumbnail)
         }
     }
     private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindPopularComics(viewComics: ViewComics){
         this.popularComics = viewComics
         with(binding){
-            comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
+            comicsImageView.loadPhoto(viewComics.comicThumbnail)
         }
     }
     private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindOngoingComics(viewComics: ViewComics){
         this.ongoingComics = viewComics
         with(binding){
-            comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
+            comicsImageView.loadPhoto(viewComics.comicThumbnail)
         }
     }
     private fun BindingViewHolder<ComicItemLayoutDiscoverBinding>.bindLatestComics(viewComics: ViewComics){
         this.latestComics = viewComics
         with(binding){
-            comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
+            comicsImageView.loadPhoto(viewComics.comicThumbnail)
         }
     }
 

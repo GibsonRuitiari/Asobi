@@ -82,7 +82,7 @@ abstract class PaginatedFragment:Fragment(){
         viewComics?.let {comic->
             this.item = comic
             with(binding){
-                comicsImageView.loadPhotoUrl(comic.comicThumbnail)
+                comicsImageView.loadPhoto(comic.comicThumbnail)
             }
         }
     }
@@ -108,7 +108,8 @@ abstract class PaginatedFragment:Fragment(){
                 layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,60.dp)
                 (layoutParams as LayoutParams).setMargins(0)
                 background=null
-                setBackgroundColor(resources.getColor(R.color.transparent,null))
+                val bgColor= resources.getColor(R.color.transparent,null)
+                setBackgroundColor(bgColor)
                 fitsSystemWindows=true
                 elevation=0f
                 appBarStateListAnimator.addState(IntArray(0),ObjectAnimator.ofFloat(this,"elevation",0f))
@@ -222,7 +223,7 @@ abstract class PaginatedFragment:Fragment(){
                 loadingJob.cancelIfActive()
             }
         }
-        changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
+        changeStatusBarColor(resources.getColor(R.color.transparent,null))
     }
 
     private fun applyBarElevationAndBackgroundColor(color:Int,
@@ -333,7 +334,7 @@ abstract class PaginatedFragment:Fragment(){
     private fun animateAppBarColorsOnScroll(){
         paginatedFragmentRecyclerView.onScrollListener(onScrollStateChange = {recyclerViewInstance, _ ->
             if (recyclerViewInstance.canScrollVertically(-1).not()){
-                changeStatusBarToTransparentInFragment(resources.getColor(R.color.transparent,null))
+                changeStatusBarColor(resources.getColor(R.color.transparent,null))
                 applyBarElevationAndBackgroundColor(resources.getColor(R.color.matte,null),0f,true)
             }
         },
@@ -341,12 +342,12 @@ abstract class PaginatedFragment:Fragment(){
             if (yPixelsConsumed>0){
                 // scrolling down
                 doActionIfWeAreOnDebug { logger.i("dy>0 scrolling down $yPixelsConsumed") }
-                changeStatusBarToTransparentInFragment(getFragmentColor())
+                changeStatusBarColor(getFragmentColor())
                 applyBarElevationAndBackgroundColor(getFragmentColor(), 4f,false)
             }else if (yPixelsConsumed<-1) {
                 // scrolling up
                 doActionIfWeAreOnDebug {  logger.i("dy<-1 scrolling up $yPixelsConsumed") }
-                changeStatusBarToTransparentInFragment(getFragmentColor())
+                changeStatusBarColor(getFragmentColor())
                 applyBarElevationAndBackgroundColor(getFragmentColor(),4f,false)
             }
         })

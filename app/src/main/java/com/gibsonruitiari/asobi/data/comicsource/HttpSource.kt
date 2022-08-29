@@ -89,7 +89,7 @@ internal abstract class HttpSource:ComicSource {
         return get("$baseUrl/ongoing-comics?page=$page", headers)
     }
     open fun mangaSearchRequest(term:String):Request{
-        return get("$baseUrl/advanced-search?key=$term", headers)
+        return get("$baseUrl/advanced-search?key=$term&page=2", headers)
     }
     open fun mangaCompletedComicsRequest(page:Int):Request{
         return get("$baseUrl/advanced-search?status=CMP&page=$page", headers)

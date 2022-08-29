@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.animation.StateListAnimator
 import android.animation.TimeInterpolator
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -19,7 +20,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.activity.addCallback
-import androidx.annotation.VisibleForTesting
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -49,9 +50,7 @@ import kotlinx.coroutines.flow.collectLatest
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@VisibleForTesting
 class ComicsSearchResultsScreen: Fragment() {
-
     /* Start: initialization of view variables */
     private lateinit var searchResultsScreenToolbar:MaterialToolbar
     private lateinit var searchResultsScreenSearchTitle:AppCompatTextView
@@ -81,6 +80,7 @@ class ComicsSearchResultsScreen: Fragment() {
         lateinit var searchResultsTextInputLayout: TextInputLayout
         lateinit var searchResultsEditText:EditText
 
+        @SuppressLint("ObjectAnimatorBinding")
         private val noElevationAnimator = StateListAnimator().apply { addState(IntArray(0),ObjectAnimator.ofFloat(this,
         "elevation", noElevation)) }
         init {
@@ -90,7 +90,6 @@ class ComicsSearchResultsScreen: Fragment() {
         private fun searchScreenResultsAppBar(context: Context, constraintSet: ConstraintSet):AppBarLayout{
             val appBarLayout  = AppBarLayout(context).apply {
                 id=ViewCompat.generateViewId()
-               // layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
                 elevation= noElevation
                 stateListAnimator=noElevationAnimator
                 setBackgroundColor(context.resources.getColor(R.color.transparent,null))
@@ -107,7 +106,7 @@ class ComicsSearchResultsScreen: Fragment() {
             val materialToolbar = MaterialToolbar(context).apply {
                 id=ViewCompat.generateViewId()
                 layoutParams = AppBarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-                background = context.getDrawable(R.drawable.toolbar_bg)
+                background = AppCompatResources.getDrawable(context,R.drawable.toolbar_bg)
                 setTitleTextColor(Color.WHITE)
                 isTitleCentered=true
                 title = context.getString(R.string.search_label)
@@ -139,7 +138,7 @@ class ComicsSearchResultsScreen: Fragment() {
                 inputType=InputType.TYPE_CLASS_TEXT
                  maxLines=1
                  setTextColor(ColorStateList.valueOf(Color.WHITE))
-                 background = context.getDrawable(R.color.davy_grey)
+                 background = AppCompatResources.getDrawable(context,R.color.davy_grey)
                  gravity =Gravity.CENTER_VERTICAL
                  hint = context.resources.getString(R.string.search_comics_hint)
                 imeOptions= EditorInfo.IME_ACTION_SEARCH
@@ -420,7 +419,7 @@ class ComicsSearchResultsScreen: Fragment() {
     private fun BindingViewHolder<ComicItemLayoutBinding>.bind(viewComics: ViewComics){
         this.searchResultsComics = viewComics
         with(binding){
-            comicsImageView.loadPhotoUrl(viewComics.comicThumbnail)
+            comicsImageView.loadPhoto(viewComics.comicThumbnail)
         }
     }
 

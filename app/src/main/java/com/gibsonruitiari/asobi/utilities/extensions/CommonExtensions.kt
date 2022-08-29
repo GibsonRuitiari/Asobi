@@ -95,7 +95,7 @@ crossinline block:suspend CoroutineScope.()->Unit):Job = viewLifecycleOwner.life
         }
     }
 
-fun Fragment.changeStatusBarToTransparentInFragment(@ColorInt color:Int){
+fun Fragment.changeStatusBarColor(@ColorInt color:Int){
     val window= requireActivity().window
     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     window.statusBarColor=color

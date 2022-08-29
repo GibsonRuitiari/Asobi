@@ -157,11 +157,11 @@ class ComicsSearchScreen:Fragment() {
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        if (savedInstanceState==null || comicsGenreScreen==null) return
+        if (savedInstanceState==null || comicsGenreScreen!=null) return
         currentFragmentIndex = savedInstanceState.getInt(currentFragmentIndexTag)
-        comicsGenreScreen = childFragmentManager.findFragmentByTag(comicsGenreScreenTag) as ComicsGenreScreen
-        comicsByGenreScreen = childFragmentManager.findFragmentByTag(comicsByGenreFragmentTag) as ComicsByGenreScreen
-        comicsSearchResultScreen = childFragmentManager.findFragmentByTag(comicsSearchResultsScreenTag) as ComicsSearchResultsScreen
+        comicsGenreScreen = childFragmentManager.getFragment(savedInstanceState,comicsGenreScreenTag) as ComicsGenreScreen
+        comicsByGenreScreen = childFragmentManager.getFragment(savedInstanceState,comicsByGenreFragmentTag) as ComicsByGenreScreen
+        comicsSearchResultScreen = childFragmentManager.getFragment(savedInstanceState,comicsSearchResultsScreenTag) as ComicsSearchResultsScreen
         val currentFragment = getFragmentFromIndex(currentFragmentIndex)
         childFragmentManager.beginTransaction()
             .hide(comicsGenreScreen!!)
@@ -171,14 +171,13 @@ class ComicsSearchScreen:Fragment() {
             .setTransition(TRANSIT_FRAGMENT_FADE)
             .commit()
     }
-    private fun defaultFragmentScreenInstance():Fragment = ComicsGenreScreen()
     private fun getFragmentFromIndex(currentIndex:Int):Fragment = when(currentIndex){
-        comicsByGenreFragmentIndex-> comicsByGenreScreen
-        comicsGenreScreenIndex -> comicsGenreScreen
-        comicsSearchResultScreenIndex -> comicsSearchResultScreen
+        comicsByGenreFragmentIndex-> comicsByGenreScreen!!
+        comicsGenreScreenIndex -> comicsGenreScreen!!
+        comicsSearchResultScreenIndex -> comicsSearchResultScreen!!
         else ->{
             doActionIfWeAreOnDebug { logger.e("an unrecognized index given $currentIndex") }
             throw IllegalArgumentException("unrecognized index $currentIndex")
         }
-    } ?: defaultFragmentScreenInstance()
+    }
 }

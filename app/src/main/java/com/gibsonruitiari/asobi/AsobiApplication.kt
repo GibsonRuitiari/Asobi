@@ -1,6 +1,6 @@
 package com.gibsonruitiari.asobi
 
-import androidx.multidex.MultiDexApplication
+import android.app.Application
 import com.gibsonruitiari.asobi.utilities.logging.AsobiDebugTree
 import com.gibsonruitiari.asobi.di.*
 import com.jakewharton.threetenabp.AndroidThreeTen
@@ -9,7 +9,7 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import timber.log.Timber
 
-class AsobiApplication :MultiDexApplication(){
+class AsobiApplication :Application(){
     override fun onCreate() {
         super.onCreate()
         AndroidThreeTen.init(this)

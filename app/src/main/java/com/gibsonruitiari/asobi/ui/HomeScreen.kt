@@ -92,7 +92,7 @@ class HomeScreen:Fragment() {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(onBackPressedCallback)
         if (savedInstanceState==null){
-            discoverFragment=defaultDiscoverFragmentInstance()
+            discoverFragment= DiscoverFragment()
             latestComicsFragment=LatestComicsFragment()
             ongoingComicsFragment=OngoingComicsFragment()
             popularComicsFragment= PopularComicsFragment()
@@ -202,15 +202,14 @@ class HomeScreen:Fragment() {
     }
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
-        /* If the saved instance is null it means the fragment is being created for the first time so handle the initialization on onCreateView */
-        if (savedInstanceState==null || discoverFragment==null) return
+        if (savedInstanceState==null || discoverFragment!=null) return
         currentFragmentIndex= savedInstanceState.getInt(currentFragmentIndexKey)
-        ongoingComicsFragment = childFragmentManager.findFragmentByTag(ongoingComicsFragmentTag) as OngoingComicsFragment
-        discoverFragment = childFragmentManager.findFragmentByTag(discoverFragmentTag) as DiscoverFragment
-        latestComicsFragment = childFragmentManager.findFragmentByTag(latestComicsFragmentTag) as LatestComicsFragment
-        popularComicsFragment = childFragmentManager.findFragmentByTag(popularComicsFragmentTag) as PopularComicsFragment
-        comicsByGenreScreen = childFragmentManager.findFragmentByTag(comicsByGenreFragmentTag) as ComicsByGenreScreen
-        completedComicsFragment = childFragmentManager.findFragmentByTag(completedComicsFragmentTag) as CompletedComicsFragment
+        ongoingComicsFragment = childFragmentManager.getFragment(savedInstanceState,ongoingComicsFragmentTag) as OngoingComicsFragment
+        discoverFragment = childFragmentManager.getFragment(savedInstanceState,discoverFragmentTag) as DiscoverFragment
+        latestComicsFragment = childFragmentManager.getFragment(savedInstanceState,latestComicsFragmentTag) as LatestComicsFragment
+        popularComicsFragment = childFragmentManager.getFragment(savedInstanceState,popularComicsFragmentTag) as PopularComicsFragment
+        comicsByGenreScreen = childFragmentManager.getFragment(savedInstanceState,comicsByGenreFragmentTag) as ComicsByGenreScreen
+        completedComicsFragment = childFragmentManager.getFragment(savedInstanceState,completedComicsFragmentTag) as CompletedComicsFragment
         val currentFragment = getFragmentFromIndex(currentFragmentIndex)
         childFragmentManager.beginTransaction()
             .hide(discoverFragment!!)
@@ -223,18 +222,17 @@ class HomeScreen:Fragment() {
             .setTransition(TRANSIT_FRAGMENT_FADE)
             .commit()
     }
-    private fun defaultDiscoverFragmentInstance():DiscoverFragment = DiscoverFragment()
     private fun getFragmentFromIndex(currentIndex:Int):Fragment= when (currentIndex) {
-        discoverFragmentIndex -> discoverFragment
-        latestComicsFragmentIndex -> latestComicsFragment
-        ongoingComicsFragmentIndex -> ongoingComicsFragment
-        completedComicsFragmentIndex->completedComicsFragment
-        genreComicsFragmentIndex->comicsByGenreScreen
-        popularComicsFragmentIndex->popularComicsFragment
+        discoverFragmentIndex -> discoverFragment!!
+        latestComicsFragmentIndex -> latestComicsFragment!!
+        ongoingComicsFragmentIndex -> ongoingComicsFragment!!
+        completedComicsFragmentIndex->completedComicsFragment!!
+        genreComicsFragmentIndex->comicsByGenreScreen!!
+        popularComicsFragmentIndex->popularComicsFragment!!
         else -> {
             doActionIfWeAreOnDebug { logger.e("an unrecognized index was used $currentIndex") }
-            throw IllegalStateException("unrecognized index $currentIndex")
+            throw IllegalArgumentException("unrecognized index $currentIndex")
         }
-    } ?: defaultDiscoverFragmentInstance()
+    }
 
 }

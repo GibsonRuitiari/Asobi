@@ -7,12 +7,21 @@ import com.gibsonruitiari.asobi.di.GlideApp
 import com.google.android.material.imageview.ShapeableImageView
 
 const val CrossFadeDuration =400
-fun ShapeableImageView.loadPhotoUrl(
+fun ShapeableImageView.loadPhoto(
     url: String,
     requestListener: RequestListener<Drawable>? = null
 ) {
     GlideApp.with(context)
         .load(url)
+        .transition(DrawableTransitionOptions.withCrossFade(CrossFadeDuration))
+        .addListener(requestListener)
+        .into(this)
+        .clearOnDetach()
+}
+
+fun ShapeableImageView.loadPhoto(drawable: Drawable,requestListener: RequestListener<Drawable>?=null){
+    GlideApp.with(context)
+        .load(drawable)
         .transition(DrawableTransitionOptions.withCrossFade(CrossFadeDuration))
         .addListener(requestListener)
         .into(this)

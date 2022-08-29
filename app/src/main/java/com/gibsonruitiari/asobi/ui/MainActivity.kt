@@ -56,9 +56,9 @@ class MainActivity : AppCompatActivity() {
 
         }else{
             selectedFragmentIndex = savedInstanceState.getInt(selectedIndexTag, mainFragmentIndex)
-            homeScreen = supportFragmentManager.findFragmentByTag(mainFragmentTag) as HomeScreen
-            comicsSearchScreen = supportFragmentManager.findFragmentByTag(searchFragmentTag) as ComicsSearchScreen
-            userLibraryFragment = supportFragmentManager.findFragmentByTag(userLibraryFragmentTag) as UserLibrary
+            homeScreen = supportFragmentManager.getFragment(savedInstanceState,mainFragmentTag) as HomeScreen
+            comicsSearchScreen = supportFragmentManager.getFragment(savedInstanceState,searchFragmentTag) as ComicsSearchScreen
+            userLibraryFragment = supportFragmentManager.getFragment(savedInstanceState,userLibraryFragmentTag) as UserLibrary
             val currentFragment = getFragmentFromIndex(selectedFragmentIndex)
             supportFragmentManager.beginTransaction()
                 .hide(homeScreen)
@@ -152,7 +152,6 @@ class MainActivity : AppCompatActivity() {
             val bottomPadding = if (binding.navigation?.isVisible == true) systemBars.bottom else 0
             view.updatePadding(left=systemBars.left,
                 right=systemBars.right, bottom = bottomPadding)
-            // consume the insets
             WindowInsetsCompat.Builder(insets).setInsets(WindowInsetsCompat
                 .Type.systemBars(), Insets.of(0,
                 systemBars.top,0,systemBars.bottom- bottomPadding)).build()
@@ -195,7 +194,5 @@ class MainActivity : AppCompatActivity() {
         }else if (currentFragment is HomeScreen){
             currentFragment.activity?.onBackPressedDispatcher?.onBackPressed()
         }
-
     }
-
 }

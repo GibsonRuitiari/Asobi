@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.*
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
@@ -30,6 +31,7 @@ import com.gibsonruitiari.asobi.utilities.extensions.*
 import com.gibsonruitiari.asobi.utilities.logging.Logger
 import com.gibsonruitiari.asobi.utilities.views.ParentFragmentsView
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButton.ICON_GRAVITY_START
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.android.ext.android.inject
@@ -101,8 +103,8 @@ class ComicsGenreScreen:Fragment() {
                                                   constraintSet: ConstraintSet,searchLabelId:Int):MaterialButton{
             val searchButton=MaterialButton(context).apply {
                 id=ViewCompat.generateViewId()
-                iconGravity = 0x1
-                textAlignment = 0x2
+                iconGravity =  ICON_GRAVITY_START
+                textAlignment = TEXT_ALIGNMENT_TEXT_START
                 setTextColor(context.resources.getColor(R.color.davy_grey,null))
                 textSize = normalTextSize // will be automatically converted to 18sp
                 contentDescription=context.resources.getString(R.string.search_comics_hint)
@@ -112,7 +114,7 @@ class ComicsGenreScreen:Fragment() {
                 iconSize= defaultIconSize
                 setTextColor(defaultColorStateList)
                 setBackgroundColor(Color.WHITE)
-                icon=context.resources.getDrawable(R.drawable.ic_baseline_search_24,null)
+                icon= ResourcesCompat.getDrawable(context.resources,R.drawable.ic_baseline_search_24,null)
             }
             constraintSet.setViewLayoutParams(searchButton.id, width = ConstraintSet.MATCH_CONSTRAINT,height= defaultButtonHeight)
             constraintSet.applyMargin(searchButton.id,marginTop=marginMedium, marginStart = marginMedium, marginEnd = marginMedium)
@@ -241,10 +243,9 @@ class ComicsGenreScreen:Fragment() {
     private val genresAdapter = listAdapterOf(initialItems = emptyList(), viewHolderCreator = { parent: ViewGroup, _: Int ->
         parent.viewHolderFrom(GenreComicItemBinding::inflate).apply {
             itemView.setOnClickListener {
-                doActionIfWeAreOnDebug {
-                    logger.i(genres.genreName)
-                    comicsGenreScreenRootLayout.showSnackBar("${genres.genreName} clicked") }
+                doActionIfWeAreOnDebug { logger.i(genres.genreName); comicsGenreScreenRootLayout.showSnackBar("${genres.genreName} clicked") }
                 filterUiGenreModelToGenre(genres)?.let { genres -> comicsByGenreViewModel.setGenre(genres)
+                    logger.i("navigating to comics by genre screen from search screen")
                 mainActivityViewModel.openComicsByGenreScreenFromSearchScreen()
                 }
             }
