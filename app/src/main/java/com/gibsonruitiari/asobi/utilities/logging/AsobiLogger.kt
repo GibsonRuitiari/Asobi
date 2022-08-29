@@ -1,9 +1,8 @@
 package com.gibsonruitiari.asobi.utilities.logging
 
-import androidx.annotation.VisibleForTesting
 import timber.log.Timber
 
-@VisibleForTesting
+
 class AsobiLogger:Logger {
     override fun setUp(isInDebugMode: Boolean) {
         if (isInDebugMode) Timber.plant(AsobiDebugTree())

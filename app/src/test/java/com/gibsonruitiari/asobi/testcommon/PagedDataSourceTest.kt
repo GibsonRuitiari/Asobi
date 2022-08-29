@@ -21,6 +21,8 @@ import org.koin.test.inject
 import kotlin.test.assertNotNull
 @OptIn(ExperimentalCoroutinesApi::class)
 open class PagedDataSourceTest:KoinTest{
+     val defaultPageNumber =1
+     val noDataPageNumber =2
     private val pagedDataDiffUtil = object :DiffUtil.ItemCallback<ViewComics>(){
         override fun areContentsTheSame(oldItem: ViewComics, newItem: ViewComics): Boolean {
             return oldItem==newItem

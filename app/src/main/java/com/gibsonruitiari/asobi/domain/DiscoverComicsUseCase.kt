@@ -9,7 +9,6 @@ import com.gibsonruitiari.asobi.data.shared.comicsbygenre.ComicsByGenreRepo
 import com.gibsonruitiari.asobi.data.shared.completedcomics.CompletedComicsRepo
 import com.gibsonruitiari.asobi.data.shared.latestcomics.LatestComicsRepo
 import com.gibsonruitiari.asobi.data.shared.ongoingcomics.OngoingComicsRepo
-import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepo
 import com.gibsonruitiari.asobi.ui.discovercomics.DiscoverComicsResult
 import com.gibsonruitiari.asobi.utilities.extensions.parseThrowableErrorMessageIntoUsefulMessage
 import com.gibsonruitiari.asobi.utilities.sMangaToViewComicMapper
@@ -19,7 +18,7 @@ import kotlinx.coroutines.flow.map
 
 class DiscoverComicsUseCase constructor(private val latestComicsRepo: LatestComicsRepo,
                                         private val ongoingComicsRepo: OngoingComicsRepo,
-                                        private val popularComicsRepo: PopularComicsRepo,
+                                        private val popularComicsRepo: com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepo,
                                         private val completedComicsRepo: CompletedComicsRepo,
                                         private val genreComicsRepo: ComicsByGenreRepo
 ): FlowUseCase<DiscoverComicsUseCase.DiscoverComicsParams, DiscoverComicsResult>() {

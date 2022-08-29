@@ -20,9 +20,7 @@ class ComicFilterViewModelDelegate:ComicFilterViewModel{
        _selectedGenre.value = Genres.DC_COMICS
     }
     override fun setGenre(selectedGenre: Genres) {
-
         _selectedGenre.update { selectedGenre }
         println("genre ${_selectedGenre.value}")
-       // _selectedGenre.value = selectedGenre
     }
 }

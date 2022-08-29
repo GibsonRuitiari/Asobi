@@ -13,6 +13,7 @@ val sampleComicList = buildList {
 
 
 }
+
 private fun generateSMangaObjectWhenGivenParams(name:String,
                                                 comicLink:String,thumbnailLink:String): SManga {
     val sMangaImpl = SManga.create()

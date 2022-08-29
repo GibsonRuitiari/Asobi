@@ -15,7 +15,6 @@ import com.gibsonruitiari.asobi.data.shared.ongoingcomics.OngoingComicsDataSourc
 import com.gibsonruitiari.asobi.data.shared.ongoingcomics.OngoingComicsRepo
 import com.gibsonruitiari.asobi.data.shared.ongoingcomics.OngoingComicsRepoImpl
 import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsDataSource
-import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepo
 import com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepoImpl
 import com.gibsonruitiari.asobi.data.shared.searchcomics.SearchComicsDelegate
 import com.gibsonruitiari.asobi.data.shared.searchcomics.SearchComicsRepo
@@ -97,7 +96,7 @@ val comicsRepositoryModule= module{
     single<OngoingComicsRepo> { OngoingComicsRepoImpl() }
     single<CompletedComicsRepo> { CompletedComicsRepoImpl() }
     single<ComicsDetailsRepo> { ComicsDetailsRepoImpl() }
-    single<PopularComicsRepo> { PopularComicsRepoImpl() }
+    single<com.gibsonruitiari.asobi.data.shared.popularcomics.PopularComicsRepo> { PopularComicsRepoImpl() }
     single<ComicsByGenreRepo> { ComicsByGenreRepoImpl() }
     single<SearchComicsRepo> { SearchComicsDelegate() }
 }

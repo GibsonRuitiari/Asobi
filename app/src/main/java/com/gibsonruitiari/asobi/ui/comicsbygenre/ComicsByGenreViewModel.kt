@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 class ComicsByGenreViewModel constructor(private val observer: PagedComicsByGenreObserver,
                                          filterViewModel: ComicFilterViewModel):ViewModel(),
 ComicFilterViewModel by filterViewModel{
-    val gradientColor = currentGenreChoice.value?.toUiGenreModel()?.genreColor
     @OptIn(ExperimentalCoroutinesApi::class)
     val comicsList: Flow<PagingData<ViewComics>> = currentGenreChoice.flatMapLatest {
         if (it != null) {
