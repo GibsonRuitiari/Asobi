@@ -24,6 +24,8 @@ internal abstract class ParsedHttpSource:HttpSource() {
     override fun parsePopularAndNewComicsParse(response: Response): MangaPage {
         return response.asJsoup().run {
             val mangas = popularAndNewMangaFromDocument(this)
+            mangas.forEach {println("popular and new mangas comic name --> ${it.comicName} comic link ${it.comicLink}")  }
+
             return@run MangaPage(mangas,true)
         }
     }

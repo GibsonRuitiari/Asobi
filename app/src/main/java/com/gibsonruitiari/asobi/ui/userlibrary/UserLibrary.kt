@@ -45,18 +45,21 @@ class UserLibrary : Fragment() {
         private val onFinishedScrollColor = context.resources.getColor(R.color.matte,null)
         private val transparentColor = context.resources.getColor(R.color.transparent,null)
         private val noElevationAnimator = StateListAnimator()
-        private val comicDetailsAppBarLayout:AppBarLayout = AppBarLayout(context).apply {
-            id=ViewCompat.generateViewId()
-            background=null
-            noElevationAnimator.addState(IntArray(0),ObjectAnimator.ofFloat(this,"elevation", noElevation))
-            stateListAnimator= noElevationAnimator
-            elevation= noElevation
-            setBackgroundColor(transparentColor)
-            constraintSet.setViewLayoutParams(this.id,ConstraintSet.MATCH_CONSTRAINT,ConstraintSet.WRAP_CONTENT)
-            constraintSet constrainEndToParent this.id
-            constraintSet constrainTopToParent  this.id
-            constraintSet constrainStartToParent this.id
-            this.addView(toolbar)
+        private val comicDetailsAppBarLayout:AppBarLayout
+        get() {
+           return AppBarLayout(context).apply {
+                id=ViewCompat.generateViewId()
+                background=null
+                noElevationAnimator.addState(IntArray(0),ObjectAnimator.ofFloat(this,"elevation", noElevation))
+                stateListAnimator= noElevationAnimator
+                elevation= noElevation
+                setBackgroundColor(transparentColor)
+                constraintSet.setViewLayoutParams(this.id,ConstraintSet.MATCH_CONSTRAINT,ConstraintSet.WRAP_CONTENT)
+                constraintSet constrainEndToParent this.id
+                constraintSet constrainTopToParent  this.id
+                constraintSet constrainStartToParent this.id
+                this.addView(toolbar)
+            }
         }
         private val toolbar:MaterialToolbar
         get() {
@@ -74,42 +77,47 @@ class UserLibrary : Fragment() {
                 (layoutParams as AppBarLayout.LayoutParams).scrollFlags= AppBarLayout.LayoutParams.SCROLL_FLAG_SCROLL + AppBarLayout.LayoutParams.SCROLL_FLAG_ENTER_ALWAYS
             }
         }
-        private val comicCover:ShapeableImageView
+//        private val comicCover:ShapeableImageView
+//        get() {
+//           return ShapeableImageView(context).apply {
+//                id=ViewCompat.generateViewId()
+//                loadPhoto(AppCompatResources.getDrawable(context,R.drawable.sunstone)!!)
+//                shapeAppearanceModel= ShapeAppearanceModel().withCornerSize(12f)
+//                scaleType=ImageView.ScaleType.CENTER_CROP
+//                adjustViewBounds=true
+//                constraintSet.setViewLayoutParams(this.id,120.dp,180.dp)
+//                constraintSet.applyMargin(this.id, marginTop = 10.dp)
+//                constraintSet constrainStartToParent comicCover.id
+//                constraintSet.connect(comicCover.id,ConstraintSet.TOP,comicDetailsAppBarLayout.id,ConstraintSet.BOTTOM)
+//                constraintSet constrainEndToParent  comicCover.id
+//                strokeWidth=0f
+//                strokeColor= ColorStateList.valueOf(transparentColor)
+//           }
+//        }
+        private val constraintLayout:ConstraintLayout
         get() {
-           return ShapeableImageView(context).apply {
+            return ConstraintLayout(context).apply {
                 id=ViewCompat.generateViewId()
-                loadPhoto(AppCompatResources.getDrawable(context,R.drawable.sunstone)!!)
-                shapeAppearanceModel= ShapeAppearanceModel().withCornerSize(12f)
-                scaleType=ImageView.ScaleType.CENTER_CROP
-                adjustViewBounds=true
-                constraintSet.setViewLayoutParams(this.id,120.dp,180.dp)
-                constraintSet.applyMargin(this.id, marginTop = 10.dp)
-                constraintSet constrainStartToParent comicCover.id
-                constraintSet.connect(comicCover.id,ConstraintSet.TOP,comicDetailsAppBarLayout.id,ConstraintSet.BOTTOM)
-                constraintSet constrainEndToParent  comicCover.id
-                strokeWidth=0f
-                strokeColor= ColorStateList.valueOf(transparentColor)
-           }
+                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+                this.addView(comicDetailsAppBarLayout)
+                constraintSet.applyTo(this)
+            }
         }
-        private val constraintLayout=ConstraintLayout(context).apply {
-            id=ViewCompat.generateViewId()
-            layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
-            this.addView(comicDetailsAppBarLayout)
-            this.addView(comicCover)
-            constraintSet.applyTo(this)
-        }
-        private val nestedScrollView = NestedScrollView(context).apply {
-            id=ViewCompat.generateViewId()
-            layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
-            this.addView(constraintLayout)
-            this.setOnScrollChangeListener { v, _, scrollY, _, _ ->
-                if (v.canScrollVertically(-1).not()){
-                    logger.i("cannot scroll vertically")
-                    changeStatusBarColor(onFinishedScrollColor)
-                    changeElevationAndBackgroundColor(onFinishedScrollColor,0f)
-                }else if (scrollY >0 || scrollY<-1){
-                    changeStatusBarColor(onScrollColor)
-                    changeElevationAndBackgroundColor(onScrollColor,4f)
+        private val nestedScrollView:NestedScrollView
+        get() {
+           return NestedScrollView(context).apply {
+                id=ViewCompat.generateViewId()
+                layoutParams = LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+                this.addView(constraintLayout)
+                this.setOnScrollChangeListener { v, _, scrollY, _, _ ->
+                    if (v.canScrollVertically(-1).not()){
+                        logger.i("cannot scroll vertically")
+                        changeStatusBarColor(onFinishedScrollColor)
+                        changeElevationAndBackgroundColor(onFinishedScrollColor,0f)
+                    }else if (scrollY >0 || scrollY<-1){
+                        changeStatusBarColor(onScrollColor)
+                        changeElevationAndBackgroundColor(onScrollColor,4f)
+                    }
                 }
             }
         }

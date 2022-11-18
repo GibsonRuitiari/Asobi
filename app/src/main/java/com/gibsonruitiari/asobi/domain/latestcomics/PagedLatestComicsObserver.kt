@@ -20,7 +20,9 @@ class PagedLatestComicsObserver constructor(private val logger: Logger, private 
        return Pager(config =params.pagingConfig,
        pagingSourceFactory = { LatestComicsDataSource(logger, latestComicsRepo) }).flow.map {
            value->
-           value.map { sMangaToViewComicMapper(it) }
+           value.map {
+               sMangaToViewComicMapper(it)
+           }
        }
     }
     data class LatestComicsParams(override val pagingConfig: PagingConfig):
