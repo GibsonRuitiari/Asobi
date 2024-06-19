@@ -37,6 +37,6 @@ the project please don't fail to raise a pr.
 
 
 ## How the application looks like
-https://github.com/GibsonRuitiari/Asobi/blob/master/art/one.jpg
+![](https://github.com/GibsonRuitiari/Asobi/blob/master/art/one.jpg)
 
-https://github.com/GibsonRuitiari/Asobi/blob/master/art/two.jpg
+![](https://github.com/GibsonRuitiari/Asobi/blob/master/art/two.jpg)
